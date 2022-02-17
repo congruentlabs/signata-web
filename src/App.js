@@ -1,33 +1,62 @@
 import { useEthers, useEtherBalance } from '@usedapp/core';
 import { formatEther } from '@ethersproject/units';
-import logo from './logo.svg';
+import Grid from '@mui/material/Grid';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import {
+  AppHeader,
+  AppFooter,
+  CreateAccount,
+  AddIdentity,
+  ManageIdentities,
+  NoConnectionWarning,
+} from './components';
 import './App.css';
 
 function App() {
-
-  const { activateBrowserWallet, account } = useEthers();
-  const etherBalance = useEtherBalance(account);
+  const {
+    activateBrowserWallet,
+    account,
+    chainId,
+    active,
+  } = useEthers();
+  // const etherBalance = useEtherBalance(account);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Signata
-        </p>
-        <button onClick={() => activateBrowserWallet()}>
-          Connect
-        </button>
-        {account && <p>Account: {account}</p>}
-        {etherBalance && <p>Balance: {formatEther(etherBalance)}</p>}
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <AppHeader
+        account={account}
+        chainId={chainId}
+        active={active}
+        handleClickConnect={() => activateBrowserWallet()}
+      />
+      <Container maxWidth="lg" >
+        <Box sx={{ minHeight: '100vh', paddingTop: 2 }}>
+          <Grid container spacing={2}>
+            {!account && (
+              <NoConnectionWarning
+                handleClickConnect={() => activateBrowserWallet()}
+              />
+            )}
+            {account && (
+              <CreateAccount
+                active={active}
+              />
+            )}
+            {account && (
+              <AddIdentity
+                active={active}
+              />
+            )}
+            {account && (
+              <ManageIdentities
+                active={active}
+              />
+            )}
+          </Grid>
+        </Box>
+      </Container>
+      <AppFooter />
     </div>
   );
 }
