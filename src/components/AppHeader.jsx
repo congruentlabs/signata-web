@@ -13,7 +13,11 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { shortenIfAddress } from '@usedapp/core';
 
-const pages = ['Docs', 'News', 'Token'];
+const pages = [
+  { name: 'Docs', href: 'https://docs.signata.net'},
+  { name: 'News', href: 'https://blog.signata.net' },
+  { name: 'Token', href: 'https://sata.technology' }
+];
 const settings = ['Log Out', 'Terms & Conditions', 'Privacy Policy'];
 
 export const AppHeader = ({
@@ -77,9 +81,9 @@ export const AppHeader = ({
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                <MenuItem key={page.name} onClick={handleCloseNavMenu}>
                   <Typography textAlign="center">
-                    {page}
+                    {page.name}
                   </Typography>
                 </MenuItem>
               ))}
@@ -89,11 +93,11 @@ export const AppHeader = ({
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
-                key={page}
+                key={page.name}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                {page}
+                {page.name}
               </Button>
             ))}
           </Box>

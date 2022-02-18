@@ -1,11 +1,14 @@
 import { useEthers, useEtherBalance } from '@usedapp/core';
 import { formatEther } from '@ethersproject/units';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
+import { green, blue } from '@mui/material/colors';
+import { useMemo } from 'react';
 import {
   AppHeader,
   AppFooter,
@@ -15,7 +18,7 @@ import {
   NoConnectionWarning,
 } from './components';
 import './App.css';
-import theme from './theme';
+
 
 function App() {
   const {
@@ -25,6 +28,7 @@ function App() {
     active,
   } = useEthers();
   // const etherBalance = useEtherBalance(account);
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   const identities = [{
     name: 'Main Identity',
@@ -38,6 +42,22 @@ function App() {
     registered: true,
     locked: true,
   }];
+
+  const theme = useMemo(() => createTheme({
+    palette: {
+      primary: {
+        main: green[700],
+      },
+      secondary: {
+        main: blue[700],
+      },
+      mode: prefersDarkMode ? 'dark' : 'light',
+      typography: {
+        fontFamily: 'Montserrat',
+      },
+    },
+  }), [prefersDarkMode]);
+  
 
   return (
     <ThemeProvider theme={theme}>
