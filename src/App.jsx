@@ -237,7 +237,7 @@ function App() {
         handleClickSave={handleClickSaveIdentity}
       />
       <Container maxWidth="md">
-        <Box sx={{ minHeight: '100vh', paddingTop: 2 }}>
+        <Box sx={{ minHeight: '90vh', paddingTop: 2 }}>
           <Grid container spacing={3} alignItems="center" justifyContent="center">
             {!account && (
               <NoConnectionWarning
