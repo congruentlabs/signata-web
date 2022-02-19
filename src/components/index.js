@@ -1,4 +1,3 @@
-export { AddIdentity } from './AddIdentity';
 export { AppFooter } from './AppFooter';
 export { AppHeader } from './AppHeader';
 export { ConnectionPopup } from './ConnectionPopup';
@@ -11,3 +10,4 @@ export { ManageAddons } from './ManageAddons';
 export { ManageIdentities } from './ManageIdentities';
 export { NoConnectionWarning } from './NoConnectionWarning';
 export { WrongNetworkWarning } from './WrongNetworkWarning';
+export { EditIdentityPopup } from './EditIdentityPopup';

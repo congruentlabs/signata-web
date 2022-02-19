@@ -14,7 +14,7 @@ export const CreateAccount = ({
     <>
       <Grid item xs={12}>
         <Alert severity="info">
-          <AlertTitle>No Signata Account on Device</AlertTitle>
+          <AlertTitle>No Signata Account on this Device</AlertTitle>
           This device has not been set up with a Signata account. Create a new account, or import your existing account.
         </Alert>
       </Grid>

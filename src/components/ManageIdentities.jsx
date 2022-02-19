@@ -1,20 +1,23 @@
-import Typography from '@mui/material/Typography';
+import { shortenIfAddress } from '@usedapp/core';
+import AddIcon from '@mui/icons-material/Add';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
-import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
-import Chip from '@mui/material/Chip';
-import LockIcon from '@mui/icons-material/Lock';
-import HowToRegIcon from '@mui/icons-material/HowToReg';
 import CardContent from '@mui/material/CardContent';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import Stack from '@mui/material/Stack';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import UploadIcon from '@mui/icons-material/Upload';
-import AddIcon from '@mui/icons-material/Add';
+import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
 import EditIcon from '@mui/icons-material/Edit';
-import { shortenIfAddress } from '@usedapp/core';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import Grid from '@mui/material/Grid';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import UploadIcon from '@mui/icons-material/Upload';
 
 export const ManageIdentities = ({
   handleClickCreate,
@@ -25,15 +28,22 @@ export const ManageIdentities = ({
   return (
     <>
       <Grid item xs={12}>
-        <Typography variant="h5" gutterBottom textAlign="center">
-          Your Signata Identities
-        </Typography>
-        {/* <Typography variant="body1">
-          A Signata Identity looks a lot like a crypto wallet, and can be used like one, but it has some extra features. Create and manage your identities below.
-        </Typography> */}
+        <Divider variant="middle">
+          Your Identities
+        </Divider>
       </Grid>
+      {identities && identities.length < 1 && (
+        <Grid item xs={12} md={8} sm={6}>
+          <Alert severity="info">
+            <AlertTitle>No Identity Registered Yet</AlertTitle>
+            To get started, create a new identity or import an existing
+            identity. You can create as many identities as you need, and
+            each identity is independent of each other.
+          </Alert>
+        </Grid>
+      )}
       {identities && identities.map((id) => (
-        <Grid item xs={12} sm={6} md={4} key={id.address}>
+        <Grid item xs={12} md={4} sm={6} key={id.address}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -71,9 +81,9 @@ export const ManageIdentities = ({
         </Grid>
       ))}
       <Grid item xs={12} sm={6} md={4}>
-        <Card>
-          <CardContent>
-            <ButtonGroup orientation="vertical" fullWidth variant="contained">
+        {/* <Card>
+          <CardContent> */}
+            <ButtonGroup orientation="vertical" size="large" fullWidth variant="text">
               <Button
                 color="primary"
                 onClick={handleClickCreate}
@@ -89,8 +99,8 @@ export const ManageIdentities = ({
                 Import Identity
               </Button>
             </ButtonGroup>
-          </CardContent>
-        </Card>
+          {/* </CardContent>
+        </Card> */}
       </Grid>
     </>
   )
