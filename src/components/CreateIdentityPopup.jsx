@@ -11,7 +11,7 @@ const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export const ConnectionPopup = ({
+export const CreateIdentityPopup = ({
   open,
   handleClickClose,
   handleClickConnect,
@@ -24,11 +24,10 @@ export const ConnectionPopup = ({
         keepMounted
         onClose={handleClickClose}
       >
-        <DialogTitle>Connecting to Web3</DialogTitle>
+        <DialogTitle>Create Identity</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Connecting your web3 wallet to Signata means you accept
-            our Terms &amp; Conditions and Privacy Policy.
+            Connecting your web3 wallet to Signata means you accept our Terms &amp; Conditions and Privacy Policy.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

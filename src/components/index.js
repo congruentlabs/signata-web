@@ -1,8 +1,13 @@
+export { AddIdentity } from './AddIdentity';
 export { AppFooter } from './AppFooter';
 export { AppHeader } from './AppHeader';
-export { CreateAccount } from './CreateAccount';
-export { AddIdentity } from './AddIdentity';
-export { ManageIdentities } from './ManageIdentities';
 export { ConnectionPopup } from './ConnectionPopup';
+export { CreateAccount } from './CreateAccount';
+export { CreateAccountPopup } from './CreateAccountPopup';
+export { CreateIdentityPopup } from './CreateIdentityPopup';
+export { ImportAccountPopup } from './ImportAccountPopup';
+export { ImportIdentityPopup } from './ImportIdentityPopup';
+export { ManageAddons } from './ManageAddons';
+export { ManageIdentities } from './ManageIdentities';
 export { NoConnectionWarning } from './NoConnectionWarning';
 export { WrongNetworkWarning } from './WrongNetworkWarning';

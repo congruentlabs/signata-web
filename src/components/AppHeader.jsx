@@ -46,7 +46,7 @@ export const AppHeader = ({
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" color="transparent">
       <Container maxWidth="md">
         <Toolbar disableGutters>
           <Avatar alt="Logo" src="logo.png" />
@@ -81,10 +81,14 @@ export const AppHeader = ({
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">
+                <MenuItem key={page.name}>
+                  <Button
+                    component="a"
+                    href={page.href}
+                    target="_blank"
+                  >
                     {page.name}
-                  </Typography>
+                  </Button>
                 </MenuItem>
               ))}
             </Menu>
@@ -94,8 +98,11 @@ export const AppHeader = ({
             {pages.map((page) => (
               <Button
                 key={page.name}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                component="a"
+                href={page.href}
+                target="_blank"
+                // onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'black', display: 'block' }}
               >
                 {page.name}
               </Button>

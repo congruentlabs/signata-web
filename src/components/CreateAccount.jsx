@@ -2,7 +2,7 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
-import ImportExportIcon from '@mui/icons-material/ImportExport';
+import UploadIcon from '@mui/icons-material/Upload';
 import AddIcon from '@mui/icons-material/Add';
 import Grid from '@mui/material/Grid';
 
@@ -30,7 +30,7 @@ export const CreateAccount = ({
           <Button
             color="secondary"
             onClick={handleClickImport}
-            startIcon={<ImportExportIcon />}
+            startIcon={<UploadIcon />}
           >
             Import Account
           </Button>

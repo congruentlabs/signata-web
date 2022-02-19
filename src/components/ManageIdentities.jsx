@@ -11,7 +11,7 @@ import CardContent from '@mui/material/CardContent';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import Stack from '@mui/material/Stack';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import ImportExportIcon from '@mui/icons-material/ImportExport';
+import UploadIcon from '@mui/icons-material/Upload';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import { shortenIfAddress } from '@usedapp/core';
@@ -25,7 +25,7 @@ export const ManageIdentities = ({
   return (
     <>
       <Grid item xs={12}>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" gutterBottom textAlign="center">
           Your Signata Identities
         </Typography>
         {/* <Typography variant="body1">
@@ -84,7 +84,7 @@ export const ManageIdentities = ({
               <Button
                 color="secondary"
                 onClick={handleClickImport}
-                startIcon={<ImportExportIcon />}
+                startIcon={<UploadIcon />}
               >
                 Import Identity
               </Button>
