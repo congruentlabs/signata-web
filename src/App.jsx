@@ -10,11 +10,12 @@ import Box from '@mui/material/Box';
 import { generateMnemonic } from 'bip39';
 import { green, blue } from '@mui/material/colors';
 import useLocalStorageState from 'use-local-storage-state';
+import 'buffer';
 
 import {
   AppHeader,
   AppFooter,
-  CreateAccount,
+  NoAccountSection,
   ManageIdentities,
   NoConnectionWarning,
   ConnectionPopup,
@@ -57,7 +58,6 @@ function App() {
   const [showEditIdentityPopup, setShowEditIdentityPopup] = useState(false);
   const [editingIdentity, setEditingIdentity] = useState(null);
   const [isSetup, setIsSetup] = useState(false);
-  const [recoveryPassphrase, setRecoveryPassphrase] = useState('');
 
   const [config, setConfig, isPersistent] = useLocalStorageState('config', []);
   // const [wallets, setWallets] = useLocalStorageState('wallets', []);
@@ -158,7 +158,6 @@ function App() {
 
   const handleClickConfirmCreateAccount = () => {
     console.log('handleClickConfirmCreateAccount');
-    setRecoveryPassphrase(generateMnemonic());
   };
 
   const handleClickConfirmImportAccount = () => {
@@ -215,7 +214,6 @@ function App() {
         open={showCreateAccountPopup}
         handleClickConfirm={handleClickConfirmCreateAccount}
         handleClickClose={handleClickClose}
-        recoveryPassphrase={recoveryPassphrase}
       />
       <ImportAccountPopup
         open={showImportAccountPopup}
@@ -251,7 +249,7 @@ function App() {
               />
             )}
             {account && !isSetup && (
-              <CreateAccount
+              <NoAccountSection
                 active={active}
                 handleClickCreate={() => handleClickOpen(OPEN_TYPES.createAccount)}
                 handleClickImport={() => handleClickOpen(OPEN_TYPES.importAccount)}

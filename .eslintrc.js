@@ -18,6 +18,11 @@ module.exports = {
   plugins: [
     'react',
   ],
+  ignorePatterns: [
+    '**/config/*.js',
+    '**/scripts/*.js',
+    '**/build/*.js',
+  ],
   rules: {
     'react/prop-types': 0,
     'react/jsx-props-no-spreading': 0,

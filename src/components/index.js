@@ -1,7 +1,7 @@
 export { default as AppFooter } from './AppFooter';
 export { default as AppHeader } from './AppHeader';
 export { default as ConnectionPopup } from './ConnectionPopup';
-export { default as CreateAccount } from './CreateAccount';
+export { default as NoAccountSection } from './NoAccountSection';
 export { default as CreateAccountPopup } from './CreateAccountPopup';
 export { default as CreateIdentityPopup } from './CreateIdentityPopup';
 export { default as ImportAccountPopup } from './ImportAccountPopup';

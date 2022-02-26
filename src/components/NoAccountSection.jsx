@@ -7,7 +7,7 @@ import UploadIcon from "@mui/icons-material/Upload";
 import AddIcon from "@mui/icons-material/Add";
 import Grid from "@mui/material/Grid";
 
-export function CreateAccount({ handleClickCreate, handleClickImport }) {
+export function NoAccountSection({ handleClickCreate, handleClickImport }) {
   return (
     <>
       <Grid item xs={12}>
@@ -39,4 +39,4 @@ export function CreateAccount({ handleClickCreate, handleClickImport }) {
   );
 }
 
-export default CreateAccount;
+export default NoAccountSection;

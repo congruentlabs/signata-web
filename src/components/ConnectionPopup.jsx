@@ -1,13 +1,10 @@
-import React, { forwardRef } from "react";
+import React from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import Slide from "@mui/material/Slide";
 import Button from "@mui/material/Button";
 import { ButtonGroup, Typography } from "@mui/material";
-
-const Transition = forwardRef((props, ref) => <Slide direction="up" ref={ref} {...props} />);
 
 export function ConnectionPopup({
   open,
@@ -17,7 +14,6 @@ export function ConnectionPopup({
   return (
     <Dialog
         open={open}
-        TransitionComponent={Transition}
         keepMounted
         onClose={handleClickClose}
       >

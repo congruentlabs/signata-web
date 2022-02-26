@@ -8,6 +8,9 @@ export function AppFooter() {
       <Typography textAlign="center">
         &copy; {new Date().getFullYear()} Congruent Labs Pty Ltd
       </Typography>
+      <Typography textAlign="center">
+        This application is currently under active development and may not work as expected.
+      </Typography>
     </Container>
   );
 }

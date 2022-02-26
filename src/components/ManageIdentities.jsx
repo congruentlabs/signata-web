@@ -82,8 +82,6 @@ function ManageIdentities({
           </Grid>
         ))}
       <Grid item xs={12} sm={6} md={4}>
-        {/* <Card>
-          <CardContent> */}
         <ButtonGroup
           orientation="vertical"
           size="large"
@@ -105,8 +103,6 @@ function ManageIdentities({
             Import Identity
           </Button>
         </ButtonGroup>
-        {/* </CardContent>
-        </Card> */}
       </Grid>
     </>
   );
