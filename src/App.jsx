@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useEthers } from '@usedapp/core';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -7,6 +7,7 @@ import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
+import { generateMnemonic } from 'bip39';
 import { green, blue } from '@mui/material/colors';
 import useLocalStorageState from 'use-local-storage-state';
 
@@ -33,7 +34,7 @@ const OPEN_TYPES = {
   importIdentity: 'import-identity',
   importAccount: 'import-account',
   editIdentity: 'edit-identity',
-}
+};
 
 // LicenseInfo.setLicenseKey(
 //   'bf57be20472e85bfdfef0d081e052e6dT1JERVI6MTg2MjEsRVhQSVJZPTE2MzY1MzA2OTUwMDAsS0VZVkVSU0lPTj0x',
@@ -55,7 +56,8 @@ function App() {
   const [showImportIdentityPopup, setShowImportIdentityPopup] = useState(false);
   const [showEditIdentityPopup, setShowEditIdentityPopup] = useState(false);
   const [editingIdentity, setEditingIdentity] = useState(null);
-  const [isSetup, setIsSetup] = useState(undefined);
+  const [isSetup, setIsSetup] = useState(false);
+  const [recoveryPassphrase, setRecoveryPassphrase] = useState('');
 
   const [config, setConfig, isPersistent] = useLocalStorageState('config', []);
   // const [wallets, setWallets] = useLocalStorageState('wallets', []);
@@ -64,7 +66,7 @@ function App() {
   // const [secureNotes, setSecureNotes] = useLocalStorageState('secureNotes', []);
 
   useEffect(() => {
-    console.log(config);
+    console.log(config || 'no config found');
     // if a seedHash is present, then they've set up their account already, so close the setup section
     if (config && !config.seedHash) {
       setIsSetup(false);
@@ -107,18 +109,8 @@ function App() {
     },
   }), [prefersDarkMode]);
 
-  const handleClickConfirmConnect = () => {
-    activateBrowserWallet()
-  };
-
-  const handleClickManageIdentity = (identity) => {
-    console.log(identity);
-    setEditingIdentity(identity);
-    handleClickOpen(OPEN_TYPES.editIdentity);
-  };
-
   const handleClickOpen = (type) => {
-    switch(type) {
+    switch (type) {
       case OPEN_TYPES.createAccount:
         setShowCreateAccountPopup(true);
         break;
@@ -142,6 +134,12 @@ function App() {
     }
   };
 
+  const handleClickManageIdentity = (identity) => {
+    console.log(identity);
+    setEditingIdentity(identity);
+    handleClickOpen(OPEN_TYPES.editIdentity);
+  };
+
   const handleClickClose = () => {
     setShowCreateAccountPopup(false);
     setShowCreateIdentityPopup(false);
@@ -152,8 +150,15 @@ function App() {
     setEditingIdentity(null);
   };
 
+  const handleClickConfirmConnect = () => {
+    console.log('handleClickConfirmConnect');
+    activateBrowserWallet();
+    setShowConnectionPopup(false);
+  };
+
   const handleClickConfirmCreateAccount = () => {
     console.log('handleClickConfirmCreateAccount');
+    setRecoveryPassphrase(generateMnemonic());
   };
 
   const handleClickConfirmImportAccount = () => {
@@ -175,7 +180,7 @@ function App() {
   const handleClickDeleteIdentity = () => {
     console.log('handleClickDeleteIdentity');
   };
-  
+
   const handleClickLockIdentity = () => {
     console.log('handleClickLockIdentity');
   };
@@ -210,6 +215,7 @@ function App() {
         open={showCreateAccountPopup}
         handleClickConfirm={handleClickConfirmCreateAccount}
         handleClickClose={handleClickClose}
+        recoveryPassphrase={recoveryPassphrase}
       />
       <ImportAccountPopup
         open={showImportAccountPopup}
@@ -244,14 +250,14 @@ function App() {
                 handleClickConnect={() => handleClickOpen(OPEN_TYPES.web3Connect)}
               />
             )}
-            {account && (
+            {account && !isSetup && (
               <CreateAccount
                 active={active}
                 handleClickCreate={() => handleClickOpen(OPEN_TYPES.createAccount)}
                 handleClickImport={() => handleClickOpen(OPEN_TYPES.importAccount)}
               />
             )}
-            {account && (
+            {account && isSetup && (
               <ManageIdentities
                 active={active}
                 identities={identities}
@@ -260,7 +266,7 @@ function App() {
                 handleClickManage={handleClickManageIdentity}
               />
             )}
-            {account && (
+            {account && isSetup && (
               <ManageAddons
                 addons={addons}
                 handleClickBuyCloud={handleClickBuyCloud}

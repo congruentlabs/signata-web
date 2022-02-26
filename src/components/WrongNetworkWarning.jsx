@@ -1,4 +1,7 @@
+import React from "react";
 
-export const WrongNetworkWarning = () => {
-  return (<></>);
-};
+function WrongNetworkWarning() {
+  return <>Wrong Network Warning</>;
+}
+
+export default WrongNetworkWarning;

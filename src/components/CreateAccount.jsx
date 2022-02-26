@@ -1,21 +1,20 @@
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import UploadIcon from '@mui/icons-material/Upload';
-import AddIcon from '@mui/icons-material/Add';
-import Grid from '@mui/material/Grid';
+import React from "react";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import UploadIcon from "@mui/icons-material/Upload";
+import AddIcon from "@mui/icons-material/Add";
+import Grid from "@mui/material/Grid";
 
-export const CreateAccount = ({
-  handleClickCreate,
-  handleClickImport
-}) => {
+export function CreateAccount({ handleClickCreate, handleClickImport }) {
   return (
     <>
       <Grid item xs={12}>
         <Alert severity="info">
           <AlertTitle>No Signata Account on this Device</AlertTitle>
-          This device has not been set up with a Signata account. Create a new account, or import your existing account.
+          This device has not been set up with a Signata account. Create a new
+          account, or import your existing account.
         </Alert>
       </Grid>
       <Grid item xs={12} textAlign="center">
@@ -37,5 +36,7 @@ export const CreateAccount = ({
         </ButtonGroup>
       </Grid>
     </>
-  )
-};
+  );
+}
+
+export default CreateAccount;
