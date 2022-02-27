@@ -11,15 +11,15 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ReplayIcon from "@mui/icons-material/Replay";
 import AddIcon from "@mui/icons-material/Add";
-import { useSnackbar } from 'notistack';
-import { generateMnemonic } from 'bip39';
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import { useSnackbar } from "notistack";
+import { generateMnemonic } from "bip39";
 
-function CreateAccountPopup({
-  open,
-  handleClickClose,
-  handleClickConnect,
-}) {
-  const [recoveryPassphrase, setRecoveryPassphrase] = useState('');
+function CreateAccountPopup({ open, handleClickClose, handleClickConnect }) {
+  const [recoveryPassphrase, setRecoveryPassphrase] = useState("");
+  const [firstConfirmChecked, setFirstConfirmChecked] = useState(false);
+  const [secondConfirmChecked, setSecondConfirmChecked] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
@@ -29,16 +29,16 @@ function CreateAccountPopup({
   }, [setRecoveryPassphrase]);
 
   const handleClickGenerate = () => {
-    console.log('handleClickGenerate');
+    console.log("handleClickGenerate");
     const m = generateMnemonic().toLowerCase();
     console.log(m);
     setRecoveryPassphrase(m);
   };
 
   const handleClickCopy = async () => {
-    console.log('handleClickCopy');
+    console.log("handleClickCopy");
     await navigator.clipboard.writeText(recoveryPassphrase);
-    enqueueSnackbar('Recovery Passphrase Copied!');
+    enqueueSnackbar("Recovery Passphrase Copied!", { variant: 'success' });
   };
 
   return (
@@ -48,13 +48,14 @@ function CreateAccountPopup({
         <Stack spacing={2}>
           <Typography variant="body1">
             A Signata account is used to manage all of your identities. We do
-            not store your account on our servers unless you want us to.
+            not store any of your information on our servers unless you want us
+            to.
           </Typography>
           <Typography variant="body1">
-            Your account looks very similar to a seed phrase for a wallet, but
-            it is used specifically for your account identities. Do not use the
-            same seed as a wallet, as you may expose your identities to more
-            risk.
+            Your account recovery passphrase looks very similar to a seed phrase
+            for a cryptocurrency wallet, but it is used specifically for your
+            Signata identities. Do not use this recovery passphrase as a wallet,
+            as you may accidentally expose your identities.
           </Typography>
           <TextField
             label="Signata Recovery Passphrase"
@@ -73,18 +74,50 @@ function CreateAccountPopup({
               Generate
             </Button>
           </ButtonGroup>
+
+          <Typography variant="body1">
+            Save this recovery passphrase somewhere secret, such as written down
+            on a piece of paper or stored in a good password manager like{" "}
+            <a
+              href="https://bitwarden.com/?ref=signata.net"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Bitwarden
+            </a>
+            . If you lose your passphrase you and the Signata team will{" "}
+            <b>never</b> be able to restore your account.
+          </Typography>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={firstConfirmChecked}
+                onChange={() => setFirstConfirmChecked(!firstConfirmChecked)}
+                color="secondary"
+              />
+            }
+            label="I will never tell anyone my passphrase, even if it's someone offering me support. The only website that I will ever use it on is signata.net."
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={secondConfirmChecked}
+                onChange={() => setSecondConfirmChecked(!secondConfirmChecked)}
+                color="secondary"
+              />
+            }
+            label="I have saved a copy of my passphrase somewhere safe, because if I lose it I will never be able to restore my account, and Signata support will never be able to restore my account."
+          />
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={handleClickClose}
-          color="inherit"
-        >
+        <Button onClick={handleClickClose} color="inherit">
           Cancel
         </Button>
         <Button
           onClick={(e) => handleClickConnect(e, recoveryPassphrase)}
           variant="contained"
+          disabled={!firstConfirmChecked || !secondConfirmChecked}
           startIcon={<AddIcon />}
         >
           Create
