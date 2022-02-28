@@ -23,9 +23,43 @@ function AppHeader({
   // chainId,
   // active,
   handleClickConnect,
+  handleClickReplacePassword,
+  isSetup,
 }) {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
+
+  const settings = !isSetup
+    ? [
+        {
+          name: "Terms & Conditions",
+          href: "terms.pdf",
+          color: "secondary",
+        },
+        {
+          name: "Privacy Policy",
+          href: "privacy.pdf",
+          color: "secondary",
+        },
+        {
+          name: "Replace Password",
+          useClickEvent: true,
+          onClick: handleClickReplacePassword,
+          color: "warning",
+        },
+      ]
+    : [
+        {
+          name: "Terms & Conditions",
+          href: "terms.pdf",
+          color: "secondary",
+        },
+        {
+          name: "Privacy Policy",
+          href: "privacy.pdf",
+          color: "secondary",
+        },
+      ];
 
   const handleOpenNavMenu = (e) => {
     setAnchorElNav(e.currentTarget);
@@ -140,19 +174,7 @@ function AppHeader({
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {[
-                {
-                  name: "Terms & Conditions",
-                  href: "terms.pdf",
-                  color: "secondary",
-                },
-                {
-                  name: "Privacy Policy",
-                  href: "privacy.pdf",
-                  color: "secondary",
-                },
-                // { name: 'Log Out', useClickEvent: true, onClick: handleClickLogOut, color: 'error' },
-              ].map((setting) => (
+              {settings.map((setting) => (
                 <MenuItem key={setting.name} onClick={handleCloseUserMenu}>
                   {setting.useClickEvent ? (
                     <Button onClick={setting.onClick} color={setting.color}>

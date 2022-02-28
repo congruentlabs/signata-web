@@ -16,7 +16,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import { useSnackbar } from "notistack";
 import { generateMnemonic } from "bip39";
 
-function CreateAccountPopup({ open, handleClickClose, handleClickConnect }) {
+function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
   const [recoveryPassphrase, setRecoveryPassphrase] = useState("");
   const [firstConfirmChecked, setFirstConfirmChecked] = useState(false);
   const [secondConfirmChecked, setSecondConfirmChecked] = useState(false);
@@ -115,7 +115,7 @@ function CreateAccountPopup({ open, handleClickClose, handleClickConnect }) {
           Cancel
         </Button>
         <Button
-          onClick={(e) => handleClickConnect(e, recoveryPassphrase)}
+          onClick={(e) => handleClickCreate(e, recoveryPassphrase)}
           variant="contained"
           disabled={!firstConfirmChecked || !secondConfirmChecked}
           startIcon={<AddIcon />}

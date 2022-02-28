@@ -11,3 +11,5 @@ export { default as ManageIdentities } from './ManageIdentities';
 export { default as NoConnectionWarning } from './NoConnectionWarning';
 export { default as WrongNetworkWarning } from './WrongNetworkWarning';
 export { default as EditIdentityPopup } from './EditIdentityPopup';
+export { default as CreatePasswordPopup } from './CreatePasswordPopup';
+export { default as ReplacePasswordPopup } from './ReplacePasswordPrompt';
