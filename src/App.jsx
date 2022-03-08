@@ -52,7 +52,7 @@ function App() {
   const [showCreateAccountPopup, setShowCreateAccountPopup] = useState(false);
   const [showReplacePasswordPopup, setShowReplacePasswordPopup] =
     useState(false);
-  const [showCreatePasswordPopup, setShowCreatePasswordPopup] = useState(true);
+  const [showCreatePasswordPopup, setShowCreatePasswordPopup] = useState(false);
   const [showImportAccountPopup, setShowImportAccountPopup] = useState(false);
   const [showCreateIdentityPopup, setShowCreateIdentityPopup] = useState(false);
   const [showImportIdentityPopup, setShowImportIdentityPopup] = useState(false);
