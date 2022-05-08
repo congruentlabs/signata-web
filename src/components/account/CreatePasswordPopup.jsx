@@ -50,7 +50,7 @@ function CreatePasswordPopup({ open, handleClickClose, handleClickCreate }) {
           <TextField
             label="Password"
             type="password"
-            error={firstErrorMessage}
+            error={firstErrorMessage !== ""}
             variant="standard"
             value={password}
             onChange={onChangePassword}
@@ -59,7 +59,7 @@ function CreatePasswordPopup({ open, handleClickClose, handleClickCreate }) {
           <TextField
             label="Repeat Password"
             type="password"
-            error={secondErrorMessage}
+            error={secondErrorMessage !== ""}
             variant="standard"
             value={passwordRepeat}
             onChange={onChangePasswordRepeat}

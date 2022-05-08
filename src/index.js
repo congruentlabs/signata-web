@@ -1,26 +1,24 @@
 /* eslint-disable react/jsx-filename-extension */
 import React from "react";
-import ReactDOM from "react-dom";
+// import ReactDOM from "react-dom";
+import { createRoot } from 'react-dom/client';
 import { DAppProvider } from "@usedapp/core";
 import { SnackbarProvider } from 'notistack';
 // import './index.css';
 import App from "./App";
-import reportWebVitals from "./reportWebVitals";
+import { SubgraphProvider } from './SubgraphProvider';
 
-const config = {};
+const container = document.getElementById('root');
+const root = createRoot(container); 
 
-ReactDOM.render(
+root.render(
   <React.StrictMode>
-    <DAppProvider config={config}>
-      <SnackbarProvider maxSnack={3}>
-        <App />
-      </SnackbarProvider>
-    </DAppProvider>
-  </React.StrictMode>,
-  document.getElementById("root")
+    <SubgraphProvider>
+      <DAppProvider>
+        <SnackbarProvider maxSnack={3}>
+          <App />
+        </SnackbarProvider>
+      </DAppProvider>
+    </SubgraphProvider>
+  </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

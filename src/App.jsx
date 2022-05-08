@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 import React, { useState, useMemo, useEffect } from "react";
-import { useEthers } from "@usedapp/core";
+import { useEthers, useTokenBalance } from "@usedapp/core";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -7,10 +8,12 @@ import Grid from "@mui/material/Grid";
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
+import WalletConnectProvider from '@walletconnect/web3-provider';
+import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
+import WalletLink from 'walletlink';
+import Web3Modal from 'web3modal';
 import { green, blue } from "@mui/material/colors";
 import useLocalStorageState from "use-local-storage-state";
-import "buffer";
-
 import {
   AppFooter,
   AppHeader,
@@ -26,8 +29,52 @@ import {
   NoAccountSection,
   NoConnectionWarning,
   ReplacePasswordPopup,
+  TokenInfo
 } from "./components";
+import {
+  useCreateIdentity,
+  useDeleteIdentity,
+  useMigrateIdentity,
+  useLockIdentity,
+  useUnlockIdentity,
+  useBuyCloud,
+  useUniswapSataPriceData,
+  useUniswapDSataPriceData,
+  useCoingeckoPrice
+} from './hooks/chainHooks';
+import { shouldBeLoading } from './hooks/helpers';
 import "./App.css";
+
+const infuraId = '5c79516b355c491bb8156fcf3a6a1d23';
+
+const providerOptions = {
+  walletconnect: {
+    package: WalletConnectProvider,
+    options: {
+      infuraId
+    }
+  },
+  binancechainwallet: {
+    package: true
+  },
+  walletlink: {
+    package: WalletLink,
+    options: {
+      appName: 'Signata',
+      infuraId
+    }
+  },
+  coinbasewallet: {
+    package: CoinbaseWalletSDK, // Required
+    options: {
+      appName: 'Signata', // Required
+      infuraId, // Required
+      rpc: '', // Optional if `infuraId` is provided; otherwise it's required
+      chainId: 1, // Optional. It defaults to 1 if not provided
+      darkMode: false // Optional. Use dark theme, defaults to false
+    }
+  }
+};
 
 const OPEN_TYPES = {
   web3Connect: "web3-connect",
@@ -40,18 +87,23 @@ const OPEN_TYPES = {
   replacePassword: "replace-password",
 };
 
-// LicenseInfo.setLicenseKey(
-//   'bf57be20472e85bfdfef0d081e052e6dT1JERVI6MTg2MjEsRVhQSVJZPTE2MzY1MzA2OTUwMDAsS0VZVkVSU0lPTj0x',
-// );
+const web3Modal = new Web3Modal({
+  providerOptions
+});
+
+const sataContractAddress = '0x3ebb4A4e91Ad83BE51F8d596533818b246F4bEe1';
+const dSataContractAddress = '0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b';
 
 function App() {
-  const { activateBrowserWallet, account, chainId, active } = useEthers();
-  // const etherBalance = useEtherBalance(account);
+  const { activateBrowserWallet, activate, account, chainId, active } = useEthers();
+  const sataBalance = useTokenBalance(sataContractAddress, account);
+  const dSataBalance = useTokenBalance(dSataContractAddress, account);
+  const sataPriceData = useUniswapSataPriceData();
+  const dSataPriceData = useUniswapDSataPriceData();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const [showConnectionPopup, setShowConnectionPopup] = useState(false);
   const [showCreateAccountPopup, setShowCreateAccountPopup] = useState(false);
-  const [showReplacePasswordPopup, setShowReplacePasswordPopup] =
-    useState(false);
+  const [showReplacePasswordPopup, setShowReplacePasswordPopup] = useState(false);
   const [showCreatePasswordPopup, setShowCreatePasswordPopup] = useState(false);
   const [showImportAccountPopup, setShowImportAccountPopup] = useState(false);
   const [showCreateIdentityPopup, setShowCreateIdentityPopup] = useState(false);
@@ -59,6 +111,20 @@ function App() {
   const [showEditIdentityPopup, setShowEditIdentityPopup] = useState(false);
   const [editingIdentity, setEditingIdentity] = useState(null);
   const [isSetup, setIsSetup] = useState(false);
+  const [isCreateIdLoading, setCreateIdLoading] = useState(false);
+  const [isUnlockIdLoading, setUnlockIdLoading] = useState(false);
+  const [isBuyCloudLoading, setBuyCloudLoading] = useState(false);
+  const [isLockIdLoading, setLockIdLoading] = useState(false);
+  const [isDeleteIdLoading, setDeleteIdLoading] = useState(false);
+  const [isMigrateIdLoading, setMigrateIdLoading] = useState(false);
+  const { state: createState, send: createSend, resetState: createResetState } = useCreateIdentity();
+  const { state: deleteState, send: deleteSend, resetState: deleteResetState } = useDeleteIdentity();
+  const { state: migrateState, send: migrateSend, resetState: migrateResetState } = useMigrateIdentity();
+  const { state: lockState, send: lockSend, resetState: lockResetState } = useLockIdentity();
+  const { state: unlockState, send: unlockSend, resetState: unlockResetState } = useUnlockIdentity();
+  const { state: buyCloudState, send: buyCloudSend, resetState: buyCloudResetState } = useBuyCloud();
+  const ethPrice = useCoingeckoPrice('ethereum', 'usd');
+
 
   const [config, setConfig, isPersistent] = useLocalStorageState("config", []);
   // const [wallets, setWallets] = useLocalStorageState('wallets', []);
@@ -74,6 +140,10 @@ function App() {
     }
   }, [config]);
 
+  useEffect(() => {
+    activateBrowserWallet(); // just try to auto activate on load for metamask users
+  }, []);
+
   // const identities = [
   //   {
   //     name: 'Main Identity',
@@ -88,6 +158,50 @@ function App() {
   //     locked: true,
   //   }
   // ];
+
+  useEffect(() => {
+    if (createState) {
+      console.log(createState);
+      setCreateIdLoading(shouldBeLoading(createState.status));
+    }
+  }, [createState]);
+
+  useEffect(() => {
+    if (deleteState) {
+      console.log(deleteState);
+      setDeleteIdLoading(shouldBeLoading(deleteState.status));
+    }
+  }, [deleteState]);
+
+  useEffect(() => {
+    if (migrateState) {
+      console.log(migrateState);
+      setMigrateIdLoading(shouldBeLoading(migrateState.status));
+    }
+  }, [migrateState]);
+
+  useEffect(() => {
+    if (lockState) {
+      console.log(lockState);
+      setLockIdLoading(shouldBeLoading(lockState.status));
+    }
+  }, [lockState]);
+
+  useEffect(() => {
+    if (unlockState) {
+      console.log(unlockState);
+      setUnlockIdLoading(shouldBeLoading(unlockState.status));
+    }
+  }, [unlockState]);
+
+  useEffect(() => {
+    if (buyCloudState) {
+      console.log(buyCloudState);
+      setBuyCloudLoading(shouldBeLoading(buyCloudState.status));
+    }
+  }, [buyCloudState]);
+
+
 
   const addons = [
     {
@@ -115,6 +229,18 @@ function App() {
       }),
     [prefersDarkMode]
   );
+
+  const handleClickConfirmConnect = async () => {
+    try {
+      setShowConnectionPopup(false);
+      const provider = await web3Modal.connect();
+
+      await provider.enable();
+      activate(provider);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleClickOpen = (type) => {
     console.log(`handleClickOpen: ${type}`);
@@ -167,12 +293,6 @@ function App() {
     setEditingIdentity(null);
   };
 
-  const handleClickConfirmConnect = () => {
-    console.log("handleClickConfirmConnect");
-    activateBrowserWallet();
-    setShowConnectionPopup(false);
-  };
-
   const handleClickConfirmCreateAccount = (e, recoveryPassphrase) => {
     console.log("handleClickConfirmCreateAccount");
     console.log(recoveryPassphrase);
@@ -185,30 +305,43 @@ function App() {
 
   const handleClickConfirmCreateIdentity = () => {
     console.log("handleClickConfirmCreateIdentity");
+    createResetState();
+    createSend();
   };
 
   const handleClickConfirmImportIdentity = () => {
     console.log("handleClickConfirmImportIdentity");
+    createResetState();
+    createSend();
   };
 
   const handleClickBuyCloud = () => {
     console.log("handleClickBuyCloud");
+    buyCloudSend();
   };
 
   const handleClickDeleteIdentity = () => {
     console.log("handleClickDeleteIdentity");
+    deleteResetState();
+    deleteSend();
   };
 
   const handleClickLockIdentity = () => {
     console.log("handleClickLockIdentity");
+    lockResetState();
+    lockSend();
   };
 
   const handleClickUnlockIdentity = () => {
     console.log("handleClickUnlockIdentity");
+    unlockResetState();
+    unlockSend();
   };
 
   const handleClickMigrateIdentity = () => {
     console.log("handleClickMigrateIdentity");
+    migrateResetState();
+    migrateSend();
   };
 
   const handleClickSaveIdentity = () => {
@@ -223,7 +356,6 @@ function App() {
         isSetup={isSetup}
         chainId={chainId}
         active={active}
-        handleClickConnect={() => handleClickOpen(OPEN_TYPES.web3Connect)}
         handleClickReplacePassword={() => handleClickOpen(OPEN_TYPES.replacePassword)}
       />
       <ConnectionPopup
@@ -253,6 +385,7 @@ function App() {
         open={showCreateIdentityPopup}
         handleClickConfirm={handleClickConfirmCreateIdentity}
         handleClickClose={handleClickClose}
+        isCreateIdLoading={isCreateIdLoading}
       />
       <ImportIdentityPopup
         open={showImportIdentityPopup}
@@ -268,6 +401,15 @@ function App() {
         handleClickUnlock={handleClickUnlockIdentity}
         handleClickMigrate={handleClickMigrateIdentity}
         handleClickSave={handleClickSaveIdentity}
+        createState={createState}
+        deleteState={deleteState}
+        migrateState={migrateState}
+        lockState={lockState}
+        unlockState={unlockState}
+        isUnlockIdLoading={isUnlockIdLoading}
+        isLockIdLoading={isLockIdLoading}
+        isMigrateIdLoading={isMigrateIdLoading}
+        isDeleteIdLoading={isDeleteIdLoading}
       />
       <Container maxWidth="md">
         <Box sx={{ minHeight: "90vh", paddingTop: 2 }}>
@@ -312,11 +454,26 @@ function App() {
               <ManageAddons
                 addons={addons}
                 handleClickBuyCloud={handleClickBuyCloud}
+                buyCloudState={buyCloudState}
+                buyCloudResetState={buyCloudResetState}
+                isBuyCloudLoading={isBuyCloudLoading}
               />
             )}
             {account && (
               <Grid item xs={12}>
                 <Divider variant="middle" />
+              </Grid>
+            )}
+            {account && (
+              <Grid item xs={12}>
+                <TokenInfo
+                  sataBalance={sataBalance}
+                  dSataBalance={dSataBalance}
+                  chainId={chainId}
+                  sataPriceData={sataPriceData}
+                  dSataPriceData={dSataPriceData}
+                  ethPrice={ethPrice}
+                />
               </Grid>
             )}
           </Grid>

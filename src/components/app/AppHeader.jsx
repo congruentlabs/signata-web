@@ -138,8 +138,8 @@ function AppHeader({
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
+              {account && (
             <Tooltip title="Settings">
-              {account ? (
                 <Button
                   onClick={handleOpenUserMenu}
                   variant="contained"
@@ -147,16 +147,8 @@ function AppHeader({
                 >
                   {account && shortenIfAddress(account)}
                 </Button>
-              ) : (
-                <Button
-                  onClick={handleClickConnect}
-                  variant="contained"
-                  color="secondary"
-                >
-                  Connect
-                </Button>
-              )}
             </Tooltip>
+              )}
 
             <Menu
               sx={{ mt: "45px" }}

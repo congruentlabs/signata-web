@@ -28,6 +28,8 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 
 const createEnvironmentHash = require('./webpack/persistentCache/createEnvironmentHash');
 
+process.env.GENERATE_SOURCEMAP = 'false';
+
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 
@@ -188,6 +190,8 @@ module.exports = function (webpackEnv) {
 
   return {
     target: ['browserslist'],
+    // Webpack noise constrained to errors and warnings
+    stats: 'errors-warnings',
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
     // Stop compilation early in production
     bail: isEnvProduction,
@@ -325,6 +329,12 @@ module.exports = function (webpackEnv) {
         // Supporting crypto modules
         'buffer': require.resolve('buffer'),
         'stream': require.resolve('stream-browserify'),
+        'https': require.resolve('https-browserify'),
+        'os': require.resolve('os-browserify/browser'),
+        'url': require.resolve('url/'),
+        'http': require.resolve('stream-http'),
+        'crypto': require.resolve('crypto-browserify'),
+        'assert': require.resolve('assert/')
       },
       plugins: [
         // Prevents users from importing files from outside of src/ (or node_modules/).
