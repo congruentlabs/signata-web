@@ -22,7 +22,7 @@ function AppHeader({
   account,
   // chainId,
   // active,
-  handleClickConnect,
+  handleClickDisconnect,
   handleClickReplacePassword,
   isSetup
 }) {
@@ -46,6 +46,12 @@ function AppHeader({
           useClickEvent: true,
           onClick: handleClickReplacePassword,
           color: 'warning'
+        },
+        {
+          name: 'Disconnect',
+          useClickEvent: true,
+          onClick: handleClickDisconnect,
+          color: 'error'
         }
       ]
     : [

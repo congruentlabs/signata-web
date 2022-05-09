@@ -22,7 +22,7 @@ export function NetworkServices({ chainId, brokers, riskOracles }) {
         {chainId === 1 && !riskOracles && (
           <Alert severity="warning">
             <AlertTitle>No Ethereum Risk Oracles Detected</AlertTitle>
-            You can manage your linked identities, but you may not be able to manage unlinked identities.
+            No risk oracle services have been detected for this network. Identity risk data may be unavailable.
           </Alert>
         )}
       </Stack>

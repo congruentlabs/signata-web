@@ -30,7 +30,8 @@ import {
   NoConnectionWarning,
   ReplacePasswordPopup,
   TokenInfo,
-  NetworkServices
+  NetworkServices,
+  ProductOverview
 } from './components';
 import {
   useCreateIdentity,
@@ -92,11 +93,11 @@ const web3Modal = new Web3Modal({
   providerOptions
 });
 
-const sataContractAddress = '0x3ebb4A4e91Ad83BE51F8d596533818b246F4bEe1';
+const sataContractAddress = '0x3ebb4a4e91ad83be51f8d596533818b246f4bee1';
 const dSataContractAddress = '0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b';
 
 function App() {
-  const { activateBrowserWallet, activate, account, chainId, active } = useEthers();
+  const { activateBrowserWallet, activate, account, chainId, active, deactivate } = useEthers();
   const sataBalance = useTokenBalance(sataContractAddress, account);
   const dSataBalance = useTokenBalance(dSataContractAddress, account);
   const sataPriceData = useUniswapSataPriceData();
@@ -288,6 +289,7 @@ function App() {
     setShowConnectionPopup(false);
     setShowEditIdentityPopup(false);
     setShowCreatePasswordPopup(false);
+    setShowReplacePasswordPopup(false);
     setEditingIdentity(null);
   };
 
@@ -355,6 +357,7 @@ function App() {
         chainId={chainId}
         active={active}
         handleClickReplacePassword={() => handleClickOpen(OPEN_TYPES.replacePassword)}
+        handleClickDisconnect={deactivate}
       />
       <ConnectionPopup
         open={showConnectionPopup}
@@ -405,8 +408,9 @@ function App() {
       />
       <Container maxWidth="md">
         <Box sx={{ minHeight: '90vh', paddingTop: 2 }}>
-          <Grid container spacing={3} alignItems="center" justifyContent="center">
+          <Grid container spacing={3}>
             {!account && <NoConnectionWarning handleClickConnect={() => handleClickOpen(OPEN_TYPES.web3Connect)} />}
+            {!account && <ProductOverview />}
             {account && !isSetup && (
               <NoAccountSection
                 active={active}
