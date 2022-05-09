@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
-import TextField from "@mui/material/TextField";
-import ButtonGroup from "@mui/material/ButtonGroup";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import ReplayIcon from "@mui/icons-material/Replay";
-import AddIcon from "@mui/icons-material/Add";
-import Switch from "@mui/material/Switch";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import { useSnackbar } from "notistack";
-import { generateMnemonic } from "bip39";
+import React, { useEffect, useState } from 'react';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ReplayIcon from '@mui/icons-material/Replay';
+import AddIcon from '@mui/icons-material/Add';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { useSnackbar } from 'notistack';
+import { generateMnemonic } from 'bip39';
 
 function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
-  const [recoveryPassphrase, setRecoveryPassphrase] = useState("");
+  const [recoveryPassphrase, setRecoveryPassphrase] = useState('');
   const [firstConfirmChecked, setFirstConfirmChecked] = useState(false);
   const [secondConfirmChecked, setSecondConfirmChecked] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
@@ -29,16 +29,16 @@ function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
   }, [setRecoveryPassphrase]);
 
   const handleClickGenerate = () => {
-    console.log("handleClickGenerate");
+    console.log('handleClickGenerate');
     const m = generateMnemonic().toLowerCase();
     console.log(m);
     setRecoveryPassphrase(m);
   };
 
   const handleClickCopy = async () => {
-    console.log("handleClickCopy");
+    console.log('handleClickCopy');
     await navigator.clipboard.writeText(recoveryPassphrase);
-    enqueueSnackbar("Recovery Passphrase Copied!", { variant: 'success' });
+    enqueueSnackbar('Recovery Passphrase Copied!', { variant: 'success' });
   };
 
   return (
@@ -47,15 +47,13 @@ function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
       <DialogContent>
         <Stack spacing={2}>
           <Typography variant="body1">
-            A Signata account is used to manage all of your identities. We do
-            not store any of your information on our servers unless you want us
-            to.
+            A Signata account is used to manage all of your identities. We do not store any of your information on our
+            servers unless you want us to.
           </Typography>
           <Typography variant="body1">
-            Your account recovery passphrase looks very similar to a seed phrase
-            for a cryptocurrency wallet, but it is used specifically for your
-            Signata identities. Do not use this recovery passphrase as a wallet,
-            as you may accidentally expose your identities.
+            Your account recovery passphrase looks very similar to a seed phrase for a cryptocurrency wallet, but it is
+            used specifically for your Signata identities. Do not use this recovery passphrase as a wallet, as you may
+            accidentally expose your identities.
           </Typography>
           <TextField
             label="Signata Recovery Passphrase"
@@ -63,7 +61,7 @@ function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
             value={recoveryPassphrase}
             multiline
             InputProps={{
-              readOnly: true,
+              readOnly: true
             }}
           />
           <ButtonGroup fullWidth color="secondary">
@@ -76,17 +74,12 @@ function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
           </ButtonGroup>
 
           <Typography variant="body1">
-            Save this recovery passphrase somewhere secret, such as written down
-            on a piece of paper or stored in a good password manager like{" "}
-            <a
-              href="https://bitwarden.com/?ref=signata.net"
-              target="_blank"
-              rel="noreferrer"
-            >
+            Save this recovery passphrase somewhere secret, such as written down on a piece of paper or stored in a good
+            password manager like{' '}
+            <a href="https://bitwarden.com/?ref=signata.net" target="_blank" rel="noreferrer">
               Bitwarden
             </a>
-            . If you lose your passphrase you and the Signata team will{" "}
-            <b>never</b> be able to restore your account.
+            . If you lose your passphrase you and the Signata team will <b>never</b> be able to restore your account.
           </Typography>
           <FormControlLabel
             control={

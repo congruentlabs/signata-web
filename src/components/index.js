@@ -14,4 +14,5 @@ export { default as NoConnectionWarning } from './connection/NoConnectionWarning
 export { default as ReplacePasswordPopup } from './account/ReplacePasswordPrompt';
 export { default as UnlockAccountPopup } from './account/UnlockAccountPopup';
 export { default as WrongNetworkWarning } from './connection/WrongNetworkWarning';
-export { default as TokenInfo } from './token/TokenInfo';
+export { default as TokenInfo } from './contracts/TokenInfo';
+export { default as NetworkServices } from './contracts/NetworkServices';

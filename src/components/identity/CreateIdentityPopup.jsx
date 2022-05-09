@@ -6,17 +6,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 
-function CreateIdentityPopup({
-  open,
-  handleClickClose,
-  handleClickConnect,
-}) {
+function CreateIdentityPopup({ open, handleClickClose, handleClickConnect }) {
   return (
-    <Dialog
-      open={open}
-      keepMounted
-      onClose={handleClickClose}
-    >
+    <Dialog open={open} keepMounted onClose={handleClickClose}>
       <DialogTitle>Create Identity</DialogTitle>
       <DialogContent>
         <DialogContentText>

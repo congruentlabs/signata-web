@@ -39,7 +39,6 @@ const identityContract = new Contract(identityContractAddress, identityContractA
 const rightsContractAddress = '0x7c8890a02abd24ff00c4eb1425258ea4b611d300';
 const rightsContract = new Contract(rightsContractAddress, rightsContractAbi);
 
-
 export function useUniswapSataPriceData() {
   // const { account } = useEthers();
   const { data } = useQuery(sataPriceQuery, {});
@@ -114,89 +113,82 @@ export const useGetSingleValue = (method) => {
 
 // get price from token contract
 export const getCoingeckoSimpleTokenPriceUri = (contract, quoteId, platformId) =>
-  `https://api.coingecko.com/api/v3/simple/token_price/${platformId}?contract_addresses=${contract}&vs_currencies=${quoteId}`
+  `https://api.coingecko.com/api/v3/simple/token_price/${platformId}?contract_addresses=${contract}&vs_currencies=${quoteId}`;
 
-export const fetchCoingeckoTokenPrice = (fetchFunction) => async (
-  contract,
-  quote,
-  platform
-) => {
+export const fetchCoingeckoTokenPrice = (fetchFunction) => async (contract, quote, platform) => {
   try {
-    const addr = contract.toLowerCase()
-    const quoteId = quote.toLowerCase()
-    const platformId = platform.toLowerCase()
-    const url = getCoingeckoSimpleTokenPriceUri(addr, quoteId, platformId)
+    const addr = contract.toLowerCase();
+    const quoteId = quote.toLowerCase();
+    const platformId = platform.toLowerCase();
+    const url = getCoingeckoSimpleTokenPriceUri(addr, quoteId, platformId);
     const data = await fetchFunction(url, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    const result = await data.json()
-    const price = result[addr][quoteId]
-    return price ? price + '' : undefined
+        'Content-Type': 'application/json'
+      }
+    });
+    const result = await data.json();
+    const price = result[addr][quoteId];
+    return price ? price + '' : undefined;
   } catch (_) {
-    return undefined
+    return undefined;
   }
-}
+};
 
-export const getCoingeckoTokenPrice = fetchCoingeckoTokenPrice(typeof window !== 'undefined' && window.fetch)
-
+export const getCoingeckoTokenPrice = fetchCoingeckoTokenPrice(typeof window !== 'undefined' && window.fetch);
 
 export const getCoingeckoSimplePriceUri = (baseId, quoteId) =>
-  `https://api.coingecko.com/api/v3/simple/price?ids=${baseId}&vs_currencies=${quoteId}`
+  `https://api.coingecko.com/api/v3/simple/price?ids=${baseId}&vs_currencies=${quoteId}`;
 
 export const fetchCoingeckoPrice = (fetchFunction) => async (base, quote) => {
   try {
-    const baseId = base.toLowerCase()
-    const quoteId = quote.toLowerCase()
-    const url = getCoingeckoSimplePriceUri(baseId, quoteId)
+    const baseId = base.toLowerCase();
+    const quoteId = quote.toLowerCase();
+    const url = getCoingeckoSimplePriceUri(baseId, quoteId);
     const data = await fetchFunction(url, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    const result = await data.json()
-    const price = result[baseId][quoteId]
-    return price ? price + '' : undefined
+        'Content-Type': 'application/json'
+      }
+    });
+    const result = await data.json();
+    const price = result[baseId][quoteId];
+    return price ? price + '' : undefined;
   } catch (_) {
-    return undefined
+    return undefined;
   }
-}
+};
 
-export const getCoingeckoPrice = fetchCoingeckoPrice(typeof window !== 'undefined' && window.fetch)
-
+export const getCoingeckoPrice = fetchCoingeckoPrice(typeof window !== 'undefined' && window.fetch);
 
 export const useCoingeckoPrice = (base, quote = 'usd') => {
-  const [price, setPrice] = useState(undefined)
-  const blockNo = useBlockNumber()
+  const [price, setPrice] = useState(undefined);
+  const blockNo = useBlockNumber();
 
   useEffect(() => {
     async function getPrice() {
-      const tokenPrice = await getCoingeckoPrice(base, quote)
-      setPrice(tokenPrice)
+      const tokenPrice = await getCoingeckoPrice(base, quote);
+      setPrice(tokenPrice);
     }
 
-    getPrice()
-  }, [base, quote, blockNo])
+    getPrice();
+  }, [base, quote, blockNo]);
 
-  return price
-}
+  return price;
+};
 
 export const useCoingeckoTokenPrice = (contract, quote = 'usd', platform = 'ethereum') => {
-  const [price, setPrice] = useState(undefined)
-  const blockNo = useBlockNumber()
+  const [price, setPrice] = useState(undefined);
+  const blockNo = useBlockNumber();
 
   useEffect(() => {
     async function getPrice() {
-      const tokenPrice = await getCoingeckoTokenPrice(contract, quote, platform)
-      setPrice(tokenPrice)
+      const tokenPrice = await getCoingeckoTokenPrice(contract, quote, platform);
+      setPrice(tokenPrice);
     }
 
-    getPrice()
-  }, [contract, quote, platform, blockNo])
+    getPrice();
+  }, [contract, quote, platform, blockNo]);
 
-  return price
-}
-
+  return price;
+};

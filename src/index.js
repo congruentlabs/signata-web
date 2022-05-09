@@ -1,15 +1,15 @@
 /* eslint-disable react/jsx-filename-extension */
-import React from "react";
+import React from 'react';
 // import ReactDOM from "react-dom";
 import { createRoot } from 'react-dom/client';
-import { DAppProvider } from "@usedapp/core";
+import { DAppProvider } from '@usedapp/core';
 import { SnackbarProvider } from 'notistack';
 // import './index.css';
-import App from "./App";
+import App from './App';
 import { SubgraphProvider } from './SubgraphProvider';
 
 const container = document.getElementById('root');
-const root = createRoot(container); 
+const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
