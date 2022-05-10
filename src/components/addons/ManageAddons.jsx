@@ -9,13 +9,14 @@ import CardContent from '@mui/material/CardContent';
 import Divider from '@mui/material/Divider';
 import CloudDoneIcon from '@mui/icons-material/CloudDone';
 import CloudOffIcon from '@mui/icons-material/CloudOff';
+import Stack from '@mui/material/Stack';
 
 function ManageAddons({ cloudStorageActive, handleClickBuyCloudStorage, handleClickManageCloudStorage }) {
   return (
-    <>
-      <Grid item xs={12}>
-        <Divider variant="middle">Addons</Divider>
-      </Grid>
+    <Stack alignItems="center" spacing={2} paddingBottom={2}>
+      <Typography variant="h6" textAlign="center">
+        Addons
+      </Typography>
       <Grid item xs={12} sm={6}>
         <Card>
           <CardContent>
@@ -50,7 +51,7 @@ function ManageAddons({ cloudStorageActive, handleClickBuyCloudStorage, handleCl
           </CardActions>
         </Card>
       </Grid>
-    </>
+    </Stack>
   );
 }
 

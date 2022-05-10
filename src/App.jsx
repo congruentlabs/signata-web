@@ -15,7 +15,7 @@ import Web3Modal from 'web3modal';
 import { lightGreen, indigo } from '@mui/material/colors';
 import useLocalStorageState from 'use-local-storage-state';
 import { HDKey } from 'ethereum-cryptography/hdkey';
-import { mnemonicToEntropy, validateMnemonic } from 'ethereum-cryptography/bip39';
+import { mnemonicToEntropy, validateMnemonic, generateMnemonic } from 'ethereum-cryptography/bip39';
 import { encrypt, decrypt } from 'ethereum-cryptography/aes';
 import { scrypt } from 'ethereum-cryptography/scrypt';
 import { utf8ToBytes, bytesToUtf8, toHex, hexToBytes } from 'ethereum-cryptography/utils';
@@ -126,6 +126,7 @@ function App() {
   const [unlockError, setUnlockError] = useState('');
   const [isSetup, setIsSetup] = useState(false);
   const [signataAccountKey, setSignataAccountKey] = useState(null);
+  const [signataEncryptionKey, setSignataEncryptionKey] = useState(null);
   const [encryptionKeyEntropy, setEncryptionKeyEntropy] = useState({});
   const [isCreateIdLoading, setCreateIdLoading] = useState(false);
   const [isUnlockIdLoading, setUnlockIdLoading] = useState(false);
@@ -322,33 +323,30 @@ function App() {
     setEditingIdentity(null);
   };
 
-  const handleClickConfirmCreateAccount = (e, recoveryPassphrase) => {
+  const handleClickConfirmCreateAccount = async (e, recoveryPassphrase) => {
     console.log('handleClickConfirmCreateAccount');
     setAccountError('');
-    const isValid = validateMnemonic(recoveryPassphrase, wordlist);
-    console.log(isValid);
-    if (isValid) {
-      const hdKey = HDKey.fromMasterSeed(mnemonicToEntropy(recoveryPassphrase, wordlist));
-      setSignataAccountKey(hdKey);
-      setConfig({ ...config, accountId: hdKey.publicExtendedKey });
-      handleClickClose();
-    } else {
-      setAccountError('Invalid Recovery Passphrase');
-    }
-  };
+    try {
+      const isValid = validateMnemonic(recoveryPassphrase, wordlist);
+      console.log(isValid);
+      if (isValid) {
+        const entropy = mnemonicToEntropy(recoveryPassphrase, wordlist);
+        const salt = getRandomBytesSync(32);
+        const iv = getRandomBytesSync(16);
+        const encryptionKeyBytes = await scrypt(entropy, salt, 16384, 8, 1, 32);
+        const encryptionKey = { salt, iv };
+        setSignataEncryptionKey({ salt, iv, encryptionKeyBytes, entropy });
 
-  const handleClickConfirmImportAccount = (e, recoveryPassphrase) => {
-    console.log('handleClickConfirmImportAccount');
-    setAccountError('');
-    const isValid = validateMnemonic(recoveryPassphrase, wordlist);
-    if (isValid) {
-      const hdKey = HDKey.fromMasterSeed(mnemonicToEntropy(recoveryPassphrase, wordlist));
-      setSignataAccountKey(hdKey);
-      setConfig({ ...config, accountId: hdKey.publicExtendedKey });
-      // check if it's registered with the cloud service
-      handleClickClose();
-    } else {
-      setAccountError('Invalid Recovery Passphrase');
+        const hdKey = HDKey.fromMasterSeed(entropy);
+        setSignataAccountKey(hdKey);
+        setConfig({ ...config, accountId: hdKey.publicExtendedKey, encryptionKey });
+        handleClickClose();
+      } else {
+        setAccountError('Invalid Recovery Passphrase');
+      }
+    } catch (error) {
+      console.error(error);
+      setAccountError(error.message);
     }
   };
 
@@ -382,8 +380,15 @@ function App() {
     }
   };
 
-  const handleClickConfirmCreateIdentity = () => {
+  const handleClickConfirmCreateIdentity = async (e, name) => {
     console.log('handleClickConfirmCreateIdentity');
+    console.log(name);
+    const mnemonic = generateMnemonic(wordlist);
+    const hdKey = HDKey.fromMasterSeed(mnemonicToEntropy(mnemonic, wordlist));
+    // encrypt the key data
+  };
+
+  const handleClickRegisterIdentity = (e, selectedIdentity) => {
     createResetState();
     createSend();
   };
@@ -454,7 +459,7 @@ function App() {
       />
       <ImportAccountPopup
         open={showImportAccountPopup}
-        handleClickConfirm={handleClickConfirmImportAccount}
+        handleClickConfirm={handleClickConfirmCreateAccount}
         handleClickClose={handleClickClose}
         errorMessage={accountError}
       />
@@ -465,7 +470,7 @@ function App() {
       />
       <CreateIdentityPopup
         open={showCreateIdentityPopup}
-        handleClickConfirm={handleClickConfirmCreateIdentity}
+        handleClickCreate={handleClickConfirmCreateIdentity}
         handleClickClose={handleClickClose}
         isCreateIdLoading={isCreateIdLoading}
       />
@@ -507,22 +512,26 @@ function App() {
               />
             )}
             {account && isSetup && (
-              <ManageIdentities
-                active={active}
-                identities={identities}
-                handleClickCreate={() => handleClickOpen(OPEN_TYPES.createIdentity)}
-                handleClickImport={() => handleClickOpen(OPEN_TYPES.importIdentity)}
-                handleClickManage={handleClickManageIdentity}
-              />
+              <Grid item xs={12}>
+                <ManageIdentities
+                  active={active}
+                  identities={identities}
+                  handleClickCreate={() => handleClickOpen(OPEN_TYPES.createIdentity)}
+                  handleClickImport={() => handleClickOpen(OPEN_TYPES.importIdentity)}
+                  handleClickManage={handleClickManageIdentity}
+                />
+              </Grid>
             )}
             {account && isSetup && (
-              <ManageAddons
-                addons={addons}
-                handleClickBuyCloud={handleClickBuyCloud}
-                buyCloudState={buyCloudState}
-                buyCloudResetState={buyCloudResetState}
-                isBuyCloudLoading={isBuyCloudLoading}
-              />
+              <Grid item xs={12}>
+                <ManageAddons
+                  addons={addons}
+                  handleClickBuyCloud={handleClickBuyCloud}
+                  buyCloudState={buyCloudState}
+                  buyCloudResetState={buyCloudResetState}
+                  isBuyCloudLoading={isBuyCloudLoading}
+                />
+              </Grid>
             )}
             {account && (
               <Grid item xs={12}>
