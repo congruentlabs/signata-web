@@ -14,6 +14,13 @@ import WalletLink from 'walletlink';
 import Web3Modal from 'web3modal';
 import { lightGreen, indigo } from '@mui/material/colors';
 import useLocalStorageState from 'use-local-storage-state';
+import { HDKey } from 'ethereum-cryptography/hdkey';
+import { mnemonicToEntropy, validateMnemonic } from 'ethereum-cryptography/bip39';
+import { encrypt, decrypt } from 'ethereum-cryptography/aes';
+import { scrypt } from 'ethereum-cryptography/scrypt';
+import { utf8ToBytes, bytesToUtf8, toHex, hexToBytes } from 'ethereum-cryptography/utils';
+import { getRandomBytesSync } from 'ethereum-cryptography/random';
+import { wordlist } from 'ethereum-cryptography/bip39/wordlists/english';
 import {
   AppFooter,
   AppHeader,
@@ -31,7 +38,9 @@ import {
   ReplacePasswordPopup,
   TokenInfo,
   NetworkServices,
-  ProductOverview
+  ProductOverview,
+  NoPersistenceWarning,
+  UnlockAccountPopup
 } from './components';
 import {
   useCreateIdentity,
@@ -105,14 +114,19 @@ function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [showConnectionPopup, setShowConnectionPopup] = useState(false);
   const [showCreateAccountPopup, setShowCreateAccountPopup] = useState(false);
-  const [showReplacePasswordPopup, setShowReplacePasswordPopup] = useState(false);
-  const [showCreatePasswordPopup, setShowCreatePasswordPopup] = useState(false);
-  const [showImportAccountPopup, setShowImportAccountPopup] = useState(false);
   const [showCreateIdentityPopup, setShowCreateIdentityPopup] = useState(false);
-  const [showImportIdentityPopup, setShowImportIdentityPopup] = useState(false);
+  const [showCreatePasswordPopup, setShowCreatePasswordPopup] = useState(false);
   const [showEditIdentityPopup, setShowEditIdentityPopup] = useState(false);
+  const [showImportAccountPopup, setShowImportAccountPopup] = useState(false);
+  const [showImportIdentityPopup, setShowImportIdentityPopup] = useState(false);
+  const [showReplacePasswordPopup, setShowReplacePasswordPopup] = useState(false);
+  const [showUnlockAccountPopup, setShowUnlockAccountPopup] = useState(false);
   const [editingIdentity, setEditingIdentity] = useState(null);
+  const [accountError, setAccountError] = useState('');
+  const [unlockError, setUnlockError] = useState('');
   const [isSetup, setIsSetup] = useState(false);
+  const [signataAccountKey, setSignataAccountKey] = useState(null);
+  const [encryptionKeyEntropy, setEncryptionKeyEntropy] = useState({});
   const [isCreateIdLoading, setCreateIdLoading] = useState(false);
   const [isUnlockIdLoading, setUnlockIdLoading] = useState(false);
   const [isBuyCloudLoading, setBuyCloudLoading] = useState(false);
@@ -135,11 +149,20 @@ function App() {
 
   useEffect(() => {
     console.log(config || 'no config found');
-    // if a seedHash is present, then they've set up their account already, so close the setup section
-    if (config && !config.seedHash) {
+    if (config && !config.accountId) {
       setIsSetup(false);
     }
-  }, [config]);
+    // if an accountId is present, then they've set up their account already, so close the setup section
+    if (config && config.accountId) {
+      setIsSetup(true);
+    }
+    if (config && !config.encryptedKey) {
+      setShowCreatePasswordPopup(true);
+    }
+    if (config && config.encryptedKey && !signataAccountKey) {
+      setShowUnlockAccountPopup(true);
+    }
+  }, [config, signataAccountKey]);
 
   useEffect(() => {
     activateBrowserWallet(); // just try to auto activate on load for metamask users
@@ -241,6 +264,11 @@ function App() {
     }
   };
 
+  const handleClickDisconnect = () => {
+    setSignataAccountKey({});
+    deactivate();
+  };
+
   const handleClickOpen = (type) => {
     console.log(`handleClickOpen: ${type}`);
     switch (type) {
@@ -290,17 +318,68 @@ function App() {
     setShowEditIdentityPopup(false);
     setShowCreatePasswordPopup(false);
     setShowReplacePasswordPopup(false);
+    setShowUnlockAccountPopup(false);
     setEditingIdentity(null);
   };
 
   const handleClickConfirmCreateAccount = (e, recoveryPassphrase) => {
     console.log('handleClickConfirmCreateAccount');
-    console.log(recoveryPassphrase);
+    setAccountError('');
+    const isValid = validateMnemonic(recoveryPassphrase, wordlist);
+    console.log(isValid);
+    if (isValid) {
+      const hdKey = HDKey.fromMasterSeed(mnemonicToEntropy(recoveryPassphrase, wordlist));
+      setSignataAccountKey(hdKey);
+      setConfig({ ...config, accountId: hdKey.publicExtendedKey });
+      handleClickClose();
+    } else {
+      setAccountError('Invalid Recovery Passphrase');
+    }
   };
 
   const handleClickConfirmImportAccount = (e, recoveryPassphrase) => {
     console.log('handleClickConfirmImportAccount');
-    console.log(recoveryPassphrase);
+    setAccountError('');
+    const isValid = validateMnemonic(recoveryPassphrase, wordlist);
+    if (isValid) {
+      const hdKey = HDKey.fromMasterSeed(mnemonicToEntropy(recoveryPassphrase, wordlist));
+      setSignataAccountKey(hdKey);
+      setConfig({ ...config, accountId: hdKey.publicExtendedKey });
+      // check if it's registered with the cloud service
+      handleClickClose();
+    } else {
+      setAccountError('Invalid Recovery Passphrase');
+    }
+  };
+
+  const handleClickCreatePassword = async (e, newPassword) => {
+    console.log('handleClickCreatePassword');
+    const salt = getRandomBytesSync(32);
+    const iv = getRandomBytesSync(16);
+    const passwordEncoded = await scrypt(utf8ToBytes(newPassword), salt, 16384, 8, 1, 32);
+    const keyBytes = utf8ToBytes(signataAccountKey.privateExtendedKey);
+    const encryptedKey = await encrypt(keyBytes, passwordEncoded, iv, 'aes-256-cbc', true);
+
+    setConfig({ ...config, encryptedKey: toHex(encryptedKey), salt: toHex(salt), iv: toHex(iv) });
+    handleClickClose();
+  };
+
+  const handleClickUnlockAccount = async (e, password) => {
+    const passwordEncoded = await scrypt(utf8ToBytes(password), hexToBytes(config.salt), 16384, 8, 1, 32);
+    const decryptedKey = await decrypt(
+      hexToBytes(config.encryptedKey),
+      passwordEncoded,
+      hexToBytes(config.iv),
+      'aes-256-cbc',
+      true
+    );
+    const hdKey = HDKey.fromExtendedKey(bytesToUtf8(decryptedKey));
+    if (hdKey.publicExtendedKey === config.accountId) {
+      setSignataAccountKey(hdKey);
+      handleClickClose();
+    } else {
+      setUnlockError('Incorrect Key!');
+    }
   };
 
   const handleClickConfirmCreateIdentity = () => {
@@ -353,28 +432,36 @@ function App() {
       <CssBaseline />
       <AppHeader
         account={account}
-        isSetup={isSetup}
-        chainId={chainId}
-        active={active}
         handleClickReplacePassword={() => handleClickOpen(OPEN_TYPES.replacePassword)}
-        handleClickDisconnect={deactivate}
+        handleClickDisconnect={handleClickDisconnect}
       />
       <ConnectionPopup
         open={showConnectionPopup}
         handleClickConnect={handleClickConfirmConnect}
         handleClickClose={handleClickClose}
       />
+      <CreatePasswordPopup
+        open={showCreatePasswordPopup}
+        handleClickClose={handleClickClose}
+        handleClickCreate={handleClickCreatePassword}
+      />
+      <ReplacePasswordPopup open={showReplacePasswordPopup} handleClickClose={handleClickClose} />
       <CreateAccountPopup
         open={showCreateAccountPopup}
         handleClickCreate={handleClickConfirmCreateAccount}
         handleClickClose={handleClickClose}
+        errorMessage={accountError}
       />
-      <CreatePasswordPopup open={showCreatePasswordPopup} handleClickClose={handleClickClose} />
-      <ReplacePasswordPopup open={showReplacePasswordPopup} handleClickClose={handleClickClose} />
       <ImportAccountPopup
         open={showImportAccountPopup}
         handleClickConfirm={handleClickConfirmImportAccount}
         handleClickClose={handleClickClose}
+        errorMessage={accountError}
+      />
+      <UnlockAccountPopup
+        open={showUnlockAccountPopup}
+        handleClickConfirm={handleClickUnlockAccount}
+        errorMessage={unlockError}
       />
       <CreateIdentityPopup
         open={showCreateIdentityPopup}
@@ -407,10 +494,11 @@ function App() {
         isDeleteIdLoading={isDeleteIdLoading}
       />
       <Container maxWidth="md">
-        <Box sx={{ minHeight: '90vh', paddingTop: 2 }}>
+        <Box sx={{ minHeight: '90vh', paddingTop: 2, paddingBottom: 2 }}>
           <Grid container spacing={3}>
             {!account && <NoConnectionWarning handleClickConnect={() => handleClickOpen(OPEN_TYPES.web3Connect)} />}
             {!account && <ProductOverview />}
+            {account && !isPersistent && <NoPersistenceWarning />}
             {account && !isSetup && (
               <NoAccountSection
                 active={active}

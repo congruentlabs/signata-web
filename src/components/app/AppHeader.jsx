@@ -18,18 +18,11 @@ const pages = [
   { name: 'Token', href: 'https://sata.technology' }
 ];
 
-function AppHeader({
-  account,
-  // chainId,
-  // active,
-  handleClickDisconnect,
-  handleClickReplacePassword,
-  isSetup
-}) {
+function AppHeader({ account, handleClickDisconnect, handleClickReplacePassword }) {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
 
-  const settings = !isSetup
+  const settings = account
     ? [
         {
           name: 'Terms & Conditions',

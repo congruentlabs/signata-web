@@ -14,7 +14,8 @@ import AddIcon from '@mui/icons-material/Add';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { useSnackbar } from 'notistack';
-import { generateMnemonic } from 'bip39';
+import { generateMnemonic } from 'ethereum-cryptography/bip39';
+import { wordlist } from 'ethereum-cryptography/bip39/wordlists/english';
 
 function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
   const [recoveryPassphrase, setRecoveryPassphrase] = useState('');
@@ -23,20 +24,18 @@ function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    const m = generateMnemonic().toLowerCase();
+    const m = generateMnemonic(wordlist);
     console.log(m);
     setRecoveryPassphrase(m);
   }, [setRecoveryPassphrase]);
 
   const handleClickGenerate = () => {
-    console.log('handleClickGenerate');
-    const m = generateMnemonic().toLowerCase();
+    const m = generateMnemonic(wordlist);
     console.log(m);
     setRecoveryPassphrase(m);
   };
 
   const handleClickCopy = async () => {
-    console.log('handleClickCopy');
     await navigator.clipboard.writeText(recoveryPassphrase);
     enqueueSnackbar('Recovery Passphrase Copied!', { variant: 'success' });
   };
@@ -79,7 +78,8 @@ function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
             <a href="https://bitwarden.com/?ref=signata.net" target="_blank" rel="noreferrer">
               Bitwarden
             </a>
-            . If you lose your passphrase you and the Signata team will <b>never</b> be able to restore your account.
+            . If someone else finds your recovery passphrase, they can steal your identities. If you lose your
+            passphrase you and the Signata team will <b>never</b> be able to restore your account.
           </Typography>
           <FormControlLabel
             control={

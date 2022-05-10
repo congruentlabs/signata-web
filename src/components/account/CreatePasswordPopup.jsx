@@ -39,12 +39,16 @@ function CreatePasswordPopup({ open, handleClickClose, handleClickCreate }) {
       <DialogContent>
         <Stack spacing={2}>
           <Typography variant="body1">
-            To make it easier to access your account, you need to set your own password instead of using your recovery
+            To make it easier to access your account, you need to set a password instead of using your recovery
             passphrase all the time.
           </Typography>
           <Typography variant="body1">
             Your password will encrypt your recovery passphrase locally. The Signata service does not store your
-            encrypted recovery passphrase anywhere.
+            encrypted recovery passphrase. You will need to set this for every device you use Signata on.
+          </Typography>
+          <Typography variant="body1">
+            Just like your recovery passphrase keep your password safe and private. Don't tell anyone your password, or
+            they could steal your identities.
           </Typography>
           <TextField
             label="Password"
