@@ -127,7 +127,6 @@ function App() {
   const [isSetup, setIsSetup] = useState(false);
   const [signataAccountKey, setSignataAccountKey] = useState(null);
   const [signataEncryptionKey, setSignataEncryptionKey] = useState(null);
-  const [encryptionKeyEntropy, setEncryptionKeyEntropy] = useState({});
   const [isCreateIdLoading, setCreateIdLoading] = useState(false);
   const [isUnlockIdLoading, setUnlockIdLoading] = useState(false);
   const [isBuyCloudLoading, setBuyCloudLoading] = useState(false);
@@ -380,12 +379,23 @@ function App() {
     }
   };
 
+  const encryptWithSignataKey = async (data) =>
+    encrypt(data, signataEncryptionKey.encryptionKeyBytes, signataEncryptionKey.iv, 'aes-256-cbc', true);
+
   const handleClickConfirmCreateIdentity = async (e, name) => {
-    console.log('handleClickConfirmCreateIdentity');
-    console.log(name);
+    // TODO:
+    // 1. generate a mnemonic and create it as a HD key
+    // 2. encrypt the HD key private key
+    // 3. generate 3 addresses in the wallet, set the record address as the first address
+    // 4. write it to localStorage
+    // 5. syncronise with the service if they have cloud enabled
+
     const mnemonic = generateMnemonic(wordlist);
     const hdKey = HDKey.fromMasterSeed(mnemonicToEntropy(mnemonic, wordlist));
     // encrypt the key data
+    const encryptedKey = await encryptWithSignataKey(utf8ToBytes(hdKey.privateExtendedKey));
+    const newIdentities = identities;
+    newIdentities.push({ name, encryptedKey });
   };
 
   const handleClickRegisterIdentity = (e, selectedIdentity) => {
@@ -394,42 +404,72 @@ function App() {
   };
 
   const handleClickConfirmImportIdentity = () => {
+    // TODO:
+    // 1. import the mnemonic and create it as a HD key
+    // 2. encrypt the HD key private key
+    // 3. generate 3 addresses in the wallet, set the record address as the first address
+    // 4. write it to localStorage
+    // 5. syncronise with the service if they have cloud enabled
     console.log('handleClickConfirmImportIdentity');
     createResetState();
     createSend();
   };
 
   const handleClickBuyCloud = () => {
+    // TODO:
+    // 1. send 20 SATA to contract for rights
+    // 2. await completed transaction
+    // 3. enable sync of localStorage to cloud service
     console.log('handleClickBuyCloud');
     buyCloudSend();
   };
 
   const handleClickDeleteIdentity = () => {
     console.log('handleClickDeleteIdentity');
+    // TODO:
+    // 1. construct call for the chain
+    // 2. await completed transaction
+    // 3. update state of localStorage and cloud service
     deleteResetState();
     deleteSend();
   };
 
   const handleClickLockIdentity = () => {
     console.log('handleClickLockIdentity');
+    // TODO:
+    // 1. construct call for the chain
+    // 2. await completed transaction
+    // 3. update state of localStorage and cloud service
     lockResetState();
     lockSend();
   };
 
   const handleClickUnlockIdentity = () => {
     console.log('handleClickUnlockIdentity');
+    // TODO:
+    // 1. construct call for the chain
+    // 2. await completed transaction
+    // 3. update state of localStorage and cloud service
     unlockResetState();
     unlockSend();
   };
 
   const handleClickMigrateIdentity = () => {
     console.log('handleClickMigrateIdentity');
+    // TODO:
+    // 1. construct call for the chain
+    // 2. await completed transaction
+    // 3. update state of localStorage and cloud service
     migrateResetState();
     migrateSend();
   };
 
   const handleClickSaveIdentity = () => {
     console.log('handleClickSaveIdentity');
+    // TODO:
+    // 1. construct call for the chain
+    // 2. await completed transaction
+    // 3. update state of localStorage and cloud service
   };
 
   return (
