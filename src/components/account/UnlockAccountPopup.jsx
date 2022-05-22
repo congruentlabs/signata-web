@@ -8,8 +8,9 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
+import { Alert } from '@mui/material';
 
-function UnlockAccountPopup({ open, handleClickClose, handleClickConfirm }) {
+function UnlockAccountPopup({ open, handleClickClose, handleClickUnlock, errorMessage, handleClickReset }) {
   const [password, setPassword] = useState('');
   const [firstErrorMessage, setFirstErrorMessage] = useState('');
 
@@ -24,7 +25,7 @@ function UnlockAccountPopup({ open, handleClickClose, handleClickConfirm }) {
 
   return (
     <Dialog open={open} keepMounted onClose={handleClickClose}>
-      <DialogTitle>Unlock your Signata Account</DialogTitle>
+      <DialogTitle>Welcome Back!</DialogTitle>
       <DialogContent>
         <Stack spacing={2}>
           <Typography variant="body1">Please enter your password to unlock your Signata account.</Typography>
@@ -37,11 +38,15 @@ function UnlockAccountPopup({ open, handleClickClose, handleClickConfirm }) {
             onChange={onChangePassword}
             helperText={firstErrorMessage}
           />
+          {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
         </Stack>
       </DialogContent>
       <DialogActions>
+        <Button onClick={(e) => handleClickReset(e)} variant="text" color="inherit" size="small">
+          Reset Device
+        </Button>
         <Button
-          onClick={(e) => handleClickConfirm(e, password)}
+          onClick={(e) => handleClickUnlock(e, password)}
           variant="contained"
           disabled={!password || password.length < 1}
           startIcon={<LockOpenIcon />}

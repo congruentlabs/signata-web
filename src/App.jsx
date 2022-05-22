@@ -140,6 +140,27 @@ function App() {
   const { state: unlockState, send: unlockSend, resetState: unlockResetState } = useUnlockIdentity();
   const { state: buyCloudState, send: buyCloudSend, resetState: buyCloudResetState } = useBuyCloud();
   const ethPrice = useCoingeckoPrice('ethereum', 'usd');
+  // const [services, setServices] = useState([
+  //   {
+  //     id: 1,
+  //     name: 'Test Broker',
+  //     type: 'Broker',
+  //     network: 'Ethereum',
+  //     jurisdiction: 'Australia',
+  //     staked: 100000,
+  //     status: 'Active'
+  //   },
+  //   {
+  //     id: 2,
+  //     name: 'Test Oracle',
+  //     type: 'Risk Oracle',
+  //     network: 'Ethereum',
+  //     jurisdiction: 'Australia',
+  //     staked: 0,
+  //     status: 'Active'
+  //   }
+  // ]);
+  const [services, setServices] = useState([]);
 
   const [config, setConfig, isPersistent] = useLocalStorageState('config', []);
   // const [wallets, setWallets] = useLocalStorageState('wallets', []);
@@ -362,20 +383,29 @@ function App() {
   };
 
   const handleClickUnlockAccount = async (e, password) => {
-    const passwordEncoded = await scrypt(utf8ToBytes(password), hexToBytes(config.salt), 16384, 8, 1, 32);
-    const decryptedKey = await decrypt(
-      hexToBytes(config.encryptedKey),
-      passwordEncoded,
-      hexToBytes(config.iv),
-      'aes-256-cbc',
-      true
-    );
-    const hdKey = HDKey.fromExtendedKey(bytesToUtf8(decryptedKey));
-    if (hdKey.publicExtendedKey === config.accountId) {
-      setSignataAccountKey(hdKey);
-      handleClickClose();
-    } else {
-      setUnlockError('Incorrect Key!');
+    console.log('handleClickUnlockAccount');
+    try {
+      const passwordEncoded = await scrypt(utf8ToBytes(password), hexToBytes(config.salt), 16384, 8, 1, 32);
+
+      const decryptedKey = await decrypt(
+        hexToBytes(config.encryptedKey),
+        passwordEncoded,
+        hexToBytes(config.iv),
+        'aes-256-cbc',
+        true
+      );
+      console.log(decryptedKey);
+      const hdKey = HDKey.fromExtendedKey(bytesToUtf8(decryptedKey));
+      console.log(hdKey);
+      if (hdKey.publicExtendedKey === config.accountId) {
+        setSignataAccountKey(hdKey);
+        handleClickClose();
+      } else {
+        setUnlockError('Incorrect Key!');
+      }
+    } catch (error) {
+      console.error(error);
+      setUnlockError(error.message);
     }
   };
 
@@ -505,7 +535,7 @@ function App() {
       />
       <UnlockAccountPopup
         open={showUnlockAccountPopup}
-        handleClickConfirm={handleClickUnlockAccount}
+        handleClickUnlock={handleClickUnlockAccount}
         errorMessage={unlockError}
       />
       <CreateIdentityPopup
@@ -590,9 +620,9 @@ function App() {
                 />
               </Grid>
             )}
-            {account && (
+            {account && services && (
               <Grid item xs={12}>
-                <NetworkServices chainId={chainId} />
+                <NetworkServices services={services} />
               </Grid>
             )}
           </Grid>
