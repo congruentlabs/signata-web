@@ -1,40 +1,43 @@
 import React, { shortenIfAddress } from '@usedapp/core';
 import AddIcon from '@mui/icons-material/Add';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Chip from '@mui/material/Chip';
-import Divider from '@mui/material/Divider';
 import EditIcon from '@mui/icons-material/Edit';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import Grid from '@mui/material/Grid';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import UploadIcon from '@mui/icons-material/Upload';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+import {
+  Alert,
+  AlertTitle,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Chip,
+  Stack,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from '@mui/material';
 
 const headings = [
   { text: 'Name', align: 'left' },
   { text: 'Address', align: 'left' },
   { text: 'Type', align: 'center' },
   { text: 'Registered', align: 'center' },
-  { text: 'Locked', align: 'center' }
+  { text: 'Locked', align: 'center' },
 ];
 
-function ManageIdentities({ handleClickCreate, handleClickImport, handleClickManage, identities }) {
+function ManageIdentities({
+  handleClickCreate,
+  handleClickImport,
+  handleClickManage,
+  identities,
+}) {
   return (
     <Card sx={{ p: 1 }}>
       <CardContent>
@@ -45,8 +48,9 @@ function ManageIdentities({ handleClickCreate, handleClickImport, handleClickMan
           {identities && identities.length < 1 && (
             <Alert severity="info">
               <AlertTitle>No Identity Registered Yet</AlertTitle>
-              To get started, create a new identity or import an existing identity. You can create as many identities as
-              you need, and each identity is independent of each other.
+              To get started, create a new identity or import an existing
+              identity. You can create as many identities as you need, and each
+              identity is independent of each other.
             </Alert>
           )}
           <TableContainer>
@@ -61,11 +65,16 @@ function ManageIdentities({ handleClickCreate, handleClickImport, handleClickMan
                 </TableRow>
               </TableHead>
               <TableBody>
-                {identities &&
-                  identities.map((id) => (
-                    <TableRow key={id.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                {identities
+                  && identities.map((id) => (
+                    <TableRow
+                      key={id.name}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
                       <TableCell align="left">{id.name}</TableCell>
-                      <TableCell align="left">{id.address && shortenIfAddress(id.address)}</TableCell>
+                      <TableCell align="left">
+                        {id.address && shortenIfAddress(id.address)}
+                      </TableCell>
                       <TableCell align="center">{id.type}</TableCell>
                       <TableCell align="center">
                         <Chip
@@ -80,7 +89,13 @@ function ManageIdentities({ handleClickCreate, handleClickImport, handleClickMan
                           label={id.registered ? 'Registered' : 'Unregistered'}
                           color={id.registered ? 'success' : 'warning'}
                           variant={id.registered ? 'outlined' : 'filled'}
-                          icon={id.registered ? <HowToRegIcon /> : <ErrorOutlineIcon />}
+                          icon={
+                            id.registered ? (
+                              <HowToRegIcon />
+                            ) : (
+                              <ErrorOutlineIcon />
+                            )
+                          }
                         />
                       </TableCell>
                       <TableCell align="center">
@@ -98,7 +113,8 @@ function ManageIdentities({ handleClickCreate, handleClickImport, handleClickMan
                 {!identities && (
                   <TableRow>
                     <TableCell colSpan={headings.length}>
-                      No identities found. Create or import an identity to get started.
+                      No identities found. Create or import an identity to get
+                      started.
                     </TableCell>
                   </TableRow>
                 )}
@@ -108,10 +124,20 @@ function ManageIdentities({ handleClickCreate, handleClickImport, handleClickMan
         </Stack>
       </CardContent>
       <CardActions>
-        <Button color="primary" onClick={handleClickCreate} variant="contained" startIcon={<AddIcon />}>
+        <Button
+          color="primary"
+          onClick={handleClickCreate}
+          variant="contained"
+          startIcon={<AddIcon />}
+        >
           Create Identity
         </Button>
-        <Button color="secondary" onClick={handleClickImport} variant="contained" startIcon={<UploadIcon />}>
+        <Button
+          color="secondary"
+          onClick={handleClickImport}
+          variant="contained"
+          startIcon={<UploadIcon />}
+        >
           Import Identity
         </Button>
       </CardActions>

@@ -9,11 +9,11 @@ export function NoConnectionWarning({ handleClickConnect }) {
     <Grid item xs={12}>
       <Alert
         severity="info"
-        action={
+        action={(
           <Button color="secondary" variant="contained" size="small" onClick={handleClickConnect}>
             Connect To Web3
           </Button>
-        }
+        )}
       >
         <AlertTitle>Not connected to web3</AlertTitle>
         To use Signata you must connect to a web3 network first.

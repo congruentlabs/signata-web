@@ -52,56 +52,79 @@ export function useUniswapDSataPriceData() {
 }
 
 export function useCreateIdentity() {
-  const { state, send, events, resetState } = useContractFunction(identityContract, 'create', {
-    transactionName: 'Create Signata Identity'
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(identityContract, 'create', {
+    transactionName: 'Create Signata Identity',
   });
-  return { state, send, events, resetState };
+  return {
+    state, send, events, resetState,
+  };
 }
 
 export function useDeleteIdentity() {
-  const { state, send, events, resetState } = useContractFunction(identityContract, 'delete', {
-    transactionName: 'Delete Signata Identity'
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(identityContract, 'delete', {
+    transactionName: 'Delete Signata Identity',
   });
-  return { state, send, events, resetState };
+  return {
+    state, send, events, resetState,
+  };
 }
 
 export function useMigrateIdentity() {
-  const { state, send, events, resetState } = useContractFunction(identityContract, 'migrate', {
-    transactionName: 'Migrate Signata Identity'
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(identityContract, 'migrate', {
+    transactionName: 'Migrate Signata Identity',
   });
-  return { state, send, events, resetState };
+  return {
+    state, send, events, resetState,
+  };
 }
 
 export function useLockIdentity() {
-  const { state, send, events, resetState } = useContractFunction(identityContract, 'lock', {
-    transactionName: 'Lock Signata Identity'
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(identityContract, 'lock', {
+    transactionName: 'Lock Signata Identity',
   });
-  return { state, send, events, resetState };
+  return {
+    state, send, events, resetState,
+  };
 }
 
 export function useUnlockIdentity() {
-  const { state, send, events, resetState } = useContractFunction(identityContract, 'unlock', {
-    transactionName: 'Unlock Signata Identity'
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(identityContract, 'unlock', {
+    transactionName: 'Unlock Signata Identity',
   });
-  return { state, send, events, resetState };
+  return {
+    state, send, events, resetState,
+  };
 }
 
 export function useBuyCloud() {
-  const { state, send, events, resetState } = useContractFunction(identityContract, 'buyCloud', {
-    transactionName: 'Buy Cloud Subscription'
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(identityContract, 'buyCloud', {
+    transactionName: 'Buy Cloud Subscription',
   });
-  return { state, send, events, resetState };
+  return {
+    state, send, events, resetState,
+  };
 }
 
 export const useGetSingleValue = (method) => {
-  const { value, error } =
-    useCall(
-      identityContractAddress && {
-        contract: identityContract,
-        method,
-        args: []
-      }
-    ) ?? {};
+  const { value, error } = useCall(
+    identityContractAddress && {
+      contract: identityContract,
+      method,
+      args: [],
+    },
+  ) ?? {};
   if (error) {
     console.error(error.message);
     return {};
@@ -112,8 +135,7 @@ export const useGetSingleValue = (method) => {
 // these cg price hooks have been copied across from usedapp, as they're using an incompatible version of react with what's used in this app right now
 
 // get price from token contract
-export const getCoingeckoSimpleTokenPriceUri = (contract, quoteId, platformId) =>
-  `https://api.coingecko.com/api/v3/simple/token_price/${platformId}?contract_addresses=${contract}&vs_currencies=${quoteId}`;
+export const getCoingeckoSimpleTokenPriceUri = (contract, quoteId, platformId) => `https://api.coingecko.com/api/v3/simple/token_price/${platformId}?contract_addresses=${contract}&vs_currencies=${quoteId}`;
 
 export const fetchCoingeckoTokenPrice = (fetchFunction) => async (contract, quote, platform) => {
   try {
@@ -124,8 +146,8 @@ export const fetchCoingeckoTokenPrice = (fetchFunction) => async (contract, quot
     const data = await fetchFunction(url, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
     const result = await data.json();
     const price = result[addr][quoteId];
@@ -137,8 +159,7 @@ export const fetchCoingeckoTokenPrice = (fetchFunction) => async (contract, quot
 
 export const getCoingeckoTokenPrice = fetchCoingeckoTokenPrice(typeof window !== 'undefined' && window.fetch);
 
-export const getCoingeckoSimplePriceUri = (baseId, quoteId) =>
-  `https://api.coingecko.com/api/v3/simple/price?ids=${baseId}&vs_currencies=${quoteId}`;
+export const getCoingeckoSimplePriceUri = (baseId, quoteId) => `https://api.coingecko.com/api/v3/simple/price?ids=${baseId}&vs_currencies=${quoteId}`;
 
 export const fetchCoingeckoPrice = (fetchFunction) => async (base, quote) => {
   try {
@@ -148,8 +169,8 @@ export const fetchCoingeckoPrice = (fetchFunction) => async (base, quote) => {
     const data = await fetchFunction(url, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     });
     const result = await data.json();
     const price = result[baseId][quoteId];

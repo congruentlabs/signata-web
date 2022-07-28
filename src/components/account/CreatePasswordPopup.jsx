@@ -47,7 +47,7 @@ function CreatePasswordPopup({ open, handleClickClose, handleClickCreate }) {
             encrypted recovery passphrase. You will need to set this for every device you use Signata on.
           </Typography>
           <Typography variant="body1">
-            Just like your recovery passphrase keep your password safe and private. Don't tell anyone your password, or
+            Just like your recovery passphrase keep your password safe and private. Don&apos;t tell anyone your password, or
             they could steal your identities.
           </Typography>
           <TextField

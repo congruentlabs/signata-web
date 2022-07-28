@@ -1,6 +1,8 @@
 import React from 'react';
 import { formatUnits } from '@ethersproject/units';
-import { Typography, Grid, Stack, Card, CardContent, CardActions, Chip, Button, useTheme } from '@mui/material';
+import {
+  Typography, Grid, Stack, Card, CardContent, CardActions, Chip, Button, useTheme,
+} from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import CloudDoneIcon from '@mui/icons-material/CloudDone';
@@ -17,7 +19,7 @@ export function Extras({
   ethPrice,
   cloudStorageActive,
   handleClickBuyCloudStorage,
-  handleClickManageCloudStorage
+  handleClickManageCloudStorage,
 }) {
   const theme = useTheme();
   if (chainId === 1) {
@@ -30,8 +32,12 @@ export function Extras({
               <Stack spacing={1}>
                 <Typography variant="h6">Your Wallet</Typography>
                 <Typography variant="body1">
-                  {fNumber(formatUnits(sataBalance || 0, 18))} SATA (
-                  {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)} USD)
+                  {fNumber(formatUnits(sataBalance || 0, 18))}
+                  {' '}
+                  SATA (
+                  {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)}
+                  {' '}
+                  USD)
                 </Typography>
                 <Chip
                   icon={sataBalance && sataBalance < 1 ? <ClearIcon /> : <CheckIcon />}
@@ -41,8 +47,12 @@ export function Extras({
                   sx={{ borderRadius: 0 }}
                 />
                 <Typography variant="body1">
-                  {fNumber(formatUnits(dSataBalance || 0, 18))} dSATA (
-                  {fCurrency(formatUnits(dSataBalance || 0, 18) * dSataPriceData.token.derivedETH * ethPrice)} USD)
+                  {fNumber(formatUnits(dSataBalance || 0, 18))}
+                  {' '}
+                  dSATA (
+                  {fCurrency(formatUnits(dSataBalance || 0, 18) * dSataPriceData.token.derivedETH * ethPrice)}
+                  {' '}
+                  USD)
                 </Typography>
                 <Chip
                   icon={sataBalance && sataBalance < 1 ? <ClearIcon /> : <CheckIcon />}
@@ -98,34 +108,36 @@ export function Extras({
         </Grid>
       </>
     );
-  } else {
-    return (
-      <Grid item xs={12} sm={6}>
-        <Card sx={{ p: 1 }}>
-          <CardContent>
-            <Stack spacing={1}>
-              <Typography variant="h6">Your Wallet Balances</Typography>
-              <Typography variant="body1">
-                {fNumber(formatUnits(sataBalance || 0, 18))} SATA (
-                {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)} USD)
-              </Typography>
-              <Chip
-                icon={sataBalance && sataBalance < 1 ? <ClearIcon /> : <CheckIcon />}
-                label="Can Purchase Rights"
-                variant="outlined"
-                color={sataBalance && sataBalance < 1 ? 'error' : 'success'}
-                sx={{ borderRadius: 0 }}
-              />
-            </Stack>
-          </CardContent>
-          <CardActions>
-            <Button color="primary">Get SATA</Button>
-          </CardActions>
-        </Card>
-      </Grid>
-    );
   }
-  return '';
+  return (
+    <Grid item xs={12} sm={6}>
+      <Card sx={{ p: 1 }}>
+        <CardContent>
+          <Stack spacing={1}>
+            <Typography variant="h6">Your Wallet Balances</Typography>
+            <Typography variant="body1">
+              {fNumber(formatUnits(sataBalance || 0, 18))}
+              {' '}
+              SATA (
+              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)}
+              {' '}
+              USD)
+            </Typography>
+            <Chip
+              icon={sataBalance && sataBalance < 1 ? <ClearIcon /> : <CheckIcon />}
+              label="Can Purchase Rights"
+              variant="outlined"
+              color={sataBalance && sataBalance < 1 ? 'error' : 'success'}
+              sx={{ borderRadius: 0 }}
+            />
+          </Stack>
+        </CardContent>
+        <CardActions>
+          <Button color="primary">Get SATA</Button>
+        </CardActions>
+      </Card>
+    </Grid>
+  );
 }
 
 export default Extras;

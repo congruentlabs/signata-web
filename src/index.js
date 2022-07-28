@@ -20,5 +20,5 @@ root.render(
         </SnackbarProvider>
       </DAppProvider>
     </SubgraphProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

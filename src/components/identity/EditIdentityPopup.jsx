@@ -14,7 +14,7 @@ export function EditIdentityPopup({
   handleClickLock,
   handleClickUnlock,
   handleClickMigrate,
-  handleClickSave
+  handleClickSave,
 }) {
   return (
     <Dialog open={open} keepMounted onClose={handleClickClose}>

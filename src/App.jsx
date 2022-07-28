@@ -1,13 +1,10 @@
-/* eslint-disable no-console */
 import React, { useState, useMemo, useEffect } from 'react';
 import { useEthers, useTokenBalance } from '@usedapp/core';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import Grid from '@mui/material/Grid';
-import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
-import Box from '@mui/material/Box';
+import {
+  Box, Container, Grid, CssBaseline,
+} from '@mui/material';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import CoinbaseWalletSDK from '@coinbase/wallet-sdk';
 import WalletLink from 'walletlink';
@@ -18,7 +15,9 @@ import { HDKey } from 'ethereum-cryptography/hdkey';
 import { mnemonicToEntropy, validateMnemonic, generateMnemonic } from 'ethereum-cryptography/bip39';
 import { encrypt, decrypt } from 'ethereum-cryptography/aes';
 import { scrypt } from 'ethereum-cryptography/scrypt';
-import { utf8ToBytes, bytesToUtf8, toHex, hexToBytes } from 'ethereum-cryptography/utils';
+import {
+  utf8ToBytes, bytesToUtf8, toHex, hexToBytes,
+} from 'ethereum-cryptography/utils';
 import { getRandomBytesSync } from 'ethereum-cryptography/random';
 import { wordlist } from 'ethereum-cryptography/bip39/wordlists/english';
 import {
@@ -31,17 +30,15 @@ import {
   EditIdentityPopup,
   ImportAccountPopup,
   ImportIdentityPopup,
-  ManageAddons,
   ManageIdentities,
   NoAccountSection,
   NoConnectionWarning,
   ReplacePasswordPopup,
-  TokenInfo,
   NetworkServices,
   ProductOverview,
   NoPersistenceWarning,
   UnlockAccountPopup,
-  Extras
+  Extras,
 } from './components';
 import {
   useCreateIdentity,
@@ -52,11 +49,10 @@ import {
   useBuyCloud,
   useUniswapSataPriceData,
   useUniswapDSataPriceData,
-  useCoingeckoPrice
+  useCoingeckoPrice,
 } from './hooks/chainHooks';
 import { shouldBeLoading } from './hooks/helpers';
 import './App.css';
-import { Card } from '@mui/material';
 
 const infuraId = '5c79516b355c491bb8156fcf3a6a1d23';
 
@@ -64,18 +60,18 @@ const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider,
     options: {
-      infuraId
-    }
+      infuraId,
+    },
   },
   binancechainwallet: {
-    package: true
+    package: true,
   },
   walletlink: {
     package: WalletLink,
     options: {
       appName: 'Signata',
-      infuraId
-    }
+      infuraId,
+    },
   },
   coinbasewallet: {
     package: CoinbaseWalletSDK, // Required
@@ -84,9 +80,9 @@ const providerOptions = {
       infuraId, // Required
       rpc: '', // Optional if `infuraId` is provided; otherwise it's required
       chainId: 1, // Optional. It defaults to 1 if not provided
-      darkMode: false // Optional. Use dark theme, defaults to false
-    }
-  }
+      darkMode: false, // Optional. Use dark theme, defaults to false
+    },
+  },
 };
 
 const OPEN_TYPES = {
@@ -97,18 +93,20 @@ const OPEN_TYPES = {
   importAccount: 'import-account',
   editIdentity: 'edit-identity',
   createPassword: 'create-password',
-  replacePassword: 'replace-password'
+  replacePassword: 'replace-password',
 };
 
 const web3Modal = new Web3Modal({
-  providerOptions
+  providerOptions,
 });
 
 const sataContractAddress = '0x3ebb4a4e91ad83be51f8d596533818b246f4bee1';
 const dSataContractAddress = '0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b';
 
 function App() {
-  const { activateBrowserWallet, activate, account, chainId, active, deactivate } = useEthers();
+  const {
+    activateBrowserWallet, activate, account, chainId, active, deactivate,
+  } = useEthers();
   const sataBalance = useTokenBalance(sataContractAddress, account);
   const dSataBalance = useTokenBalance(dSataContractAddress, account);
   const sataPriceData = useUniswapSataPriceData();
@@ -252,28 +250,27 @@ function App() {
     {
       name: 'Cloud Storage',
       status: 'active',
-      renewalDate: '2022-03-01'
-    }
+      renewalDate: '2022-03-01',
+    },
   ];
 
   const theme = useMemo(
-    () =>
-      createTheme({
-        palette: {
-          primary: {
-            main: lightGreen[500]
-          },
-          secondary: {
-            main: indigo[500]
-          },
-          mode: prefersDarkMode ? 'light' : 'light'
-          // mode: 'light',
+    () => createTheme({
+      palette: {
+        primary: {
+          main: lightGreen[500],
         },
-        typography: {
-          fontFamily: 'Lato'
-        }
-      }),
-    [prefersDarkMode]
+        secondary: {
+          main: indigo[500],
+        },
+        mode: prefersDarkMode ? 'light' : 'light',
+        // mode: 'light',
+      },
+      typography: {
+        fontFamily: 'Lato',
+      },
+    }),
+    [prefersDarkMode],
   );
 
   const handleClickConfirmConnect = async () => {
@@ -358,7 +355,9 @@ function App() {
         const iv = getRandomBytesSync(16);
         const encryptionKeyBytes = await scrypt(entropy, salt, 16384, 8, 1, 32);
         const encryptionKey = { salt, iv };
-        setSignataEncryptionKey({ salt, iv, encryptionKeyBytes, entropy });
+        setSignataEncryptionKey({
+          salt, iv, encryptionKeyBytes, entropy,
+        });
 
         const hdKey = HDKey.fromMasterSeed(entropy);
         setSignataAccountKey(hdKey);
@@ -381,7 +380,9 @@ function App() {
     const keyBytes = utf8ToBytes(signataAccountKey.privateExtendedKey);
     const encryptedKey = await encrypt(keyBytes, passwordEncoded, iv, 'aes-256-cbc', true);
 
-    setConfig({ ...config, encryptedKey: toHex(encryptedKey), salt: toHex(salt), iv: toHex(iv) });
+    setConfig({
+      ...config, encryptedKey: toHex(encryptedKey), salt: toHex(salt), iv: toHex(iv),
+    });
     handleClickClose();
   };
 
@@ -395,7 +396,7 @@ function App() {
         passwordEncoded,
         hexToBytes(config.iv),
         'aes-256-cbc',
-        true
+        true,
       );
       console.log(decryptedKey);
       const hdKey = HDKey.fromExtendedKey(bytesToUtf8(decryptedKey));
@@ -412,8 +413,7 @@ function App() {
     }
   };
 
-  const encryptWithSignataKey = async (data) =>
-    encrypt(data, signataEncryptionKey.encryptionKeyBytes, signataEncryptionKey.iv, 'aes-256-cbc', true);
+  const encryptWithSignataKey = async (data) => encrypt(data, signataEncryptionKey.encryptionKeyBytes, signataEncryptionKey.iv, 'aes-256-cbc', true);
 
   const handleClickConfirmCreateIdentity = async (e, name) => {
     // TODO:

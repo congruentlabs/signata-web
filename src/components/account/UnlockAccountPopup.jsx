@@ -10,7 +10,9 @@ import TextField from '@mui/material/TextField';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import { Alert } from '@mui/material';
 
-function UnlockAccountPopup({ open, handleClickClose, handleClickUnlock, errorMessage, handleClickReset }) {
+function UnlockAccountPopup({
+  open, handleClickClose, handleClickUnlock, errorMessage, handleClickReset,
+}) {
   const [password, setPassword] = useState('');
   const [firstErrorMessage, setFirstErrorMessage] = useState('');
 

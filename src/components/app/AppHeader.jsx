@@ -15,10 +15,14 @@ import { Typography } from '@mui/material';
 
 const pages = [
   { name: 'Docs', href: 'https://docs.signata.net' },
-  { name: 'News', href: 'https://blog.congruentlabs.co' }
+  { name: 'News', href: 'https://blog.congruentlabs.co' },
 ];
 
-function AppHeader({ account, handleClickDisconnect, handleClickReplacePassword }) {
+function AppHeader({
+  account,
+  handleClickDisconnect,
+  handleClickReplacePassword,
+}) {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
 
@@ -26,41 +30,41 @@ function AppHeader({ account, handleClickDisconnect, handleClickReplacePassword 
 
   const settings = account
     ? [
-        {
-          name: 'Terms & Conditions',
-          href: 'terms.pdf',
-          color: 'secondary'
-        },
-        {
-          name: 'Privacy Policy',
-          href: 'privacy.pdf',
-          color: 'secondary'
-        },
-        {
-          name: 'Replace Password',
-          useClickEvent: true,
-          onClick: handleClickReplacePassword,
-          color: 'warning'
-        },
-        {
-          name: 'Disconnect',
-          useClickEvent: true,
-          onClick: handleClickDisconnect,
-          color: 'error'
-        }
-      ]
+      {
+        name: 'Terms & Conditions',
+        href: 'terms.pdf',
+        color: 'secondary',
+      },
+      {
+        name: 'Privacy Policy',
+        href: 'privacy.pdf',
+        color: 'secondary',
+      },
+      {
+        name: 'Replace Password',
+        useClickEvent: true,
+        onClick: handleClickReplacePassword,
+        color: 'warning',
+      },
+      {
+        name: 'Disconnect',
+        useClickEvent: true,
+        onClick: handleClickDisconnect,
+        color: 'error',
+      },
+    ]
     : [
-        {
-          name: 'Terms & Conditions',
-          href: 'terms.pdf',
-          color: 'secondary'
-        },
-        {
-          name: 'Privacy Policy',
-          href: 'privacy.pdf',
-          color: 'secondary'
-        }
-      ];
+      {
+        name: 'Terms & Conditions',
+        href: 'terms.pdf',
+        color: 'secondary',
+      },
+      {
+        name: 'Privacy Policy',
+        href: 'privacy.pdf',
+        color: 'secondary',
+      },
+    ];
 
   const handleOpenNavMenu = (e) => {
     setAnchorElNav(e.currentTarget);
@@ -100,17 +104,17 @@ function AppHeader({ account, handleClickDisconnect, handleClickReplacePassword 
               anchorEl={anchorElNav}
               anchorOrigin={{
                 vertical: 'bottom',
-                horizontal: 'left'
+                horizontal: 'left',
               }}
               keepMounted
               transformOrigin={{
                 vertical: 'top',
-                horizontal: 'left'
+                horizontal: 'left',
               }}
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{
-                display: { xs: 'block', md: 'none' }
+                display: { xs: 'block', md: 'none' },
               }}
             >
               {pages.map((page) => (
@@ -150,8 +154,12 @@ function AppHeader({ account, handleClickDisconnect, handleClickReplacePassword 
           <Box sx={{ flexGrow: 0 }}>
             {account && (
               <Tooltip title="Settings">
-                <Button onClick={handleOpenUserMenu} variant="contained" color="secondary">
-                  {ens ? ens : shortenAddress(account)}
+                <Button
+                  onClick={handleOpenUserMenu}
+                  variant="contained"
+                  color="secondary"
+                >
+                  {ens || shortenAddress(account)}
                 </Button>
               </Tooltip>
             )}
@@ -162,12 +170,12 @@ function AppHeader({ account, handleClickDisconnect, handleClickReplacePassword 
               anchorEl={anchorElUser}
               anchorOrigin={{
                 vertical: 'top',
-                horizontal: 'right'
+                horizontal: 'right',
               }}
               keepMounted
               transformOrigin={{
                 vertical: 'top',
-                horizontal: 'right'
+                horizontal: 'right',
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
@@ -179,7 +187,11 @@ function AppHeader({ account, handleClickDisconnect, handleClickReplacePassword 
                       {setting.name}
                     </Button>
                   ) : (
-                    <Button target="_blank" href={setting.href} color={setting.color}>
+                    <Button
+                      target="_blank"
+                      href={setting.href}
+                      color={setting.color}
+                    >
                       {setting.name}
                     </Button>
                   )}

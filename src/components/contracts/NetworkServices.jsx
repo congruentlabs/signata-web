@@ -34,8 +34,8 @@ export function NetworkServices({ services }) {
               </TableCell>
             </TableRow>
           )}
-          {services &&
-            services.map((broker) => (
+          {services
+            && services.map((broker) => (
               <TableRow key={broker.id}>
                 <TableCell align="left">{broker.name}</TableCell>
                 <TableCell align="center">
@@ -49,7 +49,11 @@ export function NetworkServices({ services }) {
                 </TableCell>
                 <TableCell align="center">{broker.jurisdiction}</TableCell>
                 {broker.type === 'Broker' ? (
-                  <TableCell align="right">{broker.staked && fNumber(broker.staked)} SATA</TableCell>
+                  <TableCell align="right">
+                    {broker.staked && fNumber(broker.staked)}
+                    {' '}
+                    SATA
+                  </TableCell>
                 ) : (
                   <TableCell align="right">N/A</TableCell>
                 )}

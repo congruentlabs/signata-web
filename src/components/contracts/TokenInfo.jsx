@@ -1,10 +1,14 @@
 import React from 'react';
 import { formatUnits } from '@ethersproject/units';
-import { Alert, Typography, Grid, AlertTitle, Stack } from '@mui/material';
+import {
+  Alert, Typography, Grid, AlertTitle, Stack,
+} from '@mui/material';
 
 import { fNumber, fCurrency } from '../../utils/formats';
 
-export function TokenInfo({ sataBalance, dSataBalance, chainId, sataPriceData, dSataPriceData, ethPrice }) {
+export function TokenInfo({
+  sataBalance, dSataBalance, chainId, sataPriceData, dSataPriceData, ethPrice,
+}) {
   if (chainId === 1) {
     // Ethereum mainnet
     return (
@@ -15,8 +19,12 @@ export function TokenInfo({ sataBalance, dSataBalance, chainId, sataPriceData, d
         {sataBalance && sataBalance < 1 && (
           <Alert severity="warning">
             <AlertTitle>
-              {fNumber(formatUnits(sataBalance || 0, 18))} SATA (
-              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)} USD)
+              {fNumber(formatUnits(sataBalance || 0, 18))}
+              {' '}
+              SATA (
+              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)}
+              {' '}
+              USD)
             </AlertTitle>
             You don&apos;t hold any SATA tokens. You can manage your identities, but you may not be able to purchase
             rights to services or interact with identity brokers.
@@ -25,8 +33,12 @@ export function TokenInfo({ sataBalance, dSataBalance, chainId, sataPriceData, d
         {sataBalance && sataBalance > 0 && (
           <Alert severity="success">
             <AlertTitle>
-              {fNumber(formatUnits(sataBalance || 0, 18))} SATA (
-              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)} USD)
+              {fNumber(formatUnits(sataBalance || 0, 18))}
+              {' '}
+              SATA (
+              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)}
+              {' '}
+              USD)
             </AlertTitle>
             You hold SATA tokens. You can use these to purchase rights to services.
           </Alert>
@@ -34,8 +46,12 @@ export function TokenInfo({ sataBalance, dSataBalance, chainId, sataPriceData, d
         {dSataBalance && dSataBalance < 1 && dSataPriceData && dSataPriceData.token && (
           <Alert severity="info">
             <AlertTitle>
-              {fNumber(formatUnits(dSataBalance || 0, 18))} dSATA (
-              {fCurrency(formatUnits(dSataBalance || 0, 18) * dSataPriceData.token.derivedETH * ethPrice)} USD)
+              {fNumber(formatUnits(dSataBalance || 0, 18))}
+              {' '}
+              dSATA (
+              {fCurrency(formatUnits(dSataBalance || 0, 18) * dSataPriceData.token.derivedETH * ethPrice)}
+              {' '}
+              USD)
             </AlertTitle>
             You don&apos;t hold any dSATA tokens. You won&apos;t be able to vote in the Signata DAO.
           </Alert>
@@ -43,8 +59,12 @@ export function TokenInfo({ sataBalance, dSataBalance, chainId, sataPriceData, d
         {dSataBalance && dSataBalance > 0 && dSataPriceData && dSataPriceData.token && (
           <Alert severity="success">
             <AlertTitle>
-              {fNumber(formatUnits(dSataBalance || 0, 18))} dSATA (
-              {fCurrency(formatUnits(dSataBalance || 0, 18) * dSataPriceData.token.derivedETH * ethPrice)} USD)
+              {fNumber(formatUnits(dSataBalance || 0, 18))}
+              {' '}
+              dSATA (
+              {fCurrency(formatUnits(dSataBalance || 0, 18) * dSataPriceData.token.derivedETH * ethPrice)}
+              {' '}
+              USD)
             </AlertTitle>
             You hold dSATA tokens. You can use these to vote in the Signata DAO.
           </Alert>
@@ -63,8 +83,12 @@ export function TokenInfo({ sataBalance, dSataBalance, chainId, sataPriceData, d
         {sataBalance && sataBalance < 1 && (
           <Alert severity="warning">
             <AlertTitle>
-              {fNumber(formatUnits(sataBalance || 0, 18))} SATA (
-              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)} USD)
+              {fNumber(formatUnits(sataBalance || 0, 18))}
+              {' '}
+              SATA (
+              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)}
+              {' '}
+              USD)
             </AlertTitle>
             You don&apos;t hold any SATA tokens. You can manage your identities, but you may not be able to purchase
             rights to services or interact with identity brokers.
@@ -73,8 +97,12 @@ export function TokenInfo({ sataBalance, dSataBalance, chainId, sataPriceData, d
         {sataBalance && sataBalance > 0 && (
           <Alert severity="success">
             <AlertTitle>
-              {fNumber(formatUnits(sataBalance || 0, 18))} SATA (
-              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)} USD)
+              {fNumber(formatUnits(sataBalance || 0, 18))}
+              {' '}
+              SATA (
+              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)}
+              {' '}
+              USD)
             </AlertTitle>
             You hold SATA tokens. You can use these to purchase rights to services.
           </Alert>
@@ -93,8 +121,12 @@ export function TokenInfo({ sataBalance, dSataBalance, chainId, sataPriceData, d
         {sataBalance && sataBalance < 1 && (
           <Alert severity="warning">
             <AlertTitle>
-              {fNumber(formatUnits(sataBalance || 0, 18))} SATA (
-              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)} USD)
+              {fNumber(formatUnits(sataBalance || 0, 18))}
+              {' '}
+              SATA (
+              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)}
+              {' '}
+              USD)
             </AlertTitle>
             You don&apos;t hold any SATA tokens. You can manage your identities, but you may not be able to purchase
             rights to services or interact with identity brokers.
@@ -103,8 +135,12 @@ export function TokenInfo({ sataBalance, dSataBalance, chainId, sataPriceData, d
         {sataBalance && sataBalance > 0 && (
           <Alert severity="success">
             <AlertTitle>
-              {fNumber(formatUnits(sataBalance || 0, 18))} SATA (
-              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)} USD)
+              {fNumber(formatUnits(sataBalance || 0, 18))}
+              {' '}
+              SATA (
+              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)}
+              {' '}
+              USD)
             </AlertTitle>
             You hold SATA tokens. You can use these to purchase rights to services.
           </Alert>
@@ -123,8 +159,12 @@ export function TokenInfo({ sataBalance, dSataBalance, chainId, sataPriceData, d
         {sataBalance && sataBalance < 1 && (
           <Alert severity="warning">
             <AlertTitle>
-              {fNumber(formatUnits(sataBalance || 0, 18))} SATA (
-              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)} USD)
+              {fNumber(formatUnits(sataBalance || 0, 18))}
+              {' '}
+              SATA (
+              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)}
+              {' '}
+              USD)
             </AlertTitle>
             You don&apos;t hold any SATA tokens. You can manage your identities, but you may not be able to purchase
             rights to services or interact with identity brokers.
@@ -133,8 +173,12 @@ export function TokenInfo({ sataBalance, dSataBalance, chainId, sataPriceData, d
         {sataBalance && sataBalance > 0 && (
           <Alert severity="success">
             <AlertTitle>
-              {fNumber(formatUnits(sataBalance || 0, 18))} SATA (
-              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)} USD)
+              {fNumber(formatUnits(sataBalance || 0, 18))}
+              {' '}
+              SATA (
+              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)}
+              {' '}
+              USD)
             </AlertTitle>
             You hold SATA tokens. You can use these to purchase rights to services.
           </Alert>
@@ -153,8 +197,12 @@ export function TokenInfo({ sataBalance, dSataBalance, chainId, sataPriceData, d
         {sataBalance && sataBalance < 1 && (
           <Alert severity="warning">
             <AlertTitle>
-              {fNumber(formatUnits(sataBalance || 0, 18))} SATA (
-              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)} USD)
+              {fNumber(formatUnits(sataBalance || 0, 18))}
+              {' '}
+              SATA (
+              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)}
+              {' '}
+              USD)
             </AlertTitle>
             You don&apos;t hold any SATA tokens. You can manage your identities, but you may not be able to purchase
             rights to services or interact with identity brokers.
@@ -163,8 +211,12 @@ export function TokenInfo({ sataBalance, dSataBalance, chainId, sataPriceData, d
         {sataBalance && sataBalance > 0 && (
           <Alert severity="success">
             <AlertTitle>
-              {fNumber(formatUnits(sataBalance || 0, 18))} SATA (
-              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)} USD)
+              {fNumber(formatUnits(sataBalance || 0, 18))}
+              {' '}
+              SATA (
+              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)}
+              {' '}
+              USD)
             </AlertTitle>
             You hold SATA tokens. You can use these to purchase rights to services.
           </Alert>

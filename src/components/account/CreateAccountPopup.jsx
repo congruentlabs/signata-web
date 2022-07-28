@@ -60,7 +60,7 @@ function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
             value={recoveryPassphrase}
             multiline
             InputProps={{
-              readOnly: true
+              readOnly: true,
             }}
           />
           <ButtonGroup fullWidth color="secondary">
@@ -74,31 +74,36 @@ function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
 
           <Typography variant="body1">
             Save this recovery passphrase somewhere secret, such as written down on a piece of paper or stored in a good
-            password manager like{' '}
+            password manager like
+            {' '}
             <a href="https://bitwarden.com/?ref=signata.net" target="_blank" rel="noreferrer">
               Bitwarden
             </a>
             . If someone else finds your recovery passphrase, they can steal your identities. If you lose your
-            passphrase you and the Signata team will <b>never</b> be able to restore your account.
+            passphrase you and the Signata team will
+            {' '}
+            <b>never</b>
+            {' '}
+            be able to restore your account.
           </Typography>
           <FormControlLabel
-            control={
+            control={(
               <Switch
                 checked={firstConfirmChecked}
                 onChange={() => setFirstConfirmChecked(!firstConfirmChecked)}
                 color="secondary"
               />
-            }
+            )}
             label="I will never tell anyone my passphrase, even if it's someone offering me support. The only website that I will ever use it on is signata.net."
           />
           <FormControlLabel
-            control={
+            control={(
               <Switch
                 checked={secondConfirmChecked}
                 onChange={() => setSecondConfirmChecked(!secondConfirmChecked)}
                 color="secondary"
               />
-            }
+            )}
             label="I have saved a copy of my passphrase somewhere safe, because if I lose it I will never be able to restore my account, and Signata support will never be able to restore my account."
           />
         </Stack>
