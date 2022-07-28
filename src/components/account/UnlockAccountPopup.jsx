@@ -32,7 +32,7 @@ function UnlockAccountPopup({ open, handleClickClose, handleClickUnlock, errorMe
           <TextField
             label="Password"
             type="password"
-            error={firstErrorMessage}
+            error={firstErrorMessage || false}
             variant="standard"
             value={password}
             onChange={onChangePassword}

@@ -1,11 +1,10 @@
 {
   "root": true,
   "env": {
-    "browser": true,
-    "node": true
+    "browser": true
+    // "node": true
   },
   "extends": [
-    "airbnb",
     "prettier",
     "plugin:jsx-a11y/recommended",
     "plugin:react-hooks/recommended"
@@ -22,6 +21,13 @@
     "ecmaFeatures": {
       "experimentalObjectRestSpread": true,
       "impliedStrict": true
+    }
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["src"]
+      }
     }
   },
   "rules": {
@@ -55,10 +61,11 @@
     "react/destructuring-assignment": 0,
     "import/no-extraneous-dependencies": 0,
     "react/jsx-no-constructed-context-values": 0,
+    "function-declaration": 0,
     "react/jsx-key": 1,
     "react-hooks/rules-of-hooks": 2,
     "no-unused-vars": [
-      1,
+      0,
       {
         "ignoreRestSiblings": false
       }
@@ -68,6 +75,7 @@
       {
         "printWidth": 120,
         "singleQuote": true,
+        "endOfLine": "auto",
         "trailingComma": "none",
         "tabWidth": 2
       }

@@ -18,3 +18,4 @@ export { default as TokenInfo } from './contracts/TokenInfo';
 export { default as NetworkServices } from './contracts/NetworkServices';
 export { default as ProductOverview } from './app/ProductOverview';
 export { default as NoPersistenceWarning } from './app/NoPersistenceWarning';
+export { default as Extras } from './extras/Extras';

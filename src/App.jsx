@@ -40,7 +40,8 @@ import {
   NetworkServices,
   ProductOverview,
   NoPersistenceWarning,
-  UnlockAccountPopup
+  UnlockAccountPopup,
+  Extras
 } from './components';
 import {
   useCreateIdentity,
@@ -55,6 +56,7 @@ import {
 } from './hooks/chainHooks';
 import { shouldBeLoading } from './hooks/helpers';
 import './App.css';
+import { Card } from '@mui/material';
 
 const infuraId = '5c79516b355c491bb8156fcf3a6a1d23';
 
@@ -264,10 +266,11 @@ function App() {
           secondary: {
             main: indigo[500]
           },
-          mode: prefersDarkMode ? 'dark' : 'light',
-          typography: {
-            fontFamily: 'Montserrat'
-          }
+          mode: prefersDarkMode ? 'light' : 'light'
+          // mode: 'light',
+        },
+        typography: {
+          fontFamily: 'Lato'
         }
       }),
     [prefersDarkMode]
@@ -568,9 +571,9 @@ function App() {
         isMigrateIdLoading={isMigrateIdLoading}
         isDeleteIdLoading={isDeleteIdLoading}
       />
-      <Container maxWidth="md">
-        <Box sx={{ minHeight: '90vh', paddingTop: 2, paddingBottom: 2 }}>
-          <Grid container spacing={3}>
+      <Container maxWidth="md" sx={{ marginTop: 4 }}>
+        <Box sx={{ minHeight: '90vh', paddingTop: { xs: 1, sm: 2 }, paddingBottom: { xs: 1, sm: 2 } }}>
+          <Grid container spacing={3} alignItems="stretch" justifyContent="center">
             {!account && <NoConnectionWarning handleClickConnect={() => handleClickOpen(OPEN_TYPES.web3Connect)} />}
             {!account && <ProductOverview />}
             {account && !isPersistent && <NoPersistenceWarning />}
@@ -593,32 +596,18 @@ function App() {
               </Grid>
             )}
             {account && isSetup && (
-              <Grid item xs={12}>
-                <ManageAddons
-                  addons={addons}
-                  handleClickBuyCloud={handleClickBuyCloud}
-                  buyCloudState={buyCloudState}
-                  buyCloudResetState={buyCloudResetState}
-                  isBuyCloudLoading={isBuyCloudLoading}
-                />
-              </Grid>
-            )}
-            {account && (
-              <Grid item xs={12}>
-                <Divider variant="middle" />
-              </Grid>
-            )}
-            {account && (
-              <Grid item xs={12}>
-                <TokenInfo
-                  sataBalance={sataBalance}
-                  dSataBalance={dSataBalance}
-                  chainId={chainId}
-                  sataPriceData={sataPriceData}
-                  dSataPriceData={dSataPriceData}
-                  ethPrice={ethPrice}
-                />
-              </Grid>
+              <Extras
+                sataBalance={sataBalance}
+                dSataBalance={dSataBalance}
+                chainId={chainId}
+                sataPriceData={sataPriceData}
+                dSataPriceData={dSataPriceData}
+                ethPrice={ethPrice}
+                handleClickBuyCloud={handleClickBuyCloud}
+                buyCloudState={buyCloudState}
+                buyCloudResetState={buyCloudResetState}
+                isBuyCloudLoading={isBuyCloudLoading}
+              />
             )}
             {account && services && (
               <Grid item xs={12}>

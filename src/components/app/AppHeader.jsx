@@ -10,17 +10,19 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import { shortenIfAddress } from '@usedapp/core';
+import { shortenAddress, useLookupAddress } from '@usedapp/core';
+import { Typography } from '@mui/material';
 
 const pages = [
   { name: 'Docs', href: 'https://docs.signata.net' },
-  { name: 'News', href: 'https://blog.signata.net' },
-  { name: 'Token', href: 'https://sata.technology' }
+  { name: 'News', href: 'https://blog.congruentlabs.co' }
 ];
 
 function AppHeader({ account, handleClickDisconnect, handleClickReplacePassword }) {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
+
+  const ens = useLookupAddress(account);
 
   const settings = account
     ? [
@@ -136,11 +138,15 @@ function AppHeader({ account, handleClickDisconnect, handleClickReplacePassword 
             ))}
           </Box>
 
+          <Typography variant="h6" color="inherit" component="div" sx={{ flexGrow: 1 }}>
+            Web3 Identity Manager
+          </Typography>
+
           <Box sx={{ flexGrow: 0 }}>
             {account && (
               <Tooltip title="Settings">
                 <Button onClick={handleOpenUserMenu} variant="contained" color="secondary">
-                  {account && shortenIfAddress(account)}
+                  {ens ? ens : shortenAddress(account)}
                 </Button>
               </Tooltip>
             )}
