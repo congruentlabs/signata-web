@@ -28,7 +28,7 @@ export function Extras({
           <Card sx={{ p: 1 }}>
             <CardContent>
               <Stack spacing={1}>
-                <Typography variant="h6">Your Wallet Balances</Typography>
+                <Typography variant="h6">Your Wallet</Typography>
                 <Typography variant="body1">
                   {fNumber(formatUnits(sataBalance || 0, 18))} SATA (
                   {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)} USD)
@@ -54,10 +54,10 @@ export function Extras({
               </Stack>
             </CardContent>
             <CardActions>
-              <Button color="primary" variant="contained">
+              <Button color="secondary" variant="contained">
                 Get SATA
               </Button>
-              <Button color="primary" variant="contained">
+              <Button color="secondary" variant="contained">
                 Get dSATA
               </Button>
             </CardActions>
