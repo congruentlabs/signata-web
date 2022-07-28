@@ -12,11 +12,18 @@ import Web3Modal from 'web3modal';
 import { lightGreen, indigo } from '@mui/material/colors';
 import useLocalStorageState from 'use-local-storage-state';
 import { HDKey } from 'ethereum-cryptography/hdkey';
-import { mnemonicToEntropy, validateMnemonic, generateMnemonic } from 'ethereum-cryptography/bip39';
+import {
+  mnemonicToEntropy,
+  validateMnemonic,
+  generateMnemonic,
+} from 'ethereum-cryptography/bip39';
 import { encrypt, decrypt } from 'ethereum-cryptography/aes';
 import { scrypt } from 'ethereum-cryptography/scrypt';
 import {
-  utf8ToBytes, bytesToUtf8, toHex, hexToBytes,
+  utf8ToBytes,
+  bytesToUtf8,
+  toHex,
+  hexToBytes,
 } from 'ethereum-cryptography/utils';
 import { getRandomBytesSync } from 'ethereum-cryptography/random';
 import { wordlist } from 'ethereum-cryptography/bip39/wordlists/english';
@@ -105,7 +112,12 @@ const dSataContractAddress = '0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b';
 
 function App() {
   const {
-    activateBrowserWallet, activate, account, chainId, active, deactivate,
+    activateBrowserWallet,
+    activate,
+    account,
+    chainId,
+    active,
+    deactivate,
   } = useEthers();
   const sataBalance = useTokenBalance(sataContractAddress, account);
   const dSataBalance = useTokenBalance(dSataContractAddress, account);
@@ -133,12 +145,36 @@ function App() {
   const [isLockIdLoading, setLockIdLoading] = useState(false);
   const [isDeleteIdLoading, setDeleteIdLoading] = useState(false);
   const [isMigrateIdLoading, setMigrateIdLoading] = useState(false);
-  const { state: createState, send: createSend, resetState: createResetState } = useCreateIdentity();
-  const { state: deleteState, send: deleteSend, resetState: deleteResetState } = useDeleteIdentity();
-  const { state: migrateState, send: migrateSend, resetState: migrateResetState } = useMigrateIdentity();
-  const { state: lockState, send: lockSend, resetState: lockResetState } = useLockIdentity();
-  const { state: unlockState, send: unlockSend, resetState: unlockResetState } = useUnlockIdentity();
-  const { state: buyCloudState, send: buyCloudSend, resetState: buyCloudResetState } = useBuyCloud();
+  const {
+    state: createState,
+    send: createSend,
+    resetState: createResetState,
+  } = useCreateIdentity();
+  const {
+    state: deleteState,
+    send: deleteSend,
+    resetState: deleteResetState,
+  } = useDeleteIdentity();
+  const {
+    state: migrateState,
+    send: migrateSend,
+    resetState: migrateResetState,
+  } = useMigrateIdentity();
+  const {
+    state: lockState,
+    send: lockSend,
+    resetState: lockResetState,
+  } = useLockIdentity();
+  const {
+    state: unlockState,
+    send: unlockSend,
+    resetState: unlockResetState,
+  } = useUnlockIdentity();
+  const {
+    state: buyCloudState,
+    send: buyCloudSend,
+    resetState: buyCloudResetState,
+  } = useBuyCloud();
   const ethPrice = useCoingeckoPrice('ethereum', 'usd');
   // const [services, setServices] = useState([
   //   {
@@ -173,7 +209,8 @@ function App() {
     if (config && !config.accountId) {
       setIsSetup(false);
     }
-    // if an accountId is present, then they've set up their account already, so close the setup section
+    // if an accountId is present, then they've set up their account already, so
+    // close the setup section
     if (config && config.accountId) {
       setIsSetup(true);
     }
@@ -356,12 +393,19 @@ function App() {
         const encryptionKeyBytes = await scrypt(entropy, salt, 16384, 8, 1, 32);
         const encryptionKey = { salt, iv };
         setSignataEncryptionKey({
-          salt, iv, encryptionKeyBytes, entropy,
+          salt,
+          iv,
+          encryptionKeyBytes,
+          entropy,
         });
 
         const hdKey = HDKey.fromMasterSeed(entropy);
         setSignataAccountKey(hdKey);
-        setConfig({ ...config, accountId: hdKey.publicExtendedKey, encryptionKey });
+        setConfig({
+          ...config,
+          accountId: hdKey.publicExtendedKey,
+          encryptionKey,
+        });
         handleClickClose();
       } else {
         setAccountError('Invalid Recovery Passphrase');
@@ -376,12 +420,28 @@ function App() {
     console.log('handleClickCreatePassword');
     const salt = getRandomBytesSync(32);
     const iv = getRandomBytesSync(16);
-    const passwordEncoded = await scrypt(utf8ToBytes(newPassword), salt, 16384, 8, 1, 32);
+    const passwordEncoded = await scrypt(
+      utf8ToBytes(newPassword),
+      salt,
+      16384,
+      8,
+      1,
+      32,
+    );
     const keyBytes = utf8ToBytes(signataAccountKey.privateExtendedKey);
-    const encryptedKey = await encrypt(keyBytes, passwordEncoded, iv, 'aes-256-cbc', true);
+    const encryptedKey = await encrypt(
+      keyBytes,
+      passwordEncoded,
+      iv,
+      'aes-256-cbc',
+      true,
+    );
 
     setConfig({
-      ...config, encryptedKey: toHex(encryptedKey), salt: toHex(salt), iv: toHex(iv),
+      ...config,
+      encryptedKey: toHex(encryptedKey),
+      salt: toHex(salt),
+      iv: toHex(iv),
     });
     handleClickClose();
   };
@@ -389,7 +449,14 @@ function App() {
   const handleClickUnlockAccount = async (e, password) => {
     console.log('handleClickUnlockAccount');
     try {
-      const passwordEncoded = await scrypt(utf8ToBytes(password), hexToBytes(config.salt), 16384, 8, 1, 32);
+      const passwordEncoded = await scrypt(
+        utf8ToBytes(password),
+        hexToBytes(config.salt),
+        16384,
+        8,
+        1,
+        32,
+      );
 
       const decryptedKey = await decrypt(
         hexToBytes(config.encryptedKey),
@@ -413,7 +480,13 @@ function App() {
     }
   };
 
-  const encryptWithSignataKey = async (data) => encrypt(data, signataEncryptionKey.encryptionKeyBytes, signataEncryptionKey.iv, 'aes-256-cbc', true);
+  const encryptWithSignataKey = async (data) => encrypt(
+    data,
+    signataEncryptionKey.encryptionKeyBytes,
+    signataEncryptionKey.iv,
+    'aes-256-cbc',
+    true,
+  );
 
   const handleClickConfirmCreateIdentity = async (e, name) => {
     // TODO:
@@ -426,7 +499,9 @@ function App() {
     const mnemonic = generateMnemonic(wordlist);
     const hdKey = HDKey.fromMasterSeed(mnemonicToEntropy(mnemonic, wordlist));
     // encrypt the key data
-    const encryptedKey = await encryptWithSignataKey(utf8ToBytes(hdKey.privateExtendedKey));
+    const encryptedKey = await encryptWithSignataKey(
+      utf8ToBytes(hdKey.privateExtendedKey),
+    );
     const newIdentities = identities;
     newIdentities.push({ name, encryptedKey });
   };
@@ -523,7 +598,10 @@ function App() {
         handleClickClose={handleClickClose}
         handleClickCreate={handleClickCreatePassword}
       />
-      <ReplacePasswordPopup open={showReplacePasswordPopup} handleClickClose={handleClickClose} />
+      <ReplacePasswordPopup
+        open={showReplacePasswordPopup}
+        handleClickClose={handleClickClose}
+      />
       <CreateAccountPopup
         open={showCreateAccountPopup}
         handleClickCreate={handleClickConfirmCreateAccount}
@@ -572,9 +650,24 @@ function App() {
         isDeleteIdLoading={isDeleteIdLoading}
       />
       <Container maxWidth="md" sx={{ marginTop: 4 }}>
-        <Box sx={{ minHeight: '90vh', paddingTop: { xs: 1, sm: 2 }, paddingBottom: { xs: 1, sm: 2 } }}>
-          <Grid container spacing={3} alignItems="stretch" justifyContent="center">
-            {!account && <NoConnectionWarning handleClickConnect={() => handleClickOpen(OPEN_TYPES.web3Connect)} />}
+        <Box
+          sx={{
+            minHeight: '90vh',
+            paddingTop: { xs: 1, sm: 2 },
+            paddingBottom: { xs: 1, sm: 2 },
+          }}
+        >
+          <Grid
+            container
+            spacing={3}
+            alignItems="stretch"
+            justifyContent="center"
+          >
+            {!account && (
+              <NoConnectionWarning
+                handleClickConnect={() => handleClickOpen(OPEN_TYPES.web3Connect)}
+              />
+            )}
             {!account && <ProductOverview />}
             {account && !isPersistent && <NoPersistenceWarning />}
             {account && !isSetup && (

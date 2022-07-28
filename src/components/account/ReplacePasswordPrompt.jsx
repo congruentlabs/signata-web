@@ -7,9 +7,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import AddIcon from '@mui/icons-material/Add';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { validateMnemonic } from 'bip39';
 
 function ReplacePasswordPopup({ open, handleClickClose, handleClickCreate }) {
   const [recoveryPassphrase, setRecoveryPassphrase] = useState('');
@@ -22,7 +20,9 @@ function ReplacePasswordPopup({ open, handleClickClose, handleClickCreate }) {
   const onChangePassphrase = (e) => {
     setRecoveryPassphrase(e.target.value);
     if (e.target.value && e.target.value.split(' ').length !== 12) {
-      setPassphraseErrorMessage('Your passphrase is 12 words long, separated by spaces');
+      setPassphraseErrorMessage(
+        'Your passphrase is 12 words long, separated by spaces',
+      );
     } else {
       setPassphraseErrorMessage('');
     }
@@ -52,7 +52,8 @@ function ReplacePasswordPopup({ open, handleClickClose, handleClickCreate }) {
       <DialogContent>
         <Stack spacing={2}>
           <Typography variant="body1">
-            To replace your password, you need to provide your recovery passphrase.
+            To replace your password, you need to provide your recovery
+            passphrase.
           </Typography>
           <TextField
             label="Recovery Passphrase"
@@ -89,7 +90,9 @@ function ReplacePasswordPopup({ open, handleClickClose, handleClickCreate }) {
         <Button
           onClick={(e) => handleClickCreate(e, password)}
           variant="contained"
-          disabled={!password || password.length < 1 || password !== passwordRepeat}
+          disabled={
+            !password || password.length < 1 || password !== passwordRepeat
+          }
           startIcon={<RefreshIcon />}
         >
           Replace Password

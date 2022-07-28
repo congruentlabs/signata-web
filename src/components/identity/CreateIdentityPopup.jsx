@@ -18,8 +18,9 @@ function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
       <DialogContent>
         <Stack spacing={2}>
           <Typography variant="body1">
-            Every Signata Identity is like a blockchain wallet, but it has some extra features to make it more useful.
-            Give your identity a name so you can easily recognise it.
+            Every Signata Identity is like a blockchain wallet, but it has some
+            extra features to make it more useful. Give your identity a name so
+            you can easily recognise it.
           </Typography>
           <TextField
             label="Identity Name"

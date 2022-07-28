@@ -6,12 +6,15 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import Chip from '@mui/material/Chip';
 import CardContent from '@mui/material/CardContent';
-import Divider from '@mui/material/Divider';
 import CloudDoneIcon from '@mui/icons-material/CloudDone';
 import CloudOffIcon from '@mui/icons-material/CloudOff';
 import Stack from '@mui/material/Stack';
 
-function ManageAddons({ cloudStorageActive, handleClickBuyCloudStorage, handleClickManageCloudStorage }) {
+function ManageAddons({
+  cloudStorageActive,
+  handleClickBuyCloudStorage,
+  handleClickManageCloudStorage,
+}) {
   return (
     <Stack alignItems="center" spacing={2} paddingBottom={2}>
       <Typography variant="h6" textAlign="center">
@@ -24,8 +27,9 @@ function ManageAddons({ cloudStorageActive, handleClickBuyCloudStorage, handleCl
               Cloud Backup
             </Typography>
             <Typography variant="body1" gutterBottom>
-              Keep your Signata identities backed up securely on Signata servers. We store your data Zero-Knowledge,
-              meaning we cannot see any of your private information.
+              Keep your Signata identities backed up securely on Signata
+              servers. We store your data Zero-Knowledge, meaning we cannot see
+              any of your private information.
             </Typography>
             <Chip
               label={cloudStorageActive ? 'Active' : 'Inactive'}
@@ -36,11 +40,20 @@ function ManageAddons({ cloudStorageActive, handleClickBuyCloudStorage, handleCl
           </CardContent>
           <CardActions>
             {cloudStorageActive ? (
-              <Button size="small" color="secondary" onClick={handleClickManageCloudStorage}>
+              <Button
+                size="small"
+                color="secondary"
+                onClick={handleClickManageCloudStorage}
+              >
                 Manage
               </Button>
             ) : (
-              <Button size="small" color="secondary" variant="contained" onClick={handleClickBuyCloudStorage}>
+              <Button
+                size="small"
+                color="secondary"
+                variant="contained"
+                onClick={handleClickBuyCloudStorage}
+              >
                 Buy
               </Button>
             )}

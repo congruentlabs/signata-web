@@ -9,13 +9,18 @@ import CableIcon from '@mui/icons-material/Cable';
 import PolicyIcon from '@mui/icons-material/Policy';
 import GavelIcon from '@mui/icons-material/Gavel';
 
-export function ConnectionPopup({ open, handleClickClose, handleClickConnect }) {
+export function ConnectionPopup({
+  open,
+  handleClickClose,
+  handleClickConnect,
+}) {
   return (
     <Dialog open={open} keepMounted onClose={handleClickClose}>
       <DialogTitle>Connect to Web3</DialogTitle>
       <DialogContent>
         <Typography variant="body1" component="p" gutterBottom>
-          Connecting your Web3 wallet to Signata means you agree to our Terms &amp; Conditions and Privacy Policy.
+          Connecting your Web3 wallet to Signata means you agree to our Terms
+          &amp; Conditions and Privacy Policy.
         </Typography>
         <ButtonGroup fullWidth color="secondary" variant="text" size="small">
           <Button target="_blank" href="terms.pdf" startIcon={<GavelIcon />}>
@@ -30,7 +35,13 @@ export function ConnectionPopup({ open, handleClickClose, handleClickConnect }) 
         <Button onClick={handleClickClose} color="inherit">
           Cancel
         </Button>
-        <Button onClick={handleClickConnect} color="success" size="large" variant="contained" startIcon={<CableIcon />}>
+        <Button
+          onClick={handleClickConnect}
+          color="success"
+          size="large"
+          variant="contained"
+          startIcon={<CableIcon />}
+        >
           Connect
         </Button>
       </DialogActions>

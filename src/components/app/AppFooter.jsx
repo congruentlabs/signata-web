@@ -13,7 +13,8 @@ export function AppFooter() {
         Congruent Labs Pty Ltd
       </Typography>
       <Typography textAlign="center" variant="body2">
-        This application is currently under active development. Token prices shown are derived from Uniswap.
+        This application is currently under active development. Token prices
+        shown are derived from Uniswap.
       </Typography>
     </Container>
   );

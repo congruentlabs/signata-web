@@ -12,7 +12,8 @@ function ImportAccountPopup({ open, handleClickClose, handleClickConnect }) {
       <DialogTitle>Import Signata Account</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Connecting your web3 wallet to Signata means you accept our Terms &amp; Conditions and Privacy Policy.
+          Connecting your web3 wallet to Signata means you accept our Terms
+          &amp; Conditions and Privacy Policy.
         </DialogContentText>
       </DialogContent>
       <DialogActions>

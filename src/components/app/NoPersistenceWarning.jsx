@@ -8,7 +8,8 @@ export function NoPersistenceWarning() {
     <Grid item xs={12}>
       <Alert severity="warning">
         <AlertTitle>Can&apos;t save data!</AlertTitle>
-        Your web browser is not allowing data to be saved. If you close this page or tab you may lose your data.
+        Your web browser is not allowing data to be saved. If you close this
+        page or tab you may lose your data.
       </Alert>
     </Grid>
   );

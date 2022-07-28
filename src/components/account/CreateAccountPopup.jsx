@@ -46,13 +46,15 @@ function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
       <DialogContent>
         <Stack spacing={2}>
           <Typography variant="body1">
-            A Signata account is used to manage all of your identities. We do not store any of your information on our
-            servers unless you want us to.
+            A Signata account is used to manage all of your identities. We do
+            not store any of your information on our servers unless you want us
+            to.
           </Typography>
           <Typography variant="body1">
-            Your account recovery passphrase looks very similar to a seed phrase for a cryptocurrency wallet, but it is
-            used specifically for your Signata identities. Do not use this recovery passphrase as a wallet, as you may
-            accidentally expose your identities.
+            Your account recovery passphrase looks very similar to a seed phrase
+            for a cryptocurrency wallet, but it is used specifically for your
+            Signata identities. Do not use this recovery passphrase as a wallet,
+            as you may accidentally expose your identities.
           </Typography>
           <TextField
             label="Signata Recovery Passphrase"
@@ -73,14 +75,19 @@ function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
           </ButtonGroup>
 
           <Typography variant="body1">
-            Save this recovery passphrase somewhere secret, such as written down on a piece of paper or stored in a good
-            password manager like
+            Save this recovery passphrase somewhere secret, such as written down
+            on a piece of paper or stored in a good password manager like
             {' '}
-            <a href="https://bitwarden.com/?ref=signata.net" target="_blank" rel="noreferrer">
+            <a
+              href="https://bitwarden.com/?ref=signata.net"
+              target="_blank"
+              rel="noreferrer"
+            >
               Bitwarden
             </a>
-            . If someone else finds your recovery passphrase, they can steal your identities. If you lose your
-            passphrase you and the Signata team will
+            . If someone else finds your recovery passphrase, they can steal
+            your identities. If you lose your passphrase you and the Signata
+            team will
             {' '}
             <b>never</b>
             {' '}

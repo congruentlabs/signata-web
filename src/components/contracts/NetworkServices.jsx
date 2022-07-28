@@ -45,7 +45,11 @@ export function NetworkServices({ services }) {
                   <Chip label={broker.network} size="small" />
                 </TableCell>
                 <TableCell align="center">
-                  <Chip label={broker.status} size="small" color={broker.status === 'Active' ? 'success' : ''} />
+                  <Chip
+                    label={broker.status}
+                    size="small"
+                    color={broker.status === 'Active' ? 'success' : ''}
+                  />
                 </TableCell>
                 <TableCell align="center">{broker.jurisdiction}</TableCell>
                 {broker.type === 'Broker' ? (

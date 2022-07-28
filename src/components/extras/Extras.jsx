@@ -1,7 +1,15 @@
 import React from 'react';
 import { formatUnits } from '@ethersproject/units';
 import {
-  Typography, Grid, Stack, Card, CardContent, CardActions, Chip, Button, useTheme,
+  Typography,
+  Grid,
+  Stack,
+  Card,
+  CardContent,
+  CardActions,
+  Chip,
+  Button,
+  // useTheme,
 } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -21,7 +29,7 @@ export function Extras({
   handleClickBuyCloudStorage,
   handleClickManageCloudStorage,
 }) {
-  const theme = useTheme();
+  // const theme = useTheme();
   if (chainId === 1) {
     // Ethereum mainnet
     return (
@@ -35,12 +43,22 @@ export function Extras({
                   {fNumber(formatUnits(sataBalance || 0, 18))}
                   {' '}
                   SATA (
-                  {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)}
+                  {fCurrency(
+                    formatUnits(sataBalance || 0, 18)
+                      * sataPriceData.token.derivedETH
+                      * ethPrice,
+                  )}
                   {' '}
                   USD)
                 </Typography>
                 <Chip
-                  icon={sataBalance && sataBalance < 1 ? <ClearIcon /> : <CheckIcon />}
+                  icon={
+                    sataBalance && sataBalance < 1 ? (
+                      <ClearIcon />
+                    ) : (
+                      <CheckIcon />
+                    )
+                  }
                   label="Can Purchase Rights"
                   variant="outlined"
                   color={sataBalance && sataBalance < 1 ? 'error' : 'success'}
@@ -50,12 +68,22 @@ export function Extras({
                   {fNumber(formatUnits(dSataBalance || 0, 18))}
                   {' '}
                   dSATA (
-                  {fCurrency(formatUnits(dSataBalance || 0, 18) * dSataPriceData.token.derivedETH * ethPrice)}
+                  {fCurrency(
+                    formatUnits(dSataBalance || 0, 18)
+                      * dSataPriceData.token.derivedETH
+                      * ethPrice,
+                  )}
                   {' '}
                   USD)
                 </Typography>
                 <Chip
-                  icon={sataBalance && sataBalance < 1 ? <ClearIcon /> : <CheckIcon />}
+                  icon={
+                    sataBalance && sataBalance < 1 ? (
+                      <ClearIcon />
+                    ) : (
+                      <CheckIcon />
+                    )
+                  }
                   label="Can Vote in DAO"
                   variant="outlined"
                   color={dSataBalance && dSataBalance < 1 ? 'error' : 'success'}
@@ -79,14 +107,17 @@ export function Extras({
               <Stack spacing={1}>
                 <Typography variant="h6">Cloud Backup</Typography>
                 <Typography variant="body1">
-                  Keep your Signata identities backed up securely on Signata servers. We store your data Zero-Knowledge,
-                  meaning we cannot see any of your private information.
+                  Keep your Signata identities backed up securely on Signata
+                  servers. We store your data Zero-Knowledge, meaning we cannot
+                  see any of your private information.
                 </Typography>
                 <Chip
                   label={cloudStorageActive ? 'Active' : 'Inactive'}
                   color={cloudStorageActive ? 'success' : 'error'}
                   variant="outlined"
-                  icon={cloudStorageActive ? <CloudDoneIcon /> : <CloudOffIcon />}
+                  icon={
+                    cloudStorageActive ? <CloudDoneIcon /> : <CloudOffIcon />
+                  }
                   sx={{ borderRadius: 0 }}
                 />
               </Stack>
@@ -97,7 +128,11 @@ export function Extras({
                   Manage
                 </Button>
               ) : (
-                <Button color="primary" variant="contained" onClick={handleClickBuyCloudStorage}>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={handleClickBuyCloudStorage}
+                >
                   Buy
                 </Button>
               )}
@@ -119,12 +154,18 @@ export function Extras({
               {fNumber(formatUnits(sataBalance || 0, 18))}
               {' '}
               SATA (
-              {fCurrency(formatUnits(sataBalance || 0, 18) * sataPriceData.token.derivedETH * ethPrice)}
+              {fCurrency(
+                formatUnits(sataBalance || 0, 18)
+                  * sataPriceData.token.derivedETH
+                  * ethPrice,
+              )}
               {' '}
               USD)
             </Typography>
             <Chip
-              icon={sataBalance && sataBalance < 1 ? <ClearIcon /> : <CheckIcon />}
+              icon={
+                sataBalance && sataBalance < 1 ? <ClearIcon /> : <CheckIcon />
+              }
               label="Can Purchase Rights"
               variant="outlined"
               color={sataBalance && sataBalance < 1 ? 'error' : 'success'}

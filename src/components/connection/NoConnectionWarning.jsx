@@ -10,7 +10,12 @@ export function NoConnectionWarning({ handleClickConnect }) {
       <Alert
         severity="info"
         action={(
-          <Button color="secondary" variant="contained" size="small" onClick={handleClickConnect}>
+          <Button
+            color="secondary"
+            variant="contained"
+            size="small"
+            onClick={handleClickConnect}
+          >
             Connect To Web3
           </Button>
         )}
