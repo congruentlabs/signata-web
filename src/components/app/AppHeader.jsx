@@ -138,8 +138,13 @@ function AppHeader({ account, handleClickDisconnect, handleClickReplacePassword 
             ))}
           </Box>
 
-          <Typography variant="h6" color="inherit" component="div" sx={{ flexGrow: 1 }}>
-            Web3 Identity Manager
+          <Typography
+            variant="h6"
+            color="inherit"
+            component="div"
+            sx={{ display: { xs: 'none', md: 'flex' }, flexGrow: 1 }}
+          >
+            Signata Identity Manager
           </Typography>
 
           <Box sx={{ flexGrow: 0 }}>
