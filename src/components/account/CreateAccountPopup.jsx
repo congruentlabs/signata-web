@@ -17,7 +17,7 @@ import { useSnackbar } from 'notistack';
 import { generateMnemonic } from 'ethereum-cryptography/bip39';
 import { wordlist } from 'ethereum-cryptography/bip39/wordlists/english';
 
-function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
+function CreateAccountPopup({ onClose, handleClickCreate }) {
   const [recoveryPassphrase, setRecoveryPassphrase] = useState('');
   const [firstConfirmChecked, setFirstConfirmChecked] = useState(false);
   const [secondConfirmChecked, setSecondConfirmChecked] = useState(false);
@@ -41,7 +41,7 @@ function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
   };
 
   return (
-    <Dialog open={open} keepMounted onClose={handleClickClose}>
+    <Dialog open keepMounted onClose={onClose}>
       <DialogTitle>Create Signata Account</DialogTitle>
       <DialogContent>
         <Stack spacing={2}>
@@ -116,7 +116,7 @@ function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClickClose} color="inherit">
+        <Button onClick={onClose} color="inherit">
           Cancel
         </Button>
         <Button

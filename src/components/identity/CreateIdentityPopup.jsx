@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -9,8 +9,29 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 
-function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
+import { useCreateIdentity } from '../../hooks/chainHooks';
+import { shouldBeLoading } from '../../hooks/helpers';
+
+function CreateIdentityPopup({ open, handleClickClose, handleClickCreate }) {
   const [name, setName] = useState('');
+  const [isCreateIdLoading, setCreateIdLoading] = useState(false);
+  const {
+    state: createState,
+    send: createSend,
+    resetState: createResetState,
+  } = useCreateIdentity();
+
+  const handleClickRegisterIdentity = (e, selectedIdentity) => {
+    createResetState();
+    createSend();
+  };
+
+  useEffect(() => {
+    if (createState) {
+      console.log(createState);
+      setCreateIdLoading(shouldBeLoading(createState.status));
+    }
+  }, [createState]);
 
   return (
     <Dialog open={open} keepMounted onClose={handleClickClose}>
@@ -36,7 +57,7 @@ function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
           Cancel
         </Button>
         <Button
-          onClick={(e) => handleClickCreate(e, name)}
+          onClick={(e) => handleClickRegisterIdentity(e, name)}
           variant="contained"
           startIcon={<AddIcon />}
           disabled={!name}
@@ -48,4 +69,4 @@ function CreateAccountPopup({ open, handleClickClose, handleClickCreate }) {
   );
 }
 
-export default CreateAccountPopup;
+export default CreateIdentityPopup;
