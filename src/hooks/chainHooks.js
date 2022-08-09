@@ -4,10 +4,36 @@ import { useEffect, useState } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import { useContractFunction, useCall, useBlockNumber } from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
-import sataContractAbi from './sataAbi.json';
-import nanoContractAbi from './nanoAbi.json';
-import identityContractAbi from './identityAbi.json';
-import rightsContractAbi from './rightsAbi.json';
+import {
+  ID_CONTRACT_AVAX,
+  ID_CONTRACT_BSC,
+  ID_CONTRACT_FTM,
+  ID_CONTRACT_MAINNET,
+  ID_CONTRACT_METIS,
+  ID_CONTRACT_RINKEBY,
+  NANO_CONTRACT_AVAX,
+  NANO_CONTRACT_BSC,
+  NANO_CONTRACT_FTM,
+  NANO_CONTRACT_MAINNET,
+  NANO_CONTRACT_RINKEBY,
+  NANO_CONTRACT_METIS,
+  RIGHTS_CONTRACT_AVAX,
+  RIGHTS_CONTRACT_BSC,
+  RIGHTS_CONTRACT_FTM,
+  RIGHTS_CONTRACT_MAINNET,
+  RIGHTS_CONTRACT_METIS,
+  RIGHTS_CONTRACT_RINKEBY,
+  TOKEN_CONTRACT_AVAX,
+  TOKEN_CONTRACT_BSC,
+  TOKEN_CONTRACT_FTM,
+  TOKEN_CONTRACT_MAINNET,
+  TOKEN_CONTRACT_METIS,
+  TOKEN_CONTRACT_RINKEBY,
+} from '../config';
+import TOKEN_ABI from './sataAbi.json';
+import NANO_ABI from './nanoAbi.json';
+import ID_ABI from './identityAbi.json';
+import RIGHTS_ABI from './rightsAbi.json';
 
 const sataPriceQuery = gql`
   {
@@ -33,17 +59,147 @@ const dSataPriceQuery = gql`
   }
 `;
 
-const nanoContractAddress = '';
-const nanoContract = new Contract(nanoContractAddress, nanoContractAbi);
-const sataContractAddress = '0x3ebb4A4e91Ad83BE51F8d596533818b246F4bEe1';
-const sataContract = new Contract(sataContractAddress, sataContractAbi);
-const identityContractAddress = '0x6B47e26A52a9B5B467b98142E382c081eA97B0fc';
-const identityContract = new Contract(
-  identityContractAddress,
-  identityContractAbi,
-);
-const rightsContractAddress = '0x7c8890a02abd24ff00c4eb1425258ea4b611d300';
-const rightsContract = new Contract(rightsContractAddress, rightsContractAbi);
+export const getRightsContractAddress = (chainId) => {
+  if (chainId === 1) {
+    return RIGHTS_CONTRACT_MAINNET;
+  }
+  if (chainId === 4) {
+    return RIGHTS_CONTRACT_RINKEBY;
+  }
+  if (chainId === 56) {
+    // bsc
+    return RIGHTS_CONTRACT_BSC;
+  }
+  if (chainId === 250) {
+    // fantom
+    return RIGHTS_CONTRACT_FTM;
+  }
+  if (chainId === 1088) {
+    // metis
+    return RIGHTS_CONTRACT_METIS;
+  }
+  if (chainId === 43114) {
+    // avax
+    return RIGHTS_CONTRACT_AVAX;
+  }
+  return RIGHTS_CONTRACT_MAINNET;
+};
+
+export const getRightsContract = (chainId) => new Contract(getRightsContractAddress(chainId), RIGHTS_ABI);
+
+export const getNanoContractAddress = (chainId) => {
+  if (chainId === 1) {
+    return NANO_CONTRACT_MAINNET;
+  }
+  if (chainId === 4) {
+    return NANO_CONTRACT_RINKEBY;
+  }
+  if (chainId === 56) {
+    // bsc
+    return NANO_CONTRACT_BSC;
+  }
+  if (chainId === 250) {
+    // fantom
+    return NANO_CONTRACT_FTM;
+  }
+  if (chainId === 1088) {
+    // metis
+    return NANO_CONTRACT_METIS;
+  }
+  if (chainId === 43114) {
+    // avax
+    return NANO_CONTRACT_AVAX;
+  }
+  return NANO_CONTRACT_MAINNET;
+};
+
+export const getNanoContract = (chainId) => new Contract(getNanoContractAddress(chainId), NANO_ABI);
+
+export const getTokenContractAddress = (chainId) => {
+  if (chainId === 1) {
+    return TOKEN_CONTRACT_MAINNET;
+  }
+  if (chainId === 4) {
+    return TOKEN_CONTRACT_RINKEBY;
+  }
+  if (chainId === 56) {
+    // bsc
+    return TOKEN_CONTRACT_BSC;
+  }
+  if (chainId === 250) {
+    // fantom
+    return TOKEN_CONTRACT_FTM;
+  }
+  if (chainId === 1088) {
+    // metis
+    return TOKEN_CONTRACT_METIS;
+  }
+  if (chainId === 43114) {
+    // avax
+    return TOKEN_CONTRACT_AVAX;
+  }
+  return TOKEN_CONTRACT_MAINNET;
+};
+
+export const getTokenContract = (chainId) => new Contract(getTokenContractAddress(chainId), TOKEN_ABI);
+
+export const getIdContractAddress = (chainId) => {
+  if (chainId === 1) {
+    return ID_CONTRACT_MAINNET;
+  }
+  if (chainId === 4) {
+    return ID_CONTRACT_RINKEBY;
+  }
+  if (chainId === 56) {
+    // bsc
+    return ID_CONTRACT_BSC;
+  }
+  if (chainId === 250) {
+    // fantom
+    return ID_CONTRACT_FTM;
+  }
+  if (chainId === 1088) {
+    // metis
+    return ID_CONTRACT_METIS;
+  }
+  if (chainId === 43114) {
+    // avax
+    return ID_CONTRACT_AVAX;
+  }
+  return ID_CONTRACT_MAINNET;
+};
+
+export const getIdContract = (chainId) => new Contract(getIdContractAddress(chainId), ID_ABI);
+
+export const useGetValue = (method, args, contractAddress, contract) => {
+  const { value, error } = useCall(
+    contractAddress && {
+      contract,
+      method,
+      args,
+    },
+  ) ?? {};
+  if (error) {
+    console.error(error.message);
+    return {};
+  }
+  return value;
+};
+
+export const useGetSingleValue = (method, args, contractAddress, contract) => {
+  const { value, error } = useCall(
+    contractAddress && {
+      contract,
+      method,
+      args,
+    },
+  ) ?? {};
+  if (error) {
+    console.error(error.message);
+    return {};
+  }
+  return value?.[0];
+};
 
 export function useUniswapSataPriceData() {
   // const { account } = useEthers();
@@ -57,7 +213,8 @@ export function useUniswapDSataPriceData() {
   return data;
 }
 
-export function useCreateIdentity() {
+export function useCreateIdentity(chainId) {
+  const identityContract = getIdContract(chainId);
   const {
     state, send, events, resetState,
   } = useContractFunction(
@@ -75,7 +232,8 @@ export function useCreateIdentity() {
   };
 }
 
-export function useDeleteIdentity() {
+export function useDeleteIdentity(chainId) {
+  const identityContract = getIdContract(chainId);
   const {
     state, send, events, resetState,
   } = useContractFunction(
@@ -93,7 +251,8 @@ export function useDeleteIdentity() {
   };
 }
 
-export function useCreateNano() {
+export function useCreateNano(chainId) {
+  const nanoContract = getNanoContract(chainId);
   const {
     state, send, events, resetState,
   } = useContractFunction(
@@ -111,7 +270,27 @@ export function useCreateNano() {
   };
 }
 
-export function useLockNano() {
+export function useDelegateNano(chainId) {
+  const nanoContract = getNanoContract(chainId);
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(
+    nanoContract,
+    'delegate',
+    {
+      transactionName: 'Delegate Nano Identity',
+    },
+  );
+  return {
+    state,
+    send,
+    events,
+    resetState,
+  };
+}
+
+export function useLockNano(chainId) {
+  const nanoContract = getNanoContract(chainId);
   const {
     state, send, events, resetState,
   } = useContractFunction(
@@ -129,7 +308,8 @@ export function useLockNano() {
   };
 }
 
-export function useMigrateIdentity() {
+export function useMigrateIdentity(chainId) {
+  const identityContract = getIdContract(chainId);
   const {
     state, send, events, resetState,
   } = useContractFunction(
@@ -147,7 +327,8 @@ export function useMigrateIdentity() {
   };
 }
 
-export function useLockIdentity() {
+export function useLockIdentity(chainId) {
+  const identityContract = getIdContract(chainId);
   const {
     state, send, events, resetState,
   } = useContractFunction(
@@ -165,7 +346,8 @@ export function useLockIdentity() {
   };
 }
 
-export function useUnlockIdentity() {
+export function useUnlockIdentity(chainId) {
+  const identityContract = getIdContract(chainId);
   const {
     state, send, events, resetState,
   } = useContractFunction(
@@ -183,7 +365,8 @@ export function useUnlockIdentity() {
   };
 }
 
-export function useBuyCloud() {
+export function useBuyCloud(chainId) {
+  const identityContract = getIdContract(chainId);
   const {
     state, send, events, resetState,
   } = useContractFunction(
@@ -200,36 +383,6 @@ export function useBuyCloud() {
     resetState,
   };
 }
-
-export const useGetSingleValueNano = (method) => {
-  const { value, error } = useCall(
-    nanoContractAddress && {
-      contract: nanoContract,
-      method,
-      args: [],
-    },
-  ) ?? {};
-  if (error) {
-    console.error(error.message);
-    return {};
-  }
-  return value?.[0];
-};
-
-export const useGetSingleValue = (method) => {
-  const { value, error } = useCall(
-    identityContractAddress && {
-      contract: identityContract,
-      method,
-      args: [],
-    },
-  ) ?? {};
-  if (error) {
-    console.error(error.message);
-    return {};
-  }
-  return value?.[0];
-};
 
 // these cg price hooks have been copied across from usedapp, as they're using
 // an incompatible version of react with what's used in this app right now

@@ -22,17 +22,17 @@ import {
   useUniswapSataPriceData,
   useUniswapDSataPriceData,
   useCoingeckoPrice,
+  getTokenContractAddress,
 } from './hooks/chainHooks';
-import './App.css';
+import NanoIdentity from './components/identity/NanoIdentity';
 
-const sataContractAddress = '0x3ebb4a4e91ad83be51f8d596533818b246f4bee1';
 const dSataContractAddress = '0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b';
 
 function App() {
   const {
     activateBrowserWallet, account, chainId, active, deactivate,
   } = useEthers();
-  const sataBalance = useTokenBalance(sataContractAddress, account);
+  const sataBalance = useTokenBalance(getTokenContractAddress(chainId), account);
   const dSataBalance = useTokenBalance(dSataContractAddress, account);
   const sataPriceData = useUniswapSataPriceData();
   const dSataPriceData = useUniswapDSataPriceData();
@@ -155,6 +155,9 @@ function App() {
             {!account && <ProductOverview />}
             {!account && <NoConnectionWarning />}
             {account && !isPersistent && <NoPersistenceWarning />}
+            {account && (
+              <NanoIdentity />
+            )}
             {account && !isSetup && (
               <NoAccountSection
                 active={active}
