@@ -5,6 +5,7 @@ import { gql, useQuery } from '@apollo/client';
 import { useContractFunction, useCall, useBlockNumber } from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
 import sataContractAbi from './sataAbi.json';
+import nanoContractAbi from './nanoAbi.json';
 import identityContractAbi from './identityAbi.json';
 import rightsContractAbi from './rightsAbi.json';
 
@@ -32,6 +33,8 @@ const dSataPriceQuery = gql`
   }
 `;
 
+const nanoContractAddress = '';
+const nanoContract = new Contract(nanoContractAddress, nanoContractAbi);
 const sataContractAddress = '0x3ebb4A4e91Ad83BE51F8d596533818b246F4bEe1';
 const sataContract = new Contract(sataContractAddress, sataContractAbi);
 const identityContractAddress = '0x6B47e26A52a9B5B467b98142E382c081eA97B0fc';
@@ -80,6 +83,42 @@ export function useDeleteIdentity() {
     'delete',
     {
       transactionName: 'Delete Signata Identity',
+    },
+  );
+  return {
+    state,
+    send,
+    events,
+    resetState,
+  };
+}
+
+export function useCreateNano() {
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(
+    nanoContract,
+    'create',
+    {
+      transactionName: 'Create Nano Identity',
+    },
+  );
+  return {
+    state,
+    send,
+    events,
+    resetState,
+  };
+}
+
+export function useLockNano() {
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(
+    nanoContract,
+    'lock',
+    {
+      transactionName: 'Lock Nano Identity',
     },
   );
   return {
@@ -161,6 +200,21 @@ export function useBuyCloud() {
     resetState,
   };
 }
+
+export const useGetSingleValueNano = (method) => {
+  const { value, error } = useCall(
+    nanoContractAddress && {
+      contract: nanoContract,
+      method,
+      args: [],
+    },
+  ) ?? {};
+  if (error) {
+    console.error(error.message);
+    return {};
+  }
+  return value?.[0];
+};
 
 export const useGetSingleValue = (method) => {
   const { value, error } = useCall(

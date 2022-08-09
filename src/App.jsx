@@ -30,11 +30,7 @@ const dSataContractAddress = '0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b';
 
 function App() {
   const {
-    activateBrowserWallet,
-    account,
-    chainId,
-    active,
-    deactivate,
+    activateBrowserWallet, account, chainId, active, deactivate,
   } = useEthers();
   const sataBalance = useTokenBalance(sataContractAddress, account);
   const dSataBalance = useTokenBalance(dSataContractAddress, account);
@@ -159,7 +155,12 @@ function App() {
             {!account && <ProductOverview />}
             {!account && <NoConnectionWarning />}
             {account && !isPersistent && <NoPersistenceWarning />}
-            {account && !isSetup && <NoAccountSection active={active} />}
+            {account && !isSetup && (
+              <NoAccountSection
+                active={active}
+                setSignataEncryptionKey={setSignataEncryptionKey}
+              />
+            )}
             {account && isSetup && (
               <Grid item xs={12}>
                 <ManageIdentities />

@@ -17,17 +17,18 @@ import { scrypt } from 'ethereum-cryptography/scrypt';
 import { wordlist } from 'ethereum-cryptography/bip39/wordlists/english';
 import { CreateAccountPopup, ImportAccountPopup } from '..';
 
-function NoAccountSection() {
+function NoAccountSection(props) {
+  const {
+    setSignataEncryptionKey,
+    setSignataAccountKey,
+  } = props;
   const [config, setConfig] = useLocalStorageState('config', []);
   const [showCreateAccountPopup, setShowCreateAccountPopup] = useState(false);
   const [showImportAccountPopup, setShowImportAccountPopup] = useState(false);
   const [accountError, setAccountError] = useState('');
 
   const handleClickCreate = async (
-    e,
     recoveryPassphrase,
-    setSignataEncryptionKey,
-    setSignataAccountKey,
   ) => {
     console.log('handleClickConfirmCreateAccount');
     setAccountError('');

@@ -57,11 +57,11 @@ function ConnectionPopup({ handleClose }) {
 
   const handleClickConnect = async () => {
     try {
+      handleClose();
       const provider = await web3Modal.connect();
 
       await provider.enable();
       activate(provider);
-      handleClose();
     } catch (error) {
       console.error(error);
     }
