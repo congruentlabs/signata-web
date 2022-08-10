@@ -308,6 +308,25 @@ export function useLockNano(chainId) {
   };
 }
 
+export function useSelfLockNano(chainId) {
+  const nanoContract = getNanoContract(chainId);
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(
+    nanoContract,
+    'selfLock',
+    {
+      transactionName: 'Self Lock Nano Identity',
+    },
+  );
+  return {
+    state,
+    send,
+    events,
+    resetState,
+  };
+}
+
 export function useMigrateIdentity(chainId) {
   const identityContract = getIdContract(chainId);
   const {
