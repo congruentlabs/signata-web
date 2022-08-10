@@ -25,11 +25,9 @@ import {
   TableRow,
 } from '@mui/material';
 import useLocalStorageState from 'use-local-storage-state';
-import {
-  CreateIdentityPopup,
-  EditIdentityPopup,
-  ImportIdentityPopup,
-} from '..';
+import CreateIdentityPopup from './CreateIdentityPopup';
+import EditIdentityPopup from './EditIdentityPopup';
+import ImportIdentityPopup from './ImportIdentityPopup';
 
 const headings = [
   { text: 'Name', align: 'left' },

@@ -15,7 +15,8 @@ import { getRandomBytesSync } from 'ethereum-cryptography/random';
 import { HDKey } from 'ethereum-cryptography/hdkey';
 import { scrypt } from 'ethereum-cryptography/scrypt';
 import { wordlist } from 'ethereum-cryptography/bip39/wordlists/english';
-import { CreateAccountPopup, ImportAccountPopup } from '..';
+import CreateAccountPopup from './CreateAccountPopup';
+import ImportAccountPopup from './ImportAccountPopup';
 
 function NoAccountSection(props) {
   const {

@@ -6,7 +6,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 
-export function EditIdentityPopup({
+function EditIdentityPopup({
   // editingIdentity,
   open,
   handleClickClose,
