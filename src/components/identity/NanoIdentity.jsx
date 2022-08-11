@@ -10,6 +10,8 @@ import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import UploadIcon from '@mui/icons-material/Upload';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import {
   Grid,
   Button,
@@ -163,21 +165,27 @@ function NanoIdentity() {
 
   return (
     <Grid item xs={12} sm={6}>
-      <Card sx={{ p: 1 }}>
+      <Card>
         <CardContent>
           <Stack spacing={1}>
             <Typography variant="h6" align="center">
               Your Nano Identity
             </Typography>
-            {identityExists && (
+            {identityExists ? (
               <Chip
                 icon={<FingerprintIcon />}
                 label="Identity Registered"
                 color="primary"
                 sx={{ borderRadius: 0 }}
               />
+            ) : (
+              <Alert severity="info" sx={{ borderRadius: 0 }}>
+                <AlertTitle>No Nano Identity</AlertTitle>
+                This device has not been set up with a Signata account. Create a new
+                account, or import your existing account.
+              </Alert>
             )}
-            {identityLocked === false && (
+            {identityExists === true && identityLocked === false && (
               <Chip
                 icon={<LockOpenIcon />}
                 label="Identity Unlocked"
@@ -185,7 +193,7 @@ function NanoIdentity() {
                 sx={{ borderRadius: 0 }}
               />
             )}
-            {identityLocked === true && (
+            {identityExists === true && identityLocked === true && (
               <Chip
                 icon={<LockIcon />}
                 label="Identity Locked"
@@ -193,7 +201,7 @@ function NanoIdentity() {
                 sx={{ borderRadius: 0 }}
               />
             )}
-            {identityDelegate === account && (
+            {identityExists === true && identityDelegate === account && (
               <Chip
                 icon={<PermIdentityIcon />}
                 label="Not Delegated"
@@ -201,7 +209,7 @@ function NanoIdentity() {
                 sx={{ borderRadius: 0 }}
               />
             )}
-            {identityExists && identityDelegate !== account && (
+            {identityExists === true && identityDelegate !== account && (
               <Chip
                 icon={<PermIdentityIcon />}
                 label={`Delegated to ${shortenIfAddress(identityDelegate)}`}
@@ -212,7 +220,7 @@ function NanoIdentity() {
           </Stack>
         </CardContent>
         <CardActions sx={{ justifyContent: 'center' }}>
-          {identityExists === false && (
+          {!identityExists && (
             <Button
               color="primary"
               variant="contained"

@@ -148,7 +148,8 @@ function App() {
         >
           <Grid
             container
-            spacing={3}
+            spacing={1}
+            direction="row"
             alignItems="stretch"
             justifyContent="center"
           >

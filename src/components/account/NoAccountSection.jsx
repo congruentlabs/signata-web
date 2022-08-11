@@ -3,10 +3,14 @@ import useLocalStorageState from 'use-local-storage-state';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
 import UploadIcon from '@mui/icons-material/Upload';
 import AddIcon from '@mui/icons-material/Add';
 import Grid from '@mui/material/Grid';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import {
   mnemonicToEntropy,
   validateMnemonic,
@@ -80,31 +84,38 @@ function NoAccountSection(props) {
           handleClickImport={handleClickCreate}
         />
       )}
-      <Grid item xs={12}>
-        <Alert severity="info">
-          <AlertTitle>No Signata Account on this Device</AlertTitle>
-          This device has not been set up with a Signata account. Create a new
-          account, or import your existing account.
-        </Alert>
-      </Grid>
-      <Grid item xs={12} textAlign="center">
-        <ButtonGroup size="large">
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={() => setShowCreateAccountPopup(true)}
-            startIcon={<AddIcon />}
-          >
-            Create Account
-          </Button>
-          <Button
-            color="secondary"
-            onClick={() => setShowImportAccountPopup(true)}
-            startIcon={<UploadIcon />}
-          >
-            Import Account
-          </Button>
-        </ButtonGroup>
+      <Grid item xs={12} sm={6}>
+        <Card>
+          <CardContent>
+            <Stack spacing={1}>
+              <Typography variant="h6" align="center">
+                Your Signata Account
+              </Typography>
+              <Alert severity="info" sx={{ borderRadius: 0 }}>
+                <AlertTitle>No Signata Account on this Device</AlertTitle>
+                This device has not been set up with a Signata account. Create a new
+                account, or import your existing account.
+              </Alert>
+            </Stack>
+          </CardContent>
+          <CardActions sx={{ justifyContent: 'center' }}>
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={() => setShowCreateAccountPopup(true)}
+              startIcon={<AddIcon />}
+            >
+              Create Account
+            </Button>
+            <Button
+              color="secondary"
+              onClick={() => setShowImportAccountPopup(true)}
+              startIcon={<UploadIcon />}
+            >
+              Import Account
+            </Button>
+          </CardActions>
+        </Card>
       </Grid>
     </>
   );
