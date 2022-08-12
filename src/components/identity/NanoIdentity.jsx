@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useEthers, shortenIfAddress } from '@usedapp/core';
+import { grey } from '@mui/material/colors';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import HowToRegIcon from '@mui/icons-material/HowToReg';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
-import UploadIcon from '@mui/icons-material/Upload';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import Alert from '@mui/material/Alert';
@@ -20,7 +18,6 @@ import {
   CardContent,
   Stack,
   Typography,
-  IconButton,
   Chip,
 } from '@mui/material';
 import {
@@ -88,9 +85,6 @@ function NanoIdentity() {
       if (createState.status === 'Exception') {
         setLoading(false);
       }
-      if (createState.status === 'None') {
-        setLoading(false);
-      }
       if (createState.status === 'Mining') {
         setLoading(true);
       }
@@ -109,9 +103,6 @@ function NanoIdentity() {
       if (lockState.status === 'Exception') {
         setLoading(false);
       }
-      if (lockState.status === 'None') {
-        setLoading(false);
-      }
       if (lockState.status === 'Mining') {
         setLoading(true);
       }
@@ -128,9 +119,6 @@ function NanoIdentity() {
         setLoading(true);
       }
       if (delegateState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (delegateState.status === 'None') {
         setLoading(false);
       }
       if (delegateState.status === 'Mining') {
@@ -164,11 +152,11 @@ function NanoIdentity() {
   };
 
   return (
-    <Grid item xs={12} sm={6}>
-      <Card>
+    <Grid item xs={12} md={6}>
+      <Card sx={{ minHeight: { md: 450 } }}>
         <CardContent>
           <Stack spacing={1}>
-            <Typography variant="h6" align="center">
+            <Typography variant="h6" align="center" sx={{ background: grey[300] }}>
               Your Nano Identity
             </Typography>
             {identityExists ? (
@@ -179,10 +167,14 @@ function NanoIdentity() {
                 sx={{ borderRadius: 0 }}
               />
             ) : (
-              <Alert severity="info" sx={{ borderRadius: 0 }}>
-                <AlertTitle>No Nano Identity</AlertTitle>
-                This device has not been set up with a Signata account. Create a new
-                account, or import your existing account.
+              <Alert severity="info" sx={{ borderRadius: 0, border: 1 }}>
+                <AlertTitle>About Nano Identities</AlertTitle>
+                A nano identity is a
+                limited version of a Signata identity. If you want to try
+                Signata without setting up an account, you can register your
+                connected wallet as a Nano Identity. If you hold 10 SATA it is
+                free to create a Nano identity, otherwise you&apos;ll have to pay a
+                small fee.
               </Alert>
             )}
             {identityExists === true && identityLocked === false && (
@@ -253,14 +245,15 @@ function NanoIdentity() {
               Delegate
             </Button>
           )}
-          <IconButton
+          <Button
             color="inherit"
             size="small"
             target="_blank"
             href="https://docs.signata.net/"
+            startIcon={<QuestionMarkIcon />}
           >
-            <QuestionMarkIcon />
-          </IconButton>
+            Help
+          </Button>
         </CardActions>
         <LoadingState state={createState} />
         <LoadingState state={lockState} />

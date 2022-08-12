@@ -119,7 +119,7 @@ function AppHeader({
             >
               {pages.map((page) => (
                 <MenuItem key={page.name}>
-                  <Button component="a" href={page.href} target="_blank">
+                  <Button component="a" href={page.href} target="_blank" startIcon={page.startIcon}>
                     {page.name}
                   </Button>
                 </MenuItem>
@@ -134,6 +134,7 @@ function AppHeader({
                 component="a"
                 href={page.href}
                 target="_blank"
+                startIcon={page.startIcon}
                 // onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'black', display: 'block' }}
               >

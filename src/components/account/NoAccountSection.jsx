@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
+import { grey } from '@mui/material/colors';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Button from '@mui/material/Button';
@@ -84,14 +85,14 @@ function NoAccountSection(props) {
           handleClickImport={handleClickCreate}
         />
       )}
-      <Grid item xs={12} sm={6}>
-        <Card>
+      <Grid item xs={12} md={6}>
+        <Card sx={{ minHeight: { md: 450 } }}>
           <CardContent>
             <Stack spacing={1}>
-              <Typography variant="h6" align="center">
+              <Typography variant="h6" align="center" sx={{ background: grey[300] }}>
                 Your Signata Account
               </Typography>
-              <Alert severity="info" sx={{ borderRadius: 0 }}>
+              <Alert severity="info" sx={{ borderRadius: 0, border: 1 }}>
                 <AlertTitle>No Signata Account on this Device</AlertTitle>
                 This device has not been set up with a Signata account. Create a new
                 account, or import your existing account.

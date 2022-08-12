@@ -5,7 +5,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {
   Box, Container, Grid, CssBaseline,
 } from '@mui/material';
-import { lightGreen, indigo } from '@mui/material/colors';
+import { lightGreen, indigo, grey } from '@mui/material/colors';
 import useLocalStorageState from 'use-local-storage-state';
 import {
   AppFooter,
@@ -114,6 +114,9 @@ function App() {
         secondary: {
           main: indigo[500],
         },
+        background: {
+          paper: grey.A100,
+        },
         mode: prefersDarkMode ? 'light' : 'light',
         // mode: 'light',
       },
@@ -148,7 +151,7 @@ function App() {
         >
           <Grid
             container
-            spacing={1}
+            spacing={2}
             direction="row"
             alignItems="stretch"
             justifyContent="center"
