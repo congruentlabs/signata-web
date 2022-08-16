@@ -28,20 +28,22 @@ export function NetworkServices() {
           backgroundColor: grey[50],
         }}
       >
+        <Typography
+          variant="h6"
+          align="center"
+          sx={{
+            background: grey[300],
+            fontFamily: 'Roboto Condensed',
+            borderBottom: 1,
+            borderColor: grey[600],
+          }}
+        >
+          Network Services
+        </Typography>
         <CardContent>
           <Stack spacing={1}>
-            <Typography
-              variant="h6"
-              align="center"
-              sx={{
-                background: grey[300], fontFamily: 'Roboto Condensed', border: 1, borderColor: 'black',
-              }}
-            >
-              Network Services
-            </Typography>
             {services && services.length < 1 && (
               <Alert severity="warning">
-                <AlertTitle>No Services</AlertTitle>
                 No services have been detected for this network.
               </Alert>
             )}

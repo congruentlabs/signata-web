@@ -163,20 +163,20 @@ function ManageIdentities() {
             backgroundColor: grey[50],
           }}
         >
+          <Typography
+            variant="h6"
+            align="center"
+            sx={{
+              background: grey[300],
+              fontFamily: 'Roboto Condensed',
+              borderBottom: 1,
+              borderColor: grey[600],
+            }}
+          >
+            Add Identity
+          </Typography>
           <CardContent>
             <Stack spacing={1}>
-              <Typography
-                variant="h6"
-                align="center"
-                sx={{
-                  background: grey[300],
-                  fontFamily: 'Roboto Condensed',
-                  border: 1,
-                  borderColor: 'black',
-                }}
-              >
-                Create Identity
-              </Typography>
 
               <Alert severity="info">
                 <AlertTitle>About Identities</AlertTitle>
@@ -195,28 +195,26 @@ function ManageIdentities() {
                   }}
                 />
               )}
+              <ButtonGroup fullWidth orientation={isSm ? 'horizontal' : 'vertical'}>
+                <Button
+                  color="primary"
+                  onClick={() => setShowCreateIdentityPopup(true)}
+                  variant="contained"
+                  startIcon={<AddIcon />}
+                >
+                  Create Identity
+                </Button>
+                <Button
+                  color="secondary"
+                  onClick={() => setShowImportIdentityPopup(true)}
+                  variant="contained"
+                  startIcon={<UploadIcon />}
+                >
+                  Import Identity
+                </Button>
+              </ButtonGroup>
             </Stack>
           </CardContent>
-          <CardActions sx={{ justifyContent: 'center' }}>
-            <ButtonGroup fullWidth orientation={isSm ? 'horizontal' : 'vertical'}>
-              <Button
-                color="primary"
-                onClick={() => setShowCreateIdentityPopup(true)}
-                variant="contained"
-                startIcon={<AddIcon />}
-              >
-                Create Identity
-              </Button>
-              <Button
-                color="secondary"
-                onClick={() => setShowImportIdentityPopup(true)}
-                variant="contained"
-                startIcon={<UploadIcon />}
-              >
-                Import Identity
-              </Button>
-            </ButtonGroup>
-          </CardActions>
         </Box>
       </Grid>
     </>

@@ -28,6 +28,7 @@ import {
 } from './hooks/chainHooks';
 import secureStorage from './utils/secureStorage';
 import NanoIdentity from './components/identity/NanoIdentity';
+import YourAccount from './components/account/YourAccount';
 
 const dSataContractAddress = '0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b';
 
@@ -89,6 +90,12 @@ function App() {
     //   setShowUnlockAccountPopup(true);
     // }
   }, [config, signataAccountKey]);
+
+  useEffect(() => {
+    if (seeds) {
+      setSeeds(secureStorage(password).setItem('seeds', seeds));
+    }
+  }, [seeds, password]);
 
   useEffect(() => {
     if (password) {
@@ -189,6 +196,9 @@ function App() {
             )}
             {account && isSetup && (
               <ManageIdentities />
+            )}
+            {account && (
+              <YourAccount />
             )}
             {/* {account && isSetup && (
               <Extras

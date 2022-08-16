@@ -12,7 +12,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { shortenAddress, useLookupAddress } from '@usedapp/core';
-import { Typography } from '@mui/material';
+import { Typography, ButtonGroup } from '@mui/material';
 
 const pages = [
   { name: 'Docs', href: 'https://docs.signata.net' },
@@ -87,7 +87,10 @@ function AppHeader({
     <AppBar
       position="sticky"
       sx={{
-        boxShadow: 'none', borderColor: grey[600], borderBottom: 1, background: grey[50],
+        boxShadow: 'none',
+        borderColor: grey[600],
+        borderBottom: 1,
+        background: grey[50],
       }}
     >
       <Container maxWidth="md">
@@ -125,7 +128,13 @@ function AppHeader({
             >
               {pages.map((page) => (
                 <MenuItem key={page.name}>
-                  <Button component="a" href={page.href} target="_blank" startIcon={page.startIcon}>
+                  <Button
+                    component="a"
+                    href={page.href}
+                    target="_blank"
+                    startIcon={page.startIcon}
+                    sx={{ color: 'black' }}
+                  >
                     {page.name}
                   </Button>
                 </MenuItem>
@@ -134,19 +143,22 @@ function AppHeader({
           </Box>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page.name}
-                component="a"
-                href={page.href}
-                target="_blank"
-                startIcon={page.startIcon}
-                // onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'black', display: 'block' }}
-              >
-                {page.name}
-              </Button>
-            ))}
+            <ButtonGroup>
+              {pages.map((page) => (
+                <Button
+                  key={page.name}
+                  component="a"
+                  href={page.href}
+                  target="_blank"
+                  startIcon={page.startIcon}
+                  // onClick={handleCloseNavMenu}
+                  sx={{ px: 2, color: 'black' }}
+                  variant="text"
+                >
+                  {page.name}
+                </Button>
+              ))}
+            </ButtonGroup>
           </Box>
 
           <Typography

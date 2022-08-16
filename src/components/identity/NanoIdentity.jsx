@@ -171,17 +171,20 @@ function NanoIdentity() {
           backgroundColor: grey[50],
         }}
       >
+        <Typography
+          variant="h6"
+          align="center"
+          sx={{
+            background: grey[300],
+            fontFamily: 'Roboto Condensed',
+            borderBottom: 1,
+            borderColor: grey[600],
+          }}
+        >
+          Your Nano Identity
+        </Typography>
         <CardContent>
           <Stack spacing={1}>
-            <Typography
-              variant="h6"
-              align="center"
-              sx={{
-                background: grey[300], fontFamily: 'Roboto Condensed', border: 1, borderColor: 'black',
-              }}
-            >
-              Your Nano Identity
-            </Typography>
             {identityExists ? (
               <Chip
                 icon={<FingerprintIcon />}
@@ -191,13 +194,11 @@ function NanoIdentity() {
               />
             ) : (
               <Alert severity="info">
-                <AlertTitle>About Nano Identities</AlertTitle>
-                A nano identity is a
-                limited version of a Signata identity. If you want to try
-                Signata without setting up an account, you can register your
-                connected wallet as a Nano Identity. If you hold 10 SATA it is
-                free to create a Nano identity, otherwise you&apos;ll have to pay a
-                small fee.
+                A nano identity is a limited version of a Signata identity. If
+                you want to try Signata without setting up an account, you can
+                register your connected wallet as a Nano Identity. If you hold
+                10 SATA it is free to create a Nano identity, otherwise
+                you&apos;ll have to pay a small fee.
               </Alert>
             )}
             {identityExists === true && identityLocked === false && (
@@ -232,53 +233,54 @@ function NanoIdentity() {
                 sx={{ borderRadius: 0 }}
               />
             )}
+            <ButtonGroup
+              fullWidth
+              orientation={isSm ? 'horizontal' : 'vertical'}
+            >
+              {!identityExists && (
+                <Button
+                  color="primary"
+                  variant="contained"
+                  disabled={isLoading}
+                  startIcon={<AddIcon />}
+                  onClick={handleClickCreate}
+                >
+                  Create
+                </Button>
+              )}
+              {identityExists === true && identityLocked === false && (
+                <Button
+                  color="error"
+                  variant="contained"
+                  disabled={isLoading}
+                  startIcon={<LockIcon />}
+                  onClick={handleClickLock}
+                >
+                  Lock
+                </Button>
+              )}
+              {identityExists === true && (
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  disabled={isLoading}
+                  startIcon={<EditIcon />}
+                  onClick={handleClickDelegate}
+                >
+                  Delegate
+                </Button>
+              )}
+              <Button
+                color="inherit"
+                target="_blank"
+                href="https://docs.signata.net/"
+                startIcon={<QuestionMarkIcon />}
+              >
+                Help
+              </Button>
+            </ButtonGroup>
           </Stack>
         </CardContent>
-        <CardActions sx={{ justifyContent: 'center' }}>
-          <ButtonGroup fullWidth orientation={isSm ? 'horizontal' : 'vertical'}>
-            {!identityExists && (
-              <Button
-                color="primary"
-                variant="contained"
-                disabled={isLoading}
-                startIcon={<AddIcon />}
-                onClick={handleClickCreate}
-              >
-                Create
-              </Button>
-            )}
-            {identityExists === true && identityLocked === false && (
-              <Button
-                color="error"
-                variant="contained"
-                disabled={isLoading}
-                startIcon={<LockIcon />}
-                onClick={handleClickLock}
-              >
-                Lock
-              </Button>
-            )}
-            {identityExists === true && (
-              <Button
-                color="secondary"
-                variant="contained"
-                disabled={isLoading}
-                startIcon={<EditIcon />}
-                onClick={handleClickDelegate}
-              >
-                Delegate
-              </Button>
-            )}
-            <Button
-              color="inherit"
-              target="_blank"
-              href="https://docs.signata.net/"
-              startIcon={<QuestionMarkIcon />}
-            >
-              Help
-            </Button>
-          </ButtonGroup>
-        </CardActions>
         <LoadingState state={createState} />
         <LoadingState state={lockState} />
       </Box>
