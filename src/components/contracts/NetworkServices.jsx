@@ -1,71 +1,74 @@
-import React from 'react';
-import { Typography, Stack } from '@mui/material';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Chip from '@mui/material/Chip';
+import React, { useState } from 'react';
+import { grey } from '@mui/material/colors';
+import {
+  Grid,
+  Box,
+  CardContent,
+  Stack,
+  Typography,
+  Chip,
+  Alert,
+  AlertTitle,
+} from '@mui/material';
 
-import { fNumber } from '../../utils/formats';
-
-export function NetworkServices({ services }) {
+export function NetworkServices() {
+  const [services, setServices] = useState([
+    // { id: 1, status: 'Available', name: 'Test' },
+  ]);
   return (
-    <Stack spacing={1}>
-      <Typography variant="h6" textAlign="center">
-        Network Services
-      </Typography>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell align="left">Name</TableCell>
-            <TableCell align="center">Type</TableCell>
-            <TableCell align="center">Network</TableCell>
-            <TableCell align="center">Status</TableCell>
-            <TableCell align="center">Jurisdiction</TableCell>
-            <TableCell align="right">Total Staked</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {(!services || services.length === 0) && (
-            <TableRow>
-              <TableCell colSpan={6} align="center">
-                No Network Services Detected!
-              </TableCell>
-            </TableRow>
-          )}
-          {services
-            && services.map((broker) => (
-              <TableRow key={broker.id}>
-                <TableCell align="left">{broker.name}</TableCell>
-                <TableCell align="center">
-                  <Chip label={broker.type} size="small" />
-                </TableCell>
-                <TableCell align="center">
-                  <Chip label={broker.network} size="small" />
-                </TableCell>
-                <TableCell align="center">
-                  <Chip
-                    label={broker.status}
-                    size="small"
-                    color={broker.status === 'Active' ? 'success' : ''}
-                  />
-                </TableCell>
-                <TableCell align="center">{broker.jurisdiction}</TableCell>
-                {broker.type === 'Broker' ? (
-                  <TableCell align="right">
-                    {broker.staked && fNumber(broker.staked)}
-                    {' '}
-                    SATA
-                  </TableCell>
-                ) : (
-                  <TableCell align="right">N/A</TableCell>
-                )}
-              </TableRow>
-            ))}
-        </TableBody>
-      </Table>
-    </Stack>
+    <Grid item xs={12} md={6}>
+      <Box
+        sx={{
+          minHeight: {
+            md: 350,
+          },
+          borderRadius: 0,
+          border: 1,
+          borderColor: grey[600],
+          backgroundColor: grey[50],
+        }}
+      >
+        <CardContent>
+          <Stack spacing={1}>
+            <Typography
+              variant="h6"
+              align="center"
+              sx={{
+                background: grey[300], fontFamily: 'Roboto Condensed', border: 1, borderColor: 'black',
+              }}
+            >
+              Network Services
+            </Typography>
+            {services && services.length < 1 && (
+              <Alert severity="warning" sx={{ borderRadius: 0, border: 1 }}>
+                <AlertTitle>No Services</AlertTitle>
+                No services have been detected for this network.
+              </Alert>
+            )}
+            {services
+              && services.map((service) => (
+                <Chip
+                  key={service.id}
+                  label={`${service.name} Service: ${service.status}`}
+                  color={service.status === 'Available' ? 'success' : 'warning'}
+                  sx={{
+                    borderRadius: 0,
+                    height: 48,
+                    border: 1,
+                    borderColor: 'black',
+                  }}
+                />
+              ))}
+            <Alert severity="info" sx={{ borderRadius: 0, border: 1 }}>
+              <AlertTitle>About Network Services</AlertTitle>
+              Each network offers services for managing identities, sharing risk
+              information, and more. If services are not available you can use
+              Signata, but some features may be unavailable.
+            </Alert>
+          </Stack>
+        </CardContent>
+      </Box>
+    </Grid>
   );
 }
 

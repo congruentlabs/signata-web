@@ -5,7 +5,9 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {
   Box, Container, Grid, CssBaseline,
 } from '@mui/material';
-import { lightGreen, indigo, grey } from '@mui/material/colors';
+import {
+  lime, blue, grey, orange, red,
+} from '@mui/material/colors';
 import useLocalStorageState from 'use-local-storage-state';
 import {
   AppFooter,
@@ -61,7 +63,6 @@ function App() {
   //     status: 'Active'
   //   }
   // ]);
-  const [services, setServices] = useState([]);
 
   const [config, setConfig, isPersistent] = useLocalStorageState('config', []);
   // const [wallets, setWallets] = useLocalStorageState('wallets', []);
@@ -109,10 +110,16 @@ function App() {
     () => createTheme({
       palette: {
         primary: {
-          main: lightGreen[500],
+          main: lime.A700,
         },
         secondary: {
-          main: indigo[500],
+          main: blue.A700,
+        },
+        warning: {
+          main: orange.A700,
+        },
+        error: {
+          main: red.A700,
         },
         background: {
           paper: grey.A100,
@@ -121,7 +128,17 @@ function App() {
         // mode: 'light',
       },
       typography: {
-        fontFamily: 'Lato',
+        fontFamily: 'Roboto Condensed',
+      },
+      components: {
+        MuiButton: {
+          styleOverrides: {
+            root: {
+              borderRadius: 0,
+              // boxShadow: 'none',
+            },
+          },
+        },
       },
     }),
     [prefersDarkMode],
@@ -169,11 +186,9 @@ function App() {
               />
             )}
             {account && isSetup && (
-              <Grid item xs={12}>
-                <ManageIdentities />
-              </Grid>
+              <ManageIdentities />
             )}
-            {account && isSetup && (
+            {/* {account && isSetup && (
               <Extras
                 sataBalance={sataBalance}
                 dSataBalance={dSataBalance}
@@ -182,11 +197,9 @@ function App() {
                 dSataPriceData={dSataPriceData}
                 ethPrice={ethPrice}
               />
-            )}
-            {account && isSetup && services && (
-              <Grid item xs={12}>
-                <NetworkServices services={services} />
-              </Grid>
+            )} */}
+            {account && isSetup && (
+              <NetworkServices />
             )}
           </Grid>
         </Box>

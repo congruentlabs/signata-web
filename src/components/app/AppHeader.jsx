@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { grey } from '@mui/material/colors';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -83,7 +84,12 @@ function AppHeader({
   };
 
   return (
-    <AppBar position="static" color="transparent">
+    <AppBar
+      position="sticky"
+      sx={{
+        boxShadow: 'none', borderColor: grey[600], borderBottom: 1, background: grey[50],
+      }}
+    >
       <Container maxWidth="md">
         <Toolbar disableGutters>
           <Avatar alt="Logo" src="logo.png" />
@@ -149,7 +155,7 @@ function AppHeader({
             component="div"
             sx={{ display: { xs: 'none', md: 'flex' }, flexGrow: 1 }}
           >
-            Signata Identity Manager
+            <i>Signata Identity Manager</i>
           </Typography>
 
           <Box sx={{ flexGrow: 0 }}>
@@ -158,7 +164,7 @@ function AppHeader({
                 <Button
                   onClick={handleOpenUserMenu}
                   variant="contained"
-                  color="secondary"
+                  color="primary"
                 >
                   {ens || shortenAddress(account)}
                 </Button>

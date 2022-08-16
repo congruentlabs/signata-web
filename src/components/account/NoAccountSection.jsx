@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 import UploadIcon from '@mui/icons-material/Upload';
 import AddIcon from '@mui/icons-material/Add';
 import Grid from '@mui/material/Grid';
-import Card from '@mui/material/Card';
+import Box from '@mui/material/Box';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Stack from '@mui/material/Stack';
@@ -86,10 +86,26 @@ function NoAccountSection(props) {
         />
       )}
       <Grid item xs={12} md={6}>
-        <Card sx={{ minHeight: { md: 450 } }}>
+        <Box
+          sx={{
+            minHeight: {
+              md: 350,
+            },
+            borderRadius: 0,
+            border: 1,
+            borderColor: grey[600],
+            backgroundColor: grey[50],
+          }}
+        >
           <CardContent>
             <Stack spacing={1}>
-              <Typography variant="h6" align="center" sx={{ background: grey[300] }}>
+              <Typography
+                variant="h6"
+                align="center"
+                sx={{
+                  background: grey[300], fontFamily: 'Roboto Condensed', border: 1, borderColor: 'black',
+                }}
+              >
                 Your Signata Account
               </Typography>
               <Alert severity="info" sx={{ borderRadius: 0, border: 1 }}>
@@ -116,7 +132,7 @@ function NoAccountSection(props) {
               Import Account
             </Button>
           </CardActions>
-        </Card>
+        </Box>
       </Grid>
     </>
   );

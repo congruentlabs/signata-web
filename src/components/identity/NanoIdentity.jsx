@@ -8,17 +8,17 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
 import {
   Grid,
   Button,
-  Card,
+  Box,
   CardActions,
   CardContent,
   Stack,
   Typography,
   Chip,
+  Alert,
+  AlertTitle,
 } from '@mui/material';
 import {
   getNanoContract,
@@ -153,10 +153,26 @@ function NanoIdentity() {
 
   return (
     <Grid item xs={12} md={6}>
-      <Card sx={{ minHeight: { md: 450 } }}>
+      <Box
+        sx={{
+          minHeight: {
+            md: 350,
+          },
+          borderRadius: 0,
+          border: 1,
+          borderColor: grey[600],
+          backgroundColor: grey[50],
+        }}
+      >
         <CardContent>
           <Stack spacing={1}>
-            <Typography variant="h6" align="center" sx={{ background: grey[300] }}>
+            <Typography
+              variant="h6"
+              align="center"
+              sx={{
+                background: grey[300], fontFamily: 'Roboto Condensed', border: 1, borderColor: 'black',
+              }}
+            >
               Your Nano Identity
             </Typography>
             {identityExists ? (
@@ -247,7 +263,6 @@ function NanoIdentity() {
           )}
           <Button
             color="inherit"
-            size="small"
             target="_blank"
             href="https://docs.signata.net/"
             startIcon={<QuestionMarkIcon />}
@@ -257,7 +272,7 @@ function NanoIdentity() {
         </CardActions>
         <LoadingState state={createState} />
         <LoadingState state={lockState} />
-      </Card>
+      </Box>
     </Grid>
   );
 }
