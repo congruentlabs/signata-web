@@ -40,7 +40,7 @@ export function NetworkServices() {
               Network Services
             </Typography>
             {services && services.length < 1 && (
-              <Alert severity="warning" sx={{ borderRadius: 0, border: 1 }}>
+              <Alert severity="warning">
                 <AlertTitle>No Services</AlertTitle>
                 No services have been detected for this network.
               </Alert>
@@ -59,7 +59,7 @@ export function NetworkServices() {
                   }}
                 />
               ))}
-            <Alert severity="info" sx={{ borderRadius: 0, border: 1 }}>
+            <Alert severity="info">
               <AlertTitle>About Network Services</AlertTitle>
               Each network offers services for managing identities, sharing risk
               information, and more. If services are not available you can use

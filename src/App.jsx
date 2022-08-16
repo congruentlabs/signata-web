@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useEthers, useTokenBalance } from '@usedapp/core';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider, experimental_sx as sx } from '@mui/material/styles';
 import {
   Box, Container, Grid, CssBaseline,
 } from '@mui/material';
@@ -26,6 +26,7 @@ import {
   useCoingeckoPrice,
   getTokenContractAddress,
 } from './hooks/chainHooks';
+import secureStorage from './utils/secureStorage';
 import NanoIdentity from './components/identity/NanoIdentity';
 
 const dSataContractAddress = '0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b';
@@ -65,6 +66,8 @@ function App() {
   // ]);
 
   const [config, setConfig, isPersistent] = useLocalStorageState('config', []);
+  const [seeds, setSeeds] = useState([]);
+  const [password, setPassword] = useState('');
   // const [wallets, setWallets] = useLocalStorageState('wallets', []);
   // const [devices, setDevices] = useLocalStorageState('devices', []);
   // const [secureNotes, setSecureNotes] = useLocalStorageState('secureNotes', []);
@@ -88,23 +91,14 @@ function App() {
   }, [config, signataAccountKey]);
 
   useEffect(() => {
+    if (password) {
+      setSeeds(secureStorage(password).getItem('seeds'));
+    }
+  }, [password]);
+
+  useEffect(() => {
     activateBrowserWallet(); // just try to auto activate on load for metamask users
   }, [activateBrowserWallet]);
-
-  // const identities = [
-  //   {
-  //     name: 'Main Identity',
-  //     address: '0xfeb8f237873e846d9ddbf8a9477519ae3219984c',
-  //     registered: false,
-  //     locked: false,
-  //   },
-  //   {
-  //     name: 'Private Identity',
-  //     address: '0xB1cE9CE9cb1f2237ecbA5b3CaDF4860c86d24D63',
-  //     registered: true,
-  //     locked: true,
-  //   }
-  // ];
 
   const theme = useMemo(
     () => createTheme({
@@ -131,6 +125,14 @@ function App() {
         fontFamily: 'Roboto Condensed',
       },
       components: {
+        MuiAlert: {
+          styleOverrides: {
+            root: sx({
+              borderRadius: 0,
+              border: 1,
+            }),
+          },
+        },
         MuiButton: {
           styleOverrides: {
             root: {

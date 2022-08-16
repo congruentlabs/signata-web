@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
+import { useTheme } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
-import { shortenIfAddress, useLookupAddress } from '@usedapp/core';
+import { shortenIfAddress } from '@usedapp/core';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
@@ -12,14 +13,16 @@ import UploadIcon from '@mui/icons-material/Upload';
 import {
   Alert,
   AlertTitle,
-  Button,
   Box,
+  Button,
+  ButtonGroup,
   CardActions,
   CardContent,
   Chip,
-  Stack,
   Grid,
+  Stack,
   Typography,
+  useMediaQuery,
 } from '@mui/material';
 import CreateIdentityPopup from './CreateIdentityPopup';
 import EditIdentityPopup from './EditIdentityPopup';
@@ -34,11 +37,15 @@ const headings = [
 ];
 
 function ManageIdentities() {
+  const theme = useTheme();
   const [showCreateIdentityPopup, setShowCreateIdentityPopup] = useState(false);
   const [showImportIdentityPopup, setShowImportIdentityPopup] = useState(false);
   const [editingIdentity, setEditingIdentity] = useState(null);
   const [showEditIdentityPopup, setShowEditIdentityPopup] = useState(false);
   const [identities, setIdentities] = useLocalStorageState('identities', []);
+  const isSm = useMediaQuery(theme.breakpoints.up('sm'), {
+    defaultMatches: true,
+  });
   // const identities = [{
   //   id: 1, name: 'Test', locked: false, type: 'Standard', registered: true, address: '0xce95DAde44E7307bAA616C77EF446915633dD9Ab',
   // }];
@@ -171,7 +178,7 @@ function ManageIdentities() {
                 Create Identity
               </Typography>
 
-              <Alert severity="info" sx={{ borderRadius: 0, border: 1 }}>
+              <Alert severity="info">
                 <AlertTitle>About Identities</AlertTitle>
                 Full Signata Identities can be created or imported using the
                 buttons below. You can create unlimited identities, each for a specific purpose.
@@ -191,22 +198,24 @@ function ManageIdentities() {
             </Stack>
           </CardContent>
           <CardActions sx={{ justifyContent: 'center' }}>
-            <Button
-              color="primary"
-              onClick={() => setShowCreateIdentityPopup(true)}
-              variant="contained"
-              startIcon={<AddIcon />}
-            >
-              Create Identity
-            </Button>
-            <Button
-              color="secondary"
-              onClick={() => setShowImportIdentityPopup(true)}
-              variant="contained"
-              startIcon={<UploadIcon />}
-            >
-              Import Identity
-            </Button>
+            <ButtonGroup fullWidth orientation={isSm ? 'horizontal' : 'vertical'}>
+              <Button
+                color="primary"
+                onClick={() => setShowCreateIdentityPopup(true)}
+                variant="contained"
+                startIcon={<AddIcon />}
+              >
+                Create Identity
+              </Button>
+              <Button
+                color="secondary"
+                onClick={() => setShowImportIdentityPopup(true)}
+                variant="contained"
+                startIcon={<UploadIcon />}
+              >
+                Import Identity
+              </Button>
+            </ButtonGroup>
           </CardActions>
         </Box>
       </Grid>

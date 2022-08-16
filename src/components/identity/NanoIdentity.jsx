@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useEthers, shortenIfAddress } from '@usedapp/core';
+import { useTheme } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -9,16 +10,18 @@ import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import {
-  Grid,
-  Button,
-  Box,
-  CardActions,
-  CardContent,
-  Stack,
-  Typography,
-  Chip,
   Alert,
   AlertTitle,
+  Box,
+  Button,
+  ButtonGroup,
+  CardActions,
+  CardContent,
+  Chip,
+  Grid,
+  Stack,
+  Typography,
+  useMediaQuery,
 } from '@mui/material';
 import {
   getNanoContract,
@@ -32,6 +35,10 @@ import LoadingState from './LoadingState';
 
 function NanoIdentity() {
   const { chainId, account } = useEthers();
+  const theme = useTheme();
+  const isSm = useMediaQuery(theme.breakpoints.up('sm'), {
+    defaultMatches: true,
+  });
 
   const [delegateAddress, setDelegateAddress] = useState('');
   const [isLoading, setLoading] = useState(false);
@@ -183,7 +190,7 @@ function NanoIdentity() {
                 sx={{ borderRadius: 0 }}
               />
             ) : (
-              <Alert severity="info" sx={{ borderRadius: 0, border: 1 }}>
+              <Alert severity="info">
                 <AlertTitle>About Nano Identities</AlertTitle>
                 A nano identity is a
                 limited version of a Signata identity. If you want to try
@@ -228,47 +235,49 @@ function NanoIdentity() {
           </Stack>
         </CardContent>
         <CardActions sx={{ justifyContent: 'center' }}>
-          {!identityExists && (
+          <ButtonGroup fullWidth orientation={isSm ? 'horizontal' : 'vertical'}>
+            {!identityExists && (
+              <Button
+                color="primary"
+                variant="contained"
+                disabled={isLoading}
+                startIcon={<AddIcon />}
+                onClick={handleClickCreate}
+              >
+                Create
+              </Button>
+            )}
+            {identityExists === true && identityLocked === false && (
+              <Button
+                color="error"
+                variant="contained"
+                disabled={isLoading}
+                startIcon={<LockIcon />}
+                onClick={handleClickLock}
+              >
+                Lock
+              </Button>
+            )}
+            {identityExists === true && (
+              <Button
+                color="secondary"
+                variant="contained"
+                disabled={isLoading}
+                startIcon={<EditIcon />}
+                onClick={handleClickDelegate}
+              >
+                Delegate
+              </Button>
+            )}
             <Button
-              color="primary"
-              variant="contained"
-              disabled={isLoading}
-              startIcon={<AddIcon />}
-              onClick={handleClickCreate}
+              color="inherit"
+              target="_blank"
+              href="https://docs.signata.net/"
+              startIcon={<QuestionMarkIcon />}
             >
-              Create
+              Help
             </Button>
-          )}
-          {identityExists === true && identityLocked === false && (
-            <Button
-              color="error"
-              variant="contained"
-              disabled={isLoading}
-              startIcon={<LockIcon />}
-              onClick={handleClickLock}
-            >
-              Lock
-            </Button>
-          )}
-          {identityExists === true && (
-            <Button
-              color="secondary"
-              variant="contained"
-              disabled={isLoading}
-              startIcon={<EditIcon />}
-              onClick={handleClickDelegate}
-            >
-              Delegate
-            </Button>
-          )}
-          <Button
-            color="inherit"
-            target="_blank"
-            href="https://docs.signata.net/"
-            startIcon={<QuestionMarkIcon />}
-          >
-            Help
-          </Button>
+          </ButtonGroup>
         </CardActions>
         <LoadingState state={createState} />
         <LoadingState state={lockState} />
