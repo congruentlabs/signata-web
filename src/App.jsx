@@ -83,7 +83,6 @@ function App() {
   useEffect(() => {
     if (seeds && encryptionPassword) {
       // update the localStorage with seeds every time they're changed
-      console.log('updating localStorage');
       secureStorage(encryptionPassword).setItem('seeds', seeds);
       // update the lastSaved for any sync jobs
       // setConfig({ ...config, lastSaved: Date.now() });

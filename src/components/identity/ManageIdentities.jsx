@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
 import { useTheme } from '@mui/material/styles';
-import { shortenIfAddress } from '@usedapp/core';
+import { useEthers, shortenIfAddress, DEFAULT_SUPPORTED_CHAINS } from '@usedapp/core';
 import { generateMnemonic } from 'ethereum-cryptography/bip39';
 import { wordlist } from 'ethereum-cryptography/bip39/wordlists/english';
 import AddIcon from '@mui/icons-material/Add';
@@ -32,6 +32,7 @@ import ItemBox from '../app/ItemBox';
 
 function ManageIdentities(props) {
   const { seeds, setSeeds } = props;
+  const { chainId, account } = useEthers();
   const theme = useTheme();
   const isSm = useMediaQuery(theme.breakpoints.up('sm'), {
     defaultMatches: true,
@@ -50,7 +51,7 @@ function ManageIdentities(props) {
     console.log(seeds);
     const newSeeds = Array.from(seeds);
     newSeeds.push({
-      identitySeed, delegateSeed, securitySeed, name: 'New Identity',
+      identitySeed, delegateSeed, securitySeed, name: 'New Identity', chainId,
     });
     setSeeds(newSeeds);
     setIdentitySeed('');
@@ -111,7 +112,7 @@ function ManageIdentities(props) {
       )}
       {seeds
         && seeds.map((seed) => (
-          <Grid item xs={12} md={6} key={seed.id}>
+          <Grid item xs={12} md={6} key={seed.identitySeed}>
             <ItemBox>
               <ItemHeader text={`Identity: ${seed.name || 'Unnamed'}`} />
               <CardContent>
@@ -127,7 +128,9 @@ function ManageIdentities(props) {
                     }}
                   /> */}
                   <Chip
-                    label={`Chain: ${seed.chain}`}
+                    label={`Chain: ${DEFAULT_SUPPORTED_CHAINS.find(
+                      (network) => network.chainId === seed.chainId,
+                    )?.chainName}`}
                     color="default"
                     sx={{
                       borderRadius: 0,
@@ -139,6 +142,7 @@ function ManageIdentities(props) {
                   <Chip
                     label={`Identity: ${seed.identitySeed}`}
                     color="default"
+                    variant="outlined"
                     sx={{
                       borderRadius: 0,
                       height: 24,
@@ -149,6 +153,7 @@ function ManageIdentities(props) {
                   <Chip
                     label={`Delegate: ${seed.delegateSeed}`}
                     color="default"
+                    variant="outlined"
                     sx={{
                       borderRadius: 0,
                       height: 24,
@@ -159,6 +164,7 @@ function ManageIdentities(props) {
                   <Chip
                     label={`Security: ${seed.securitySeed}`}
                     color="default"
+                    variant="outlined"
                     sx={{
                       borderRadius: 0,
                       height: 24,
@@ -172,7 +178,7 @@ function ManageIdentities(props) {
                     icon={seed.locked ? <LockIcon /> : <LockOpenIcon />}
                     sx={{
                       borderRadius: 0,
-                      height: 32,
+                      height: 28,
                       border: 1,
                       borderColor: 'black',
                     }}
@@ -185,7 +191,7 @@ function ManageIdentities(props) {
                     }
                     sx={{
                       borderRadius: 0,
-                      height: 32,
+                      height: 28,
                       border: 1,
                       borderColor: 'black',
                     }}

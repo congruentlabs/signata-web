@@ -79,12 +79,9 @@ function YourAccount(props) {
   const onUnlockPassword = (e) => {
     e.preventDefault();
     const salt = CryptoJS.enc.Hex.parse(config.salt);
-    console.log(salt.toString());
     const hashedPassword = CryptoJS.PBKDF2(password, salt, {
       iterations: 10000,
     });
-    console.log(hashedPassword.toString());
-    console.log(config.hashedPassword);
     if (hashedPassword.toString() === config.hashedPassword) {
       setEncryptionPassword(password);
     } else {
