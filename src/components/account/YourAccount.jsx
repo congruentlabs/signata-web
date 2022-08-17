@@ -210,10 +210,10 @@ function YourAccount(props) {
                 fullWidth
                 orientation={isSm ? 'horizontal' : 'vertical'}
               >
-                <Button color="secondary" variant="contained">
+                <Button color="secondary" variant="contained" disabled>
                   Download Backup
                 </Button>
-                <Button color="secondary" variant="contained">
+                <Button color="secondary" variant="contained" disabled>
                   Restore Backup
                 </Button>
               </ButtonGroup>
