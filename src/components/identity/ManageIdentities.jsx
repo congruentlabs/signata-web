@@ -97,6 +97,13 @@ function ManageIdentities(props) {
 
   const onDeleteSeed = (e, seed) => {
     e.preventDefault();
+    const newSeeds = [];
+    seeds.forEach((s) => {
+      if (s.identitySeed !== seed.identitySeed) {
+        newSeeds.push(s);
+      }
+    });
+    setSeeds(newSeeds);
   };
 
   const onDestroySeed = (e, seed) => {

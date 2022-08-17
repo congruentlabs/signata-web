@@ -164,8 +164,8 @@ function App() {
             container
             spacing={2}
             direction="row"
-            alignItems="stretch"
             justifyContent="center"
+            alignItems="stretch"
           >
             {!account && <ProductOverview />}
             {!account && <NoConnectionWarning />}

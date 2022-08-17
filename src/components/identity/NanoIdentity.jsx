@@ -156,7 +156,7 @@ function NanoIdentity() {
   };
 
   return (
-    <Grid item xs={12} md={6}>
+    <Grid item xs={12} md={6} sx={{ height: '100%' }}>
       <ItemBox>
         <ItemHeader text="Your Nano Identity" />
         <CardContent>
