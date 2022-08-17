@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
 import { useTheme } from '@mui/material/styles';
-import { grey } from '@mui/material/colors';
 import { shortenIfAddress } from '@usedapp/core';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -13,7 +12,6 @@ import UploadIcon from '@mui/icons-material/Upload';
 import {
   Alert,
   AlertTitle,
-  Box,
   Button,
   ButtonGroup,
   CardActions,
@@ -27,6 +25,8 @@ import {
 import CreateIdentityPopup from './CreateIdentityPopup';
 import EditIdentityPopup from './EditIdentityPopup';
 import ImportIdentityPopup from './ImportIdentityPopup';
+import ItemHeader from '../app/ItemHeader';
+import ItemBox from '../app/ItemBox';
 
 const headings = [
   { text: 'Name', align: 'left' },
@@ -60,33 +60,10 @@ function ManageIdentities() {
       {identities
         && identities.map((id) => (
           <Grid item xs={12} md={6} key={id.id}>
-            <Box
-              sx={{
-                minHeight: {
-                  md: 350,
-                },
-                borderRadius: 0,
-                border: 1,
-                borderColor: grey[600],
-                backgroundColor: grey[50],
-              }}
-            >
+            <ItemBox>
+              <ItemHeader title={`Identity: ${id.name}`} />
               <CardContent>
                 <Stack spacing={1}>
-                  <Typography
-                    variant="h6"
-                    align="center"
-                    sx={{
-                      background: grey[300],
-                      fontFamily: 'Roboto Condensed',
-                      border: 1,
-                      borderColor: 'black',
-                    }}
-                  >
-                    Identity:
-                    {' '}
-                    {id.name}
-                  </Typography>
                   <Chip
                     label={id.address && shortenIfAddress(id.address)}
                     color="default"
@@ -147,34 +124,13 @@ function ManageIdentities() {
                   Edit
                 </Button>
               </CardActions>
-            </Box>
+            </ItemBox>
           </Grid>
         ))}
 
       <Grid item xs={12} md={6}>
-        <Box
-          sx={{
-            minHeight: {
-              md: 350,
-            },
-            borderRadius: 0,
-            border: 1,
-            borderColor: grey[600],
-            backgroundColor: grey[50],
-          }}
-        >
-          <Typography
-            variant="h6"
-            align="center"
-            sx={{
-              background: grey[300],
-              fontFamily: 'Roboto Condensed',
-              borderBottom: 1,
-              borderColor: grey[600],
-            }}
-          >
-            Add Identity
-          </Typography>
+        <ItemBox>
+          <ItemHeader text="Add Identity" />
           <CardContent>
             <Stack spacing={1}>
 
@@ -184,16 +140,16 @@ function ManageIdentities() {
                 buttons below. You can create unlimited identities, each for a specific purpose.
               </Alert>
               {identities && identities.length < 1 && (
-                <Chip
-                  label="No Identities Created"
-                  color="warning"
-                  sx={{
-                    borderRadius: 0,
-                    height: 48,
-                    border: 1,
-                    borderColor: 'black',
-                  }}
-                />
+              <Chip
+                label="No Identities Created"
+                color="warning"
+                sx={{
+                  borderRadius: 0,
+                  height: 48,
+                  border: 1,
+                  borderColor: 'black',
+                }}
+              />
               )}
               <ButtonGroup fullWidth orientation={isSm ? 'horizontal' : 'vertical'}>
                 <Button
@@ -215,7 +171,7 @@ function ManageIdentities() {
               </ButtonGroup>
             </Stack>
           </CardContent>
-        </Box>
+        </ItemBox>
       </Grid>
     </>
   );

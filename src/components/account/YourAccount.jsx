@@ -1,102 +1,229 @@
 import React, { useState } from 'react';
 import { grey } from '@mui/material/colors';
 import { useTheme } from '@mui/material/styles';
+import CryptoJS from 'crypto-js';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
   Grid,
-  Box,
+  Chip,
   CardContent,
-  CardActions,
   ButtonGroup,
   Button,
   Stack,
-  Typography,
-  Chip,
   Alert,
   AlertTitle,
   TextField,
   useMediaQuery,
 } from '@mui/material';
+import ItemHeader from '../app/ItemHeader';
+import ItemBox from '../app/ItemBox';
 
-function YourAccount() {
+function YourAccount(props) {
+  const {
+    config, setConfig, isPersistent, setEncryptionPassword, unlocked,
+  } = props;
+  const [password, setPassword] = useState('');
+  const [passwordRepeat, setPasswordRepeat] = useState('');
+  const [firstErrorMessage, setFirstErrorMessage] = useState('');
+  const [secondErrorMessage, setSecondErrorMessage] = useState('');
+  const [showCapsWarning, setShowCapsWarning] = useState(false);
   const theme = useTheme();
   const isSm = useMediaQuery(theme.breakpoints.up('sm'), {
     defaultMatches: true,
   });
+
+  const onChangePassword = (e) => {
+    setPassword(e.target.value);
+    if (e.target.value.length < 12) {
+      setFirstErrorMessage('Password needs to be longer than 12 characters');
+    } else {
+      setFirstErrorMessage('');
+    }
+  };
+
+  const onChangePasswordRepeat = (e) => {
+    setPasswordRepeat(e.target.value);
+    if (e.target.value !== password) {
+      setSecondErrorMessage('Password does not match');
+    } else {
+      setSecondErrorMessage('');
+    }
+  };
+
+  const onKeyDown = (keyEvent) => {
+    if (keyEvent.getModifierState('CapsLock')) {
+      setShowCapsWarning(true);
+    } else {
+      setShowCapsWarning(false);
+    }
+  };
+
+  const onCreatePassword = (e) => {
+    e.preventDefault();
+    // set the password globally
+    setEncryptionPassword(password);
+    // hash the password so we can verify it later
+    const salt = CryptoJS.lib.WordArray.random(128 / 8);
+    const hashedPassword = CryptoJS.PBKDF2(password, salt, {
+      iterations: 10000,
+    });
+    // mark the config as hasAccount
+    setConfig({
+      ...config,
+      hasAccount: true,
+      salt: salt.toString(),
+      hashedPassword: hashedPassword.toString(),
+    });
+  };
+
+  const onUnlockPassword = (e) => {
+    e.preventDefault();
+    const salt = CryptoJS.enc.Hex.parse(config.salt);
+    console.log(salt.toString());
+    const hashedPassword = CryptoJS.PBKDF2(password, salt, {
+      iterations: 10000,
+    });
+    console.log(hashedPassword.toString());
+    console.log(config.hashedPassword);
+    if (hashedPassword.toString() === config.hashedPassword) {
+      setEncryptionPassword(password);
+    } else {
+      setFirstErrorMessage('Incorrect password!');
+    }
+  };
+
   return (
     <Grid item xs={12} md={6}>
-      <Box
-        sx={{
-          minHeight: {
-            md: 350,
-          },
-          borderRadius: 0,
-          border: 1,
-          borderColor: grey[600],
-          backgroundColor: grey[50],
-        }}
-      >
-        <Typography
-          variant="h6"
-          align="center"
-          sx={{
-            background: grey[300],
-            fontFamily: 'Roboto Condensed',
-            borderBottom: 1,
-            borderColor: grey[600],
-          }}
-        >
-          Your Account
-        </Typography>
+      <ItemBox>
+        <ItemHeader text="Your Account" />
         <CardContent>
-          <Stack spacing={1}>
-            <TextField label="Password" variant="filled" color="secondary" size="small" />
-            <ButtonGroup
-              fullWidth
-              orientation={isSm ? 'horizontal' : 'vertical'}
-            >
-              <Button
-                color="primary"
-                variant="contained"
-                // disabled={isLoading}
-                // startIcon={<AddIcon />}
-                // onClick={handleClickCreate}
+
+          {(!config || !config.hasAccount) && (
+            <form onSubmit={onCreatePassword}>
+              <Stack spacing={1}>
+                {!isPersistent && (
+                  <Alert severity="error">
+                    <AlertTitle>Not Persistent</AlertTitle>
+                    This device won&apos;t save your data once you leave this app.
+                    It is not safe to use Signata on this device as you may lose
+                    your identity data.
+                  </Alert>
+                )}
+                <Alert severity="info">
+                  Your password encrypts all of your identities. Your identities are
+                  only saved on this device. If you clear your browser cache, or use
+                  this app in a private window, you might lose your data once you
+                  leave this app.
+                </Alert>
+                <TextField
+                  label="Password"
+                  variant="outlined"
+                  color="info"
+                  type="password"
+                  size="small"
+                  onKeyDown={onKeyDown}
+                  value={password}
+                  error={firstErrorMessage !== ''}
+                  onChange={onChangePassword}
+                  helperText={firstErrorMessage}
+                />
+                <TextField
+                  label="Repeat Password"
+                  variant="outlined"
+                  color="info"
+                  type="password"
+                  size="small"
+                  onKeyDown={onKeyDown}
+                  value={passwordRepeat}
+                  error={secondErrorMessage !== ''}
+                  onChange={onChangePasswordRepeat}
+                  helperText={secondErrorMessage}
+                />
+                {showCapsWarning && (
+                  <Alert severity="warning">Caps Lock is On</Alert>
+                )}
+                <ButtonGroup
+                  fullWidth
+                  orientation={isSm ? 'horizontal' : 'vertical'}
+                >
+                  {(!config || !config.hasAccount) && (
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    disabled={
+                          !password
+                          || password.length < 1
+                          || password !== passwordRepeat
+                        }
+                    onClick={onCreatePassword}
+                  >
+                    Set Password
+                  </Button>
+                  )}
+                </ButtonGroup>
+              </Stack>
+            </form>
+          )}
+
+          {config && config.hasAccount && !unlocked && (
+            <form onSubmit={onUnlockPassword}>
+              <Stack spacing={1}>
+                {!isPersistent && (
+                  <Alert severity="error">
+                    <AlertTitle>Not Persistent</AlertTitle>
+                    This device won&apos;t save your data once you leave this app.
+                    It is not safe to use Signata on this device as you may lose
+                    your identity data.
+                  </Alert>
+                )}
+                <Alert severity="info">
+                  Unlock your account to access your identities.
+                </Alert>
+                <TextField
+                  label="Password"
+                  variant="outlined"
+                  color="info"
+                  type="password"
+                  size="small"
+                  onKeyDown={onKeyDown}
+                  value={password}
+                  error={firstErrorMessage !== ''}
+                  onChange={onChangePassword}
+                  helperText={firstErrorMessage}
+                />
+                {showCapsWarning && (
+                <Alert severity="warning">Caps Lock is On</Alert>
+                )}
+                <Button
+                  color="primary"
+                  variant="contained"
+                  disabled={!password || password.length < 1}
+                  onClick={onUnlockPassword}
+                >
+                  Unlock
+                </Button>
+              </Stack>
+            </form>
+          )}
+
+          {config && config.hasAccount && unlocked && (
+            <Stack spacing={1}>
+              <Alert severity="success">Account Unlocked</Alert>
+              <ButtonGroup
+                fullWidth
+                orientation={isSm ? 'horizontal' : 'vertical'}
               >
-                Unlock
-              </Button>
-            </ButtonGroup>
-            <Alert severity="info">
-              Your password encrypts all of your identities. Your identities are
-              only stored on this device. You can download a copy of your account to
-              back it up, or use the Cloud Addon to securely back up on Signata
-              servers.
-            </Alert>
-            <ButtonGroup
-              fullWidth
-              size="small"
-              orientation={isSm ? 'horizontal' : 'vertical'}
-            >
-              <Button
-                color="secondary"
-                variant="outlined"
-                // disabled={isLoading}
-                // startIcon={<AddIcon />}
-                // onClick={handleClickCreate}
-              >
-                Download
-              </Button>
-              <Button
-                color="secondary"
-                variant="outlined"
-                // disabled={isLoading}
-                // startIcon={<AddIcon />}
-                // onClick={handleClickCreate}
-              >
-                Restore
-              </Button>
-            </ButtonGroup>
-          </Stack>
+                <Button color="secondary" variant="contained">
+                  Download Backup
+                </Button>
+                <Button color="secondary" variant="contained">
+                  Restore Backup
+                </Button>
+              </ButtonGroup>
+            </Stack>
+          )}
         </CardContent>
-      </Box>
+      </ItemBox>
     </Grid>
   );
 }

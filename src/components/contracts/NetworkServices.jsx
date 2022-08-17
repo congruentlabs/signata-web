@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useEthers, DEFAULT_SUPPORTED_CHAINS } from '@usedapp/core';
 import { grey } from '@mui/material/colors';
 import {
   Grid,
@@ -11,10 +12,14 @@ import {
   AlertTitle,
 } from '@mui/material';
 
-export function NetworkServices() {
+function NetworkServices() {
+  const { chainId } = useEthers();
   const [services, setServices] = useState([
     // { id: 1, status: 'Available', name: 'Test' },
   ]);
+  const chainName = DEFAULT_SUPPORTED_CHAINS.find(
+    (network) => network.chainId === chainId,
+  )?.chainName;
   return (
     <Grid item xs={12} md={6}>
       <Box
@@ -38,6 +43,8 @@ export function NetworkServices() {
             borderColor: grey[600],
           }}
         >
+          {chainName}
+          {' '}
           Network Services
         </Typography>
         <CardContent>

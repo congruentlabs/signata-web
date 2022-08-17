@@ -1,31 +1,26 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useEthers, useTokenBalance } from '@usedapp/core';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { createTheme, ThemeProvider, experimental_sx as sx } from '@mui/material/styles';
+import useLocalStorageState from 'use-local-storage-state';
+import {
+  createTheme,
+  ThemeProvider,
+  experimental_sx as sx,
+} from '@mui/material/styles';
 import {
   Box, Container, Grid, CssBaseline,
 } from '@mui/material';
 import {
   lime, blue, grey, orange, red,
 } from '@mui/material/colors';
-import useLocalStorageState from 'use-local-storage-state';
 import {
   AppFooter,
   AppHeader,
   NoConnectionWarning,
   NetworkServices,
   ProductOverview,
-  NoPersistenceWarning,
-  Extras,
   ManageIdentities,
-  NoAccountSection,
 } from './components';
-import {
-  useUniswapSataPriceData,
-  useUniswapDSataPriceData,
-  useCoingeckoPrice,
-  getTokenContractAddress,
-} from './hooks/chainHooks';
 import secureStorage from './utils/secureStorage';
 import NanoIdentity from './components/identity/NanoIdentity';
 import YourAccount from './components/account/YourAccount';
@@ -33,18 +28,14 @@ import YourAccount from './components/account/YourAccount';
 const dSataContractAddress = '0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b';
 
 function App() {
-  const {
-    activateBrowserWallet, account, chainId, active, deactivate,
-  } = useEthers();
-  const sataBalance = useTokenBalance(getTokenContractAddress(chainId), account);
-  const dSataBalance = useTokenBalance(dSataContractAddress, account);
-  const sataPriceData = useUniswapSataPriceData();
-  const dSataPriceData = useUniswapDSataPriceData();
+  const { activateBrowserWallet, account, deactivate } = useEthers();
+  // const sataBalance = useTokenBalance(getTokenContractAddress(chainId), account);
+  // const dSataBalance = useTokenBalance(dSataContractAddress, account);
+  // const sataPriceData = useUniswapSataPriceData();
+  // const dSataPriceData = useUniswapDSataPriceData();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [isSetup, setIsSetup] = useState(false);
-  const [signataAccountKey, setSignataAccountKey] = useState(null);
-  const [signataEncryptionKey, setSignataEncryptionKey] = useState(null);
-  const ethPrice = useCoingeckoPrice('ethereum', 'usd');
+  // const [isSetup, setIsSetup] = useState(false);
+  // const [signataEncryptionKey, setSignataEncryptionKey] = useState(null);
   // const [services, setServices] = useState([
   //   {
   //     id: 1,
@@ -68,40 +59,33 @@ function App() {
 
   const [config, setConfig, isPersistent] = useLocalStorageState('config', []);
   const [seeds, setSeeds] = useState([]);
-  const [password, setPassword] = useState('');
-  // const [wallets, setWallets] = useLocalStorageState('wallets', []);
-  // const [devices, setDevices] = useLocalStorageState('devices', []);
-  // const [secureNotes, setSecureNotes] = useLocalStorageState('secureNotes', []);
+  const [encryptionPassword, setEncryptionPassword] = useState('');
 
   useEffect(() => {
-    console.log(config || 'no config found');
-    if (config && !config.accountId) {
-      setIsSetup(false);
+    if (seeds && encryptionPassword) {
+      // update the localStorage with seeds every time they're changed
+      setSeeds(secureStorage(encryptionPassword).setItem('seeds', seeds));
+      // update the lastSaved for any sync jobs
+      setConfig({ ...config, lastSaved: Date.now() });
     }
-    // if an accountId is present, then they've set up their account already, so
-    // close the setup section
-    if (config && config.accountId) {
-      setIsSetup(true);
-    }
-    // if (config && !config.encryptedKey) {
-    //   setShowCreatePasswordPopup(true);
-    // }
-    // if (config && config.encryptedKey && !signataAccountKey) {
-    //   setShowUnlockAccountPopup(true);
-    // }
-  }, [config, signataAccountKey]);
+  }, [seeds, encryptionPassword, setConfig, config]);
 
   useEffect(() => {
-    if (seeds) {
-      setSeeds(secureStorage(password).setItem('seeds', seeds));
+    if (encryptionPassword) {
+      try {
+        const dat = secureStorage(encryptionPassword).getItem('seeds');
+        console.log(dat);
+        if (dat === null) {
+          setSeeds([]);
+        } else {
+          setSeeds(dat);
+        }
+      } catch (e) {
+        console.error(e);
+        setSeeds([]);
+      }
     }
-  }, [seeds, password]);
-
-  useEffect(() => {
-    if (password) {
-      setSeeds(secureStorage(password).getItem('seeds'));
-    }
-  }, [password]);
+  }, [encryptionPassword]);
 
   useEffect(() => {
     activateBrowserWallet(); // just try to auto activate on load for metamask users
@@ -154,7 +138,6 @@ function App() {
   );
 
   const handleClickDisconnect = () => {
-    setSignataAccountKey({});
     deactivate();
   };
 
@@ -184,21 +167,16 @@ function App() {
           >
             {!account && <ProductOverview />}
             {!account && <NoConnectionWarning />}
-            {account && !isPersistent && <NoPersistenceWarning />}
+            {account && <NanoIdentity />}
+            {account && encryptionPassword && <ManageIdentities />}
             {account && (
-              <NanoIdentity />
-            )}
-            {account && !isSetup && (
-              <NoAccountSection
-                active={active}
-                setSignataEncryptionKey={setSignataEncryptionKey}
+              <YourAccount
+                config={config}
+                setConfig={setConfig}
+                isPersistent={isPersistent}
+                setEncryptionPassword={setEncryptionPassword}
+                unlocked={encryptionPassword !== ''}
               />
-            )}
-            {account && isSetup && (
-              <ManageIdentities />
-            )}
-            {account && (
-              <YourAccount />
             )}
             {/* {account && isSetup && (
               <Extras
@@ -210,9 +188,7 @@ function App() {
                 ethPrice={ethPrice}
               />
             )} */}
-            {account && isSetup && (
-              <NetworkServices />
-            )}
+            {account && encryptionPassword && <NetworkServices />}
           </Grid>
         </Box>
       </Container>

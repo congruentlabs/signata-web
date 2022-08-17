@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useEthers, shortenIfAddress } from '@usedapp/core';
 import { useTheme } from '@mui/material/styles';
-import { grey } from '@mui/material/colors';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import LockIcon from '@mui/icons-material/Lock';
@@ -11,16 +10,12 @@ import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import {
   Alert,
-  AlertTitle,
-  Box,
   Button,
   ButtonGroup,
-  CardActions,
   CardContent,
   Chip,
   Grid,
   Stack,
-  Typography,
   useMediaQuery,
 } from '@mui/material';
 import {
@@ -32,6 +27,8 @@ import {
   useSelfLockNano,
 } from '../../hooks/chainHooks';
 import LoadingState from './LoadingState';
+import ItemHeader from '../app/ItemHeader';
+import ItemBox from '../app/ItemBox';
 
 function NanoIdentity() {
   const { chainId, account } = useEthers();
@@ -160,29 +157,8 @@ function NanoIdentity() {
 
   return (
     <Grid item xs={12} md={6}>
-      <Box
-        sx={{
-          minHeight: {
-            md: 350,
-          },
-          borderRadius: 0,
-          border: 1,
-          borderColor: grey[600],
-          backgroundColor: grey[50],
-        }}
-      >
-        <Typography
-          variant="h6"
-          align="center"
-          sx={{
-            background: grey[300],
-            fontFamily: 'Roboto Condensed',
-            borderBottom: 1,
-            borderColor: grey[600],
-          }}
-        >
-          Your Nano Identity
-        </Typography>
+      <ItemBox>
+        <ItemHeader text="Your Nano Identity" />
         <CardContent>
           <Stack spacing={1}>
             {identityExists ? (
@@ -245,7 +221,7 @@ function NanoIdentity() {
                   startIcon={<AddIcon />}
                   onClick={handleClickCreate}
                 >
-                  Create
+                  Create Nano ID
                 </Button>
               )}
               {identityExists === true && identityLocked === false && (
@@ -270,20 +246,20 @@ function NanoIdentity() {
                   Delegate
                 </Button>
               )}
-              <Button
+              {/* <Button
                 color="inherit"
                 target="_blank"
                 href="https://docs.signata.net/"
                 startIcon={<QuestionMarkIcon />}
               >
                 Help
-              </Button>
+              </Button> */}
             </ButtonGroup>
           </Stack>
         </CardContent>
         <LoadingState state={createState} />
         <LoadingState state={lockState} />
-      </Box>
+      </ItemBox>
     </Grid>
   );
 }

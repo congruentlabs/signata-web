@@ -22,7 +22,6 @@ const pages = [
 function AppHeader({
   account,
   handleClickDisconnect,
-  handleClickReplacePassword,
 }) {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
@@ -40,12 +39,6 @@ function AppHeader({
         name: 'Privacy Policy',
         href: 'privacy.pdf',
         color: 'secondary',
-      },
-      {
-        name: 'Replace Password',
-        useClickEvent: true,
-        onClick: handleClickReplacePassword,
-        color: 'warning',
       },
       {
         name: 'Disconnect',

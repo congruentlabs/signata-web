@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
 import { grey } from '@mui/material/colors';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
-import Button from '@mui/material/Button';
-import UploadIcon from '@mui/icons-material/Upload';
 import AddIcon from '@mui/icons-material/Add';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
+import UploadIcon from '@mui/icons-material/Upload';
+import { useTheme } from '@mui/material/styles';
+import {
+  ButtonGroup,
+  Alert,
+  AlertTitle,
+  Button,
+  Grid,
+  Box,
+  CardContent,
+  CardActions,
+  Stack,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import {
   mnemonicToEntropy,
   validateMnemonic,
@@ -24,18 +29,17 @@ import CreateAccountPopup from './CreateAccountPopup';
 import ImportAccountPopup from './ImportAccountPopup';
 
 function NoAccountSection(props) {
-  const {
-    setSignataEncryptionKey,
-    setSignataAccountKey,
-  } = props;
+  const { setSignataEncryptionKey, setSignataAccountKey } = props;
   const [config, setConfig] = useLocalStorageState('config', []);
   const [showCreateAccountPopup, setShowCreateAccountPopup] = useState(false);
   const [showImportAccountPopup, setShowImportAccountPopup] = useState(false);
   const [accountError, setAccountError] = useState('');
+  const theme = useTheme();
+  const isSm = useMediaQuery(theme.breakpoints.up('sm'), {
+    defaultMatches: true,
+  });
 
-  const handleClickCreate = async (
-    recoveryPassphrase,
-  ) => {
+  const handleClickCreate = async (recoveryPassphrase) => {
     console.log('handleClickConfirmCreateAccount');
     setAccountError('');
     try {
@@ -103,35 +107,41 @@ function NoAccountSection(props) {
                 variant="h6"
                 align="center"
                 sx={{
-                  background: grey[300], fontFamily: 'Roboto Condensed', border: 1, borderColor: 'black',
+                  background: grey[300],
+                  fontFamily: 'Roboto Condensed',
+                  border: 1,
+                  borderColor: 'black',
                 }}
               >
                 Your Signata Account
               </Typography>
               <Alert severity="info" sx={{ borderRadius: 0, border: 1 }}>
                 <AlertTitle>No Signata Account on this Device</AlertTitle>
-                This device has not been set up with a Signata account. Create a new
-                account, or import your existing account.
+                This device has not been set up with a Signata account. Create a
+                new account, or import your existing account.
               </Alert>
+              <ButtonGroup
+                fullWidth
+                orientation={isSm ? 'horizontal' : 'vertical'}
+              >
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={() => setShowCreateAccountPopup(true)}
+                  startIcon={<AddIcon />}
+                >
+                  Create Account
+                </Button>
+                <Button
+                  color="secondary"
+                  onClick={() => setShowImportAccountPopup(true)}
+                  startIcon={<UploadIcon />}
+                >
+                  Import Account
+                </Button>
+              </ButtonGroup>
             </Stack>
           </CardContent>
-          <CardActions sx={{ justifyContent: 'center' }}>
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={() => setShowCreateAccountPopup(true)}
-              startIcon={<AddIcon />}
-            >
-              Create Account
-            </Button>
-            <Button
-              color="secondary"
-              onClick={() => setShowImportAccountPopup(true)}
-              startIcon={<UploadIcon />}
-            >
-              Import Account
-            </Button>
-          </CardActions>
         </Box>
       </Grid>
     </>
