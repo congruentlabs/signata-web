@@ -8,7 +8,7 @@ function ItemHeader(props) {
     <Box
       sx={{
         minHeight: {
-          md: 350,
+          md: 300,
         },
         borderRadius: 0,
         border: 1,

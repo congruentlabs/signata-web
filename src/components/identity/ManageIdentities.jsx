@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
 import { useTheme } from '@mui/material/styles';
 import { shortenIfAddress } from '@usedapp/core';
+import { generateMnemonic } from 'ethereum-cryptography/bip39';
+import { wordlist } from 'ethereum-cryptography/bip39/wordlists/english';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import UploadIcon from '@mui/icons-material/Upload';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Alert,
-  AlertTitle,
   Button,
   ButtonGroup,
   CardActions,
@@ -19,6 +20,7 @@ import {
   Chip,
   Grid,
   Stack,
+  TextField,
   Typography,
   useMediaQuery,
 } from '@mui/material';
@@ -28,27 +30,77 @@ import ImportIdentityPopup from './ImportIdentityPopup';
 import ItemHeader from '../app/ItemHeader';
 import ItemBox from '../app/ItemBox';
 
-const headings = [
-  { text: 'Name', align: 'left' },
-  { text: 'Address', align: 'left' },
-  { text: 'Type', align: 'center' },
-  { text: 'Registered', align: 'center' },
-  { text: 'Locked', align: 'center' },
-];
-
-function ManageIdentities() {
+function ManageIdentities(props) {
+  const { seeds, setSeeds } = props;
   const theme = useTheme();
+  const isSm = useMediaQuery(theme.breakpoints.up('sm'), {
+    defaultMatches: true,
+  });
   const [showCreateIdentityPopup, setShowCreateIdentityPopup] = useState(false);
   const [showImportIdentityPopup, setShowImportIdentityPopup] = useState(false);
   const [editingIdentity, setEditingIdentity] = useState(null);
   const [showEditIdentityPopup, setShowEditIdentityPopup] = useState(false);
   const [identities, setIdentities] = useLocalStorageState('identities', []);
-  const isSm = useMediaQuery(theme.breakpoints.up('sm'), {
-    defaultMatches: true,
-  });
-  // const identities = [{
-  //   id: 1, name: 'Test', locked: false, type: 'Standard', registered: true, address: '0xce95DAde44E7307bAA616C77EF446915633dD9Ab',
-  // }];
+  const [identitySeed, setIdentitySeed] = useState('');
+  const [delegateSeed, setDelegateSeed] = useState('');
+  const [securitySeed, setSecuritySeed] = useState('');
+
+  const onCreateIdentity = (e) => {
+    e.preventDefault();
+    console.log(seeds);
+    const newSeeds = Array.from(seeds);
+    newSeeds.push({
+      identitySeed, delegateSeed, securitySeed, name: 'New Identity',
+    });
+    setSeeds(newSeeds);
+    setIdentitySeed('');
+    setDelegateSeed('');
+    setSecuritySeed('');
+  };
+
+  const onClickGenerate = (e) => {
+    e.preventDefault();
+    setIdentitySeed(generateMnemonic(wordlist));
+    setDelegateSeed(generateMnemonic(wordlist));
+    setSecuritySeed(generateMnemonic(wordlist));
+  };
+
+  const onRenameSeed = (e, seed) => {
+    e.preventDefault();
+    let newSeed = seed;
+    const newSeeds = Array.from(seeds);
+    newSeeds.forEach((s, idx) => {
+      if (s.identitySeed === seed.identitySeed) {
+        newSeed = { ...newSeed, name: 'test' };
+        newSeeds[idx] = newSeed;
+      }
+    });
+    setSeeds(newSeeds);
+  };
+
+  const onRegisterSeed = (e, seed) => {
+    e.preventDefault();
+  };
+
+  const onLockSeed = (e, seed) => {
+    e.preventDefault();
+  };
+
+  const onUnlockSeed = (e, seed) => {
+    e.preventDefault();
+  };
+
+  const onRolloverSeed = (e, seed) => {
+    e.preventDefault();
+  };
+
+  const onDeleteSeed = (e, seed) => {
+    e.preventDefault();
+  };
+
+  const onDestroySeed = (e, seed) => {
+    e.preventDefault();
+  };
 
   return (
     <>
@@ -57,15 +109,15 @@ function ManageIdentities() {
       {showEditIdentityPopup && (
         <EditIdentityPopup editingIdentity={editingIdentity} />
       )}
-      {identities
-        && identities.map((id) => (
-          <Grid item xs={12} md={6} key={id.id}>
+      {seeds
+        && seeds.map((seed) => (
+          <Grid item xs={12} md={6} key={seed.id}>
             <ItemBox>
-              <ItemHeader title={`Identity: ${id.name}`} />
+              <ItemHeader text={`Identity: ${seed.name || 'Unnamed'}`} />
               <CardContent>
                 <Stack spacing={1}>
-                  <Chip
-                    label={id.address && shortenIfAddress(id.address)}
+                  {/* <Chip
+                    label={seed.address && shortenIfAddress(seed.address)}
                     color="default"
                     sx={{
                       borderRadius: 0,
@@ -73,57 +125,134 @@ function ManageIdentities() {
                       border: 1,
                       borderColor: 'black',
                     }}
-                  />
+                  /> */}
                   <Chip
-                    label={`Type: ${id.type}`}
+                    label={`Chain: ${seed.chain}`}
                     color="default"
                     sx={{
                       borderRadius: 0,
-                      height: 48,
+                      height: 24,
                       border: 1,
                       borderColor: 'black',
                     }}
                   />
                   <Chip
-                    label={id.locked ? 'Locked' : 'Unlocked'}
-                    color={id.locked ? 'error' : 'success'}
-                    icon={id.locked ? <LockIcon /> : <LockOpenIcon />}
+                    label={`Identity: ${seed.identitySeed}`}
+                    color="default"
                     sx={{
                       borderRadius: 0,
-                      height: 48,
+                      height: 24,
                       border: 1,
                       borderColor: 'black',
                     }}
                   />
                   <Chip
-                    label={id.registered ? 'Registered' : 'Unregistered'}
-                    color={id.registered ? 'success' : 'warning'}
+                    label={`Delegate: ${seed.delegateSeed}`}
+                    color="default"
+                    sx={{
+                      borderRadius: 0,
+                      height: 24,
+                      border: 1,
+                      borderColor: 'black',
+                    }}
+                  />
+                  <Chip
+                    label={`Security: ${seed.securitySeed}`}
+                    color="default"
+                    sx={{
+                      borderRadius: 0,
+                      height: 24,
+                      border: 1,
+                      borderColor: 'black',
+                    }}
+                  />
+                  <Chip
+                    label={seed.locked ? 'Locked' : 'Unlocked'}
+                    color={seed.locked ? 'error' : 'success'}
+                    icon={seed.locked ? <LockIcon /> : <LockOpenIcon />}
+                    sx={{
+                      borderRadius: 0,
+                      height: 32,
+                      border: 1,
+                      borderColor: 'black',
+                    }}
+                  />
+                  <Chip
+                    label={seed.registered ? 'Registered' : 'Unregistered'}
+                    color={seed.registered ? 'success' : 'info'}
                     icon={
-                      id.registered ? <HowToRegIcon /> : <ErrorOutlineIcon />
+                      seed.registered ? <HowToRegIcon /> : <ErrorOutlineIcon />
                     }
                     sx={{
                       borderRadius: 0,
-                      height: 48,
+                      height: 32,
                       border: 1,
                       borderColor: 'black',
                     }}
                   />
-                  <Typography />
+                  <ButtonGroup
+                    fullWidth
+                    size="small"
+                    variant="contained"
+                    color="inherit"
+                    orientation={isSm ? 'horizontal' : 'vertical'}
+                  >
+                    {!seed.registered && (
+                      <Button
+                        onClick={(e) => onRegisterSeed(e, seed)}
+                        color="primary"
+                      >
+                        Register
+                      </Button>
+                    )}
+                    <Button
+                      onClick={(e) => onRenameSeed(e, seed)}
+                      // startIcon={<EditIcon />}
+                    >
+                      Rename
+                    </Button>
+                    {seed.registered && !seed.locked && (
+                      <Button
+                        onClick={(e) => onLockSeed(e, seed)}
+                        // startIcon={<EditIcon />}
+                      >
+                        Lock
+                      </Button>
+                    )}
+                    {seed.registered && seed.locked && (
+                      <Button
+                        onClick={(e) => onUnlockSeed(e, seed)}
+                      >
+                        Unlock
+                      </Button>
+                    )}
+                    {seed.registered && (
+                    <Button
+                      onClick={(e) => onRolloverSeed(e, seed)}
+                      // startIcon={<EditIcon />}
+                    >
+                      Rollover
+                    </Button>
+                    )}
+                    {seed.registered && (
+                      <Button
+                        onClick={(e) => onDestroySeed(e, seed)}
+                        // startIcon={<EditIcon />}
+                      >
+                        Destroy
+                      </Button>
+                    )}
+                    {!seed.registered && (
+                      <Button
+                        onClick={(e) => onDeleteSeed(e, seed)}
+                        // startIcon={<EditIcon />}
+                      >
+                        Delete
+                      </Button>
+                    )}
+                  </ButtonGroup>
                 </Stack>
               </CardContent>
-              <CardActions sx={{ justifyContent: 'center' }}>
-                <Button
-                  onClick={() => {
-                    setEditingIdentity(id);
-                    setShowEditIdentityPopup(id);
-                  }}
-                  color="secondary"
-                  variant="contained"
-                  startIcon={<EditIcon />}
-                >
-                  Edit
-                </Button>
-              </CardActions>
             </ItemBox>
           </Grid>
         ))}
@@ -133,40 +262,52 @@ function ManageIdentities() {
           <ItemHeader text="Add Identity" />
           <CardContent>
             <Stack spacing={1}>
-
               <Alert severity="info">
-                <AlertTitle>About Identities</AlertTitle>
-                Full Signata Identities can be created or imported using the
-                buttons below. You can create unlimited identities, each for a specific purpose.
+                Signata identities can be created by generating new seeds below,
+                or specifying your own seeds if you want to import an existing
+                identity.
               </Alert>
-              {identities && identities.length < 1 && (
-              <Chip
-                label="No Identities Created"
-                color="warning"
-                sx={{
-                  borderRadius: 0,
-                  height: 48,
-                  border: 1,
-                  borderColor: 'black',
-                }}
+              <TextField
+                label="Identity Seed"
+                variant="outlined"
+                color="info"
+                size="small"
+                value={identitySeed}
               />
-              )}
-              <ButtonGroup fullWidth orientation={isSm ? 'horizontal' : 'vertical'}>
+              <TextField
+                label="Delegate Seed"
+                variant="outlined"
+                color="info"
+                size="small"
+                value={delegateSeed}
+              />
+              <TextField
+                label="Security Seed"
+                variant="outlined"
+                color="info"
+                size="small"
+                value={securitySeed}
+              />
+              <ButtonGroup
+                fullWidth
+                orientation={isSm ? 'horizontal' : 'vertical'}
+              >
                 <Button
                   color="primary"
-                  onClick={() => setShowCreateIdentityPopup(true)}
+                  onClick={onCreateIdentity}
                   variant="contained"
+                  disabled={!identitySeed || !delegateSeed || !securitySeed}
                   startIcon={<AddIcon />}
                 >
-                  Create Identity
+                  Add Identity
                 </Button>
                 <Button
-                  color="secondary"
-                  onClick={() => setShowImportIdentityPopup(true)}
+                  color="inherit"
                   variant="contained"
-                  startIcon={<UploadIcon />}
+                  startIcon={<RefreshIcon />}
+                  onClick={onClickGenerate}
                 >
-                  Import Identity
+                  Generate
                 </Button>
               </ButtonGroup>
             </Stack>

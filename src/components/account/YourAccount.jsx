@@ -220,6 +220,38 @@ function YourAccount(props) {
                   Restore Backup
                 </Button>
               </ButtonGroup>
+              {/* <TextField
+                label="New Password"
+                variant="outlined"
+                color="info"
+                type="password"
+                size="small"
+                onKeyDown={onKeyDown}
+                value={password}
+                error={firstErrorMessage !== ''}
+                onChange={onChangePassword}
+                helperText={firstErrorMessage}
+              />
+              <TextField
+                label="New Repeat Password"
+                variant="outlined"
+                color="info"
+                type="password"
+                size="small"
+                onKeyDown={onKeyDown}
+                value={passwordRepeat}
+                error={secondErrorMessage !== ''}
+                onChange={onChangePasswordRepeat}
+                helperText={secondErrorMessage}
+              />
+              <Button
+                color="primary"
+                variant="contained"
+                disabled={!password || password.length < 1}
+                onClick={onReplacePassword}
+              >
+                Replace Password
+              </Button> */}
             </Stack>
           )}
         </CardContent>

@@ -62,22 +62,15 @@ function App() {
   const [encryptionPassword, setEncryptionPassword] = useState('');
 
   useEffect(() => {
-    if (seeds && encryptionPassword) {
-      // update the localStorage with seeds every time they're changed
-      setSeeds(secureStorage(encryptionPassword).setItem('seeds', seeds));
-      // update the lastSaved for any sync jobs
-      setConfig({ ...config, lastSaved: Date.now() });
-    }
-  }, [seeds, encryptionPassword, setConfig, config]);
-
-  useEffect(() => {
     if (encryptionPassword) {
       try {
         const dat = secureStorage(encryptionPassword).getItem('seeds');
         console.log(dat);
         if (dat === null) {
+          console.log('no seeds found');
           setSeeds([]);
         } else {
+          console.log('found seeds');
           setSeeds(dat);
         }
       } catch (e) {
@@ -85,7 +78,17 @@ function App() {
         setSeeds([]);
       }
     }
-  }, [encryptionPassword]);
+  }, [encryptionPassword, setSeeds]);
+
+  useEffect(() => {
+    if (seeds && encryptionPassword) {
+      // update the localStorage with seeds every time they're changed
+      console.log('updating localStorage');
+      secureStorage(encryptionPassword).setItem('seeds', seeds);
+      // update the lastSaved for any sync jobs
+      // setConfig({ ...config, lastSaved: Date.now() });
+    }
+  }, [seeds, encryptionPassword]);
 
   useEffect(() => {
     activateBrowserWallet(); // just try to auto activate on load for metamask users
@@ -168,7 +171,9 @@ function App() {
             {!account && <ProductOverview />}
             {!account && <NoConnectionWarning />}
             {account && <NanoIdentity />}
-            {account && encryptionPassword && <ManageIdentities />}
+            {account && encryptionPassword && (
+              <ManageIdentities seeds={seeds} setSeeds={setSeeds} />
+            )}
             {account && (
               <YourAccount
                 config={config}
