@@ -3,29 +3,40 @@ import {
   Typography,
   Stack,
   Button,
-  Card,
+  Box,
   CardContent,
   Grid,
 } from '@mui/material';
+import { grey } from '@mui/material/colors';
 
 function ProductOverview() {
   return (
-    <Grid item xs={12} sm={8}>
-      <Card>
+    <Grid item xs={12} sm={10} md={8}>
+      <Box
+        sx={{
+          minHeight: {
+            md: 300,
+          },
+          borderRadius: 0,
+          border: 1,
+          borderColor: grey[600],
+          backgroundColor: grey[50],
+        }}
+      >
         <CardContent>
           <Stack spacing={1}>
             <Typography textAlign="center">
               <img src="/logo.png" alt="logo" width="100" style={{ textAlign: 'center' }} />
             </Typography>
-            <Typography variant="h4">
-              Welcome to Signata, your Web3 Identity Manager
+            <Typography variant="h4" textAlign="center">
+              Welcome to the Signata Web3 Identity Manager
             </Typography>
             <Typography variant="body1">
               Blockchain technology is a powerful new means to build distributed
               and self-sovereign systems. Create and manage your online
               identities with Signata, and take control of your online future.
             </Typography>
-            <Typography variant="h6">Built on IPFS</Typography>
+            <Typography variant="h6" textAlign="center">Built on IPFS</Typography>
             <Typography variant="body1">
               Blockchain and smart contract technology provides the tools for
               self-sovereignty for online systems. No central services that can
@@ -40,17 +51,17 @@ function ProductOverview() {
             >
               Read the Docs
             </Button>
-            <Typography variant="h6">
-              Decentralized Governance for a Decentralized Solution
+            <Typography variant="h6" textAlign="center">
+              Community Controlled
             </Typography>
             <Typography variant="body1">
               Signata is controlled by the Signata Decentralized Autonomous
-              Organization (DAO), not by Big Tech or Governments. Join the
+              Organization (Signata DAO), not by Big Tech or Governments. Join the
               ecosystem to have your say and build a better online future.
             </Typography>
             <Button
               target="_blank"
-              href="https://sata.technology/vote"
+              href="https://docs.signata.net/guides/dao-guide"
               variant="text"
               color="secondary"
             >
@@ -58,7 +69,7 @@ function ProductOverview() {
             </Button>
           </Stack>
         </CardContent>
-      </Card>
+      </Box>
     </Grid>
   );
 }

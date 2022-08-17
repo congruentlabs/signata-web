@@ -1,6 +1,5 @@
 export { default as AppFooter } from './app/AppFooter';
 export { default as AppHeader } from './app/AppHeader';
-export { default as ConnectionPopup } from './connection/ConnectionPopup';
 export { default as CreateAccountPopup } from './account/CreateAccountPopup';
 export { default as CreateIdentityPopup } from './identity/CreateIdentityPopup';
 export { default as CreatePasswordPopup } from './account/CreatePasswordPopup';

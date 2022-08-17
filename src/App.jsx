@@ -155,7 +155,7 @@ function App() {
       <Container maxWidth="md" sx={{ marginTop: 4 }}>
         <Box
           sx={{
-            minHeight: '90vh',
+            minHeight: '80vh',
             paddingTop: { xs: 1, sm: 2 },
             paddingBottom: { xs: 1, sm: 2 },
           }}
