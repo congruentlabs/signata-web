@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useEthers, shortenIfAddress } from '@usedapp/core';
+import { useEthers, shortenIfAddress, DEFAULT_SUPPORTED_CHAINS } from '@usedapp/core';
 import { useTheme } from '@mui/material/styles';
-import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
-import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import {
-  Alert,
   Button,
   ButtonGroup,
   CardContent,
   Chip,
-  Grid,
   Stack,
   useMediaQuery,
 } from '@mui/material';
@@ -22,7 +18,6 @@ import {
   getNanoContract,
   getNanoContractAddress,
   useGetSingleValue,
-  useCreateNano,
   useDelegateNano,
   useSelfLockNano,
 } from '../../hooks/chainHooks';
@@ -48,25 +43,12 @@ function NanoIdentity() {
     nanoContract,
   );
 
-  const identityExists = useGetSingleValue(
-    '_identityExists',
-    [account],
-    getNanoContractAddress(chainId),
-    nanoContract,
-  );
-
   const identityDelegate = useGetSingleValue(
     '_identityDelegate',
     [account],
     getNanoContractAddress(chainId),
     nanoContract,
   );
-
-  const {
-    state: createState,
-    send: createSend,
-    resetState: createResetState,
-  } = useCreateNano();
 
   const {
     state: lockState,
@@ -79,24 +61,6 @@ function NanoIdentity() {
     send: delegateSend,
     resetState: delegateResetState,
   } = useDelegateNano();
-
-  useEffect(() => {
-    if (createState) {
-      console.log(createState);
-      if (createState.status === 'PendingSignature') {
-        setLoading(true);
-      }
-      if (createState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (createState.status === 'Mining') {
-        setLoading(true);
-      }
-      if (createState.status === 'Success') {
-        setLoading(false);
-      }
-    }
-  }, [createState]);
 
   useEffect(() => {
     if (lockState) {
@@ -135,14 +99,8 @@ function NanoIdentity() {
   }, [delegateState]);
 
   const resetStates = () => {
-    createResetState();
     lockResetState();
     delegateResetState();
-  };
-
-  const handleClickCreate = () => {
-    resetStates();
-    createSend();
   };
 
   const handleClickLock = () => {
@@ -156,111 +114,89 @@ function NanoIdentity() {
   };
 
   return (
-    <Grid item xs={12} md={6} sx={{ height: '100%' }}>
-      <ItemBox>
-        <ItemHeader text="Your Nano Identity" />
-        <CardContent>
-          <Stack spacing={1}>
-            {identityExists ? (
-              <Chip
-                icon={<FingerprintIcon />}
-                label="Identity Registered"
-                color="primary"
-                sx={{ borderRadius: 0 }}
-              />
-            ) : (
-              <Alert severity="info">
-                A nano identity is a limited version of a Signata identity. If
-                you want to try Signata without setting up an account, you can
-                register your connected wallet as a Nano Identity. If you hold
-                10 SATA it is free to create a Nano identity, otherwise
-                you&apos;ll have to pay a small fee.
-              </Alert>
-            )}
-            {identityExists === true && identityLocked === false && (
-              <Chip
-                icon={<LockOpenIcon />}
-                label="Identity Unlocked"
-                color="primary"
-                sx={{ borderRadius: 0 }}
-              />
-            )}
-            {identityExists === true && identityLocked === true && (
-              <Chip
-                icon={<LockIcon />}
-                label="Identity Locked"
+    <ItemBox>
+      <ItemHeader text="Nano Identity" />
+      <CardContent>
+        <Stack spacing={1}>
+          <Chip
+            label={`Chain: ${
+              DEFAULT_SUPPORTED_CHAINS.find(
+                (network) => network.chainId === chainId,
+              )?.chainName
+            }`}
+            color="default"
+            sx={{
+              borderRadius: 0,
+              height: 24,
+              border: 1,
+              borderColor: 'black',
+            }}
+          />
+          <Chip
+            label={identityDelegate === account ? 'Not Delegated' : `Delegated to ${shortenIfAddress(identityDelegate)}`}
+            color={identityDelegate === account ? 'error' : 'success'}
+            variant={identityDelegate === account ? 'filled' : 'outlined'}
+            icon={<PermIdentityIcon />}
+            sx={{
+              borderRadius: 0,
+              height: 28,
+              border: 1,
+              borderColor: 'black',
+            }}
+          />
+          <Chip
+            label={identityLocked ? 'Locked' : 'Unlocked'}
+            color={identityLocked ? 'error' : 'success'}
+            variant={identityLocked ? 'filled' : 'outlined'}
+            icon={identityLocked ? <LockIcon /> : <LockOpenIcon />}
+            sx={{
+              borderRadius: 0,
+              height: 28,
+              border: 1,
+              borderColor: 'black',
+            }}
+          />
+          <Chip
+            icon={<FingerprintIcon />}
+            label="Identity Registered"
+            color="default"
+            variant="outlined"
+            sx={{
+              borderRadius: 0,
+              height: 24,
+              border: 1,
+              borderColor: 'black',
+            }}
+          />
+          <ButtonGroup
+            fullWidth
+            size="small"
+            variant="outlined"
+            orientation={isSm ? 'horizontal' : 'vertical'}
+          >
+            {identityLocked === false && (
+              <Button
                 color="error"
-                sx={{ borderRadius: 0 }}
-              />
-            )}
-            {identityExists === true && identityDelegate === account && (
-              <Chip
-                icon={<PermIdentityIcon />}
-                label="Not Delegated"
-                color="secondary"
-                sx={{ borderRadius: 0 }}
-              />
-            )}
-            {identityExists === true && identityDelegate !== account && (
-              <Chip
-                icon={<PermIdentityIcon />}
-                label={`Delegated to ${shortenIfAddress(identityDelegate)}`}
-                color="primary"
-                sx={{ borderRadius: 0 }}
-              />
-            )}
-            <ButtonGroup
-              fullWidth
-              orientation={isSm ? 'horizontal' : 'vertical'}
-            >
-              {!identityExists && (
-                <Button
-                  color="primary"
-                  variant="contained"
-                  disabled={isLoading}
-                  startIcon={<AddIcon />}
-                  onClick={handleClickCreate}
-                >
-                  Create Nano ID
-                </Button>
-              )}
-              {identityExists === true && identityLocked === false && (
-                <Button
-                  color="error"
-                  variant="contained"
-                  disabled={isLoading}
-                  startIcon={<LockIcon />}
-                  onClick={handleClickLock}
-                >
-                  Lock
-                </Button>
-              )}
-              {identityExists === true && (
-                <Button
-                  color="secondary"
-                  variant="contained"
-                  disabled={isLoading}
-                  startIcon={<EditIcon />}
-                  onClick={handleClickDelegate}
-                >
-                  Delegate
-                </Button>
-              )}
-              {/* <Button
-                color="inherit"
-                target="_blank"
-                href="https://docs.signata.net/"
-                startIcon={<QuestionMarkIcon />}
+                disabled={isLoading}
+                startIcon={<LockIcon />}
+                onClick={handleClickLock}
               >
-                Help
-              </Button> */}
-            </ButtonGroup>
-          </Stack>
-        </CardContent>
-        <LoadingState state={createState} />
-        <LoadingState state={lockState} />
-      </ItemBox>
-    </Grid>
+                Lock
+              </Button>
+            )}
+            <Button
+              color="secondary"
+              disabled={isLoading}
+              startIcon={<EditIcon />}
+              onClick={handleClickDelegate}
+            >
+              Delegate
+            </Button>
+          </ButtonGroup>
+        </Stack>
+      </CardContent>
+      <LoadingState state={lockState} />
+    </ItemBox>
   );
 }
 

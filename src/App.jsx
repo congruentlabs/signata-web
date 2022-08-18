@@ -21,7 +21,6 @@ import {
   ProductOverview,
   ManageIdentities,
   YourAccount,
-  NanoIdentity,
 } from './components';
 import secureStorage from './utils/secureStorage';
 
@@ -31,36 +30,36 @@ function App() {
   const { activateBrowserWallet, account, deactivate } = useEthers();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [config, setConfig, isPersistent] = useLocalStorageState('config', []);
-  const [seeds, setSeeds] = useState([]);
+  const [identities, setIdentities] = useState([]);
   const [encryptionPassword, setEncryptionPassword] = useState('');
 
   useEffect(() => {
     if (encryptionPassword) {
       try {
-        const dat = secureStorage(encryptionPassword).getItem('seeds');
+        const dat = secureStorage(encryptionPassword).getItem('identities');
         console.log(dat);
         if (dat === null) {
-          console.log('no seeds found');
-          setSeeds([]);
+          console.log('no identities found');
+          setIdentities([]);
         } else {
-          console.log('found seeds');
-          setSeeds(dat);
+          console.log('found identities');
+          setIdentities(dat);
         }
       } catch (e) {
         console.error(e);
-        setSeeds([]);
+        setIdentities([]);
       }
     }
-  }, [encryptionPassword, setSeeds]);
+  }, [encryptionPassword, setIdentities]);
 
   useEffect(() => {
-    if (seeds && encryptionPassword) {
-      // update the localStorage with seeds every time they're changed
-      secureStorage(encryptionPassword).setItem('seeds', seeds);
+    if (identities && encryptionPassword) {
+      // update the localStorage with identities every time they're changed
+      secureStorage(encryptionPassword).setItem('identities', identities);
       // update the lastSaved for any sync jobs
       // setConfig({ ...config, lastSaved: Date.now() });
     }
-  }, [seeds, encryptionPassword]);
+  }, [identities, encryptionPassword]);
 
   useEffect(() => {
     activateBrowserWallet(); // just try to auto activate on load for metamask users
@@ -142,9 +141,8 @@ function App() {
           >
             {!account && <ProductOverview />}
             {!account && <NoConnectionWarning />}
-            {account && <NanoIdentity />}
             {account && encryptionPassword && (
-              <ManageIdentities seeds={seeds} setSeeds={setSeeds} />
+              <ManageIdentities identities={identities} setIdentities={setIdentities} />
             )}
             {account && (
               <YourAccount

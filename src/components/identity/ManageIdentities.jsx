@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import useLocalStorageState from 'use-local-storage-state';
+import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { useTheme } from '@mui/material/styles';
 import {
@@ -10,9 +9,8 @@ import {
 import { generateMnemonic } from 'ethereum-cryptography/bip39';
 import { wordlist } from 'ethereum-cryptography/bip39/wordlists/english';
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import HowToRegIcon from '@mui/icons-material/HowToReg';
+import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -29,12 +27,24 @@ import {
   TextField,
   DialogTitle,
   useMediaQuery,
+  Box,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import ItemHeader from '../app/ItemHeader';
 import ItemBox from '../app/ItemBox';
+import TabPanel from './TabPanel';
+import LoadingState from './LoadingState';
+import {
+  getNanoContract,
+  getNanoContractAddress,
+  useGetSingleValue,
+  useCreateNano,
+} from '../../hooks/chainHooks';
+import { NanoIdentity } from '..';
 
 function ManageIdentities(props) {
-  const { seeds, setSeeds } = props;
+  const { identities, setIdentities } = props;
   const { chainId, account } = useEthers();
   const theme = useTheme();
   const isSm = useMediaQuery(theme.breakpoints.up('sm'), {
@@ -46,12 +56,28 @@ function ManageIdentities(props) {
   const [openRename, setOpenRename] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [newName, setNewName] = useState('');
-  const [editingSeed, setEditingSeed] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [tabValue, setTabValue] = useState(0);
+  const nanoContract = getNanoContract(chainId);
+  const [isLoading, setLoading] = useState(false);
+
+  const {
+    state: createNanoState,
+    send: createNanoSend,
+    resetState: createNanoResetState,
+  } = useCreateNano();
+
+  const nanoExists = useGetSingleValue(
+    '_identityExists',
+    [account],
+    getNanoContractAddress(chainId),
+    nanoContract,
+  );
 
   const onCreateIdentity = (e) => {
     e.preventDefault();
-    console.log(seeds);
-    const newSeeds = Array.from(seeds);
+    console.log(identities);
+    const newIds = Array.from(identities);
 
     const identityWallet = ethers.Wallet.fromMnemonic(identitySeed);
     const identityAddress = identityWallet.address;
@@ -59,7 +85,7 @@ function ManageIdentities(props) {
     const delegateAddress = delegateWallet.address;
     const securityWallet = ethers.Wallet.fromMnemonic(securitySeed);
     const securityAddress = securityWallet.address;
-    newSeeds.push({
+    newIds.push({
       identitySeed,
       delegateSeed,
       securitySeed,
@@ -70,10 +96,37 @@ function ManageIdentities(props) {
       chainId,
       creator: account,
     });
-    setSeeds(newSeeds);
+    setIdentities(newIds);
     setIdentitySeed('');
     setDelegateSeed('');
     setSecuritySeed('');
+  };
+
+  useEffect(() => {
+    if (createNanoState) {
+      console.log(createNanoState);
+      if (createNanoState.status === 'PendingSignature') {
+        setLoading(true);
+      }
+      if (createNanoState.status === 'Exception') {
+        setLoading(false);
+      }
+      if (createNanoState.status === 'Mining') {
+        setLoading(true);
+      }
+      if (createNanoState.status === 'Success') {
+        setLoading(false);
+      }
+    }
+  }, [createNanoState]);
+
+  const resetStates = () => {
+    createNanoResetState();
+  };
+
+  const onCreateNanoIdentity = () => {
+    resetStates();
+    createNanoSend();
   };
 
   const onClickGenerate = (e) => {
@@ -85,77 +138,78 @@ function ManageIdentities(props) {
 
   const onRenameSeed = (e, seed) => {
     setNewName(seed.name || 'New Name');
-    setEditingSeed(seed);
+    setEditingId(seed);
     setOpenRename(true);
   };
 
-  const onRegisterSeed = (e, seed) => {
+  const onRegisterSeed = (e, id) => {
     e.preventDefault();
     // get the first address for all three seeds
-    const identityWallet = ethers.Wallet.fromMnemonic(seed.identitySeed);
-    const identityAddress = identityWallet.address;
-    const delegateWallet = ethers.Wallet.fromMnemonic(seed.delegateSeed);
-    const delegateAddress = delegateWallet.address;
-    const securityWallet = ethers.Wallet.fromMnemonic(seed.securitySeed);
-    const securityAddress = securityWallet.address;
+    const identityWallet = ethers.Wallet.fromMnemonic(id.identitySeed);
+    const delegateWallet = ethers.Wallet.fromMnemonic(id.delegateSeed);
+    const securityWallet = ethers.Wallet.fromMnemonic(id.securitySeed);
   };
 
-  const onLockSeed = (e, seed) => {
+  const onLockSeed = (e, id) => {
     e.preventDefault();
   };
 
-  const onUnlockSeed = (e, seed) => {
+  const onUnlockSeed = (e, id) => {
     e.preventDefault();
   };
 
-  const onRolloverSeed = (e, seed) => {
+  const onRolloverSeed = (e, id) => {
     e.preventDefault();
   };
 
-  const onDeleteSeed = (e, seed) => {
+  const onDeleteSeed = (e, id) => {
     e.preventDefault();
-    setEditingSeed(seed);
+    setEditingId(id);
     setOpenDelete(true);
   };
 
-  const onDestroySeed = (e, seed) => {
+  const onDestroySeed = (e, id) => {
     e.preventDefault();
   };
 
   const onCloseDelete = () => {
     setOpenDelete(false);
-    setEditingSeed(null);
+    setEditingId(null);
   };
 
   const onCloseRename = () => {
     setOpenRename(false);
     setNewName('');
-    setEditingSeed(null);
+    setEditingId(null);
   };
 
   const onSubmitRename = (e) => {
     e.preventDefault();
-    let newSeed = editingSeed;
-    const newSeeds = Array.from(seeds);
-    newSeeds.forEach((s, idx) => {
-      if (s.identitySeed === newSeed.identitySeed) {
-        newSeed = { ...newSeed, name: newName };
-        newSeeds[idx] = newSeed;
+    let newId = editingId;
+    const newIds = Array.from(identities);
+    newIds.forEach((s, idx) => {
+      if (s.identitySeed === newId.identitySeed) {
+        newId = { ...newId, name: newName };
+        newIds[idx] = newId;
       }
     });
-    setSeeds(newSeeds);
+    setIdentities(newIds);
     onCloseRename();
   };
 
   const onSubmitDelete = (e) => {
     const newSeeds = [];
-    seeds.forEach((s) => {
-      if (s.identitySeed !== editingSeed.identitySeed) {
+    identities.forEach((s) => {
+      if (s.identitySeed !== editingId.identitySeed) {
         newSeeds.push(s);
       }
     });
-    setSeeds(newSeeds);
+    setIdentities(newSeeds);
     onCloseDelete();
+  };
+
+  const handleChangeTab = (e, newTabValue) => {
+    setTabValue(newTabValue);
   };
 
   return (
@@ -166,14 +220,11 @@ function ManageIdentities(props) {
           <DialogContent>
             <Stack spacing={2}>
               <Alert severity="warning">
-                Identities that have not been registered are
-                deleted immediately and cannot be recovered.
+                Identities that have not been registered are deleted immediately
+                and cannot be recovered.
               </Alert>
               <ButtonGroup fullWidth>
-                <Button
-                  onClick={onCloseDelete}
-                  color="inherit"
-                >
+                <Button onClick={onCloseDelete} color="inherit">
                   Cancel
                 </Button>
                 <Button
@@ -208,10 +259,7 @@ function ManageIdentities(props) {
                 onChange={(e) => setNewName(e.target.value)}
               />
               <ButtonGroup fullWidth>
-                <Button
-                  onClick={onCloseRename}
-                  color="inherit"
-                >
+                <Button onClick={onCloseRename} color="inherit">
                   Cancel
                 </Button>
                 <Button
@@ -228,11 +276,11 @@ function ManageIdentities(props) {
           </DialogContent>
         </form>
       </Dialog>
-      {seeds
-        && seeds.map((seed) => (
-          <Grid item xs={12} md={6} key={seed.identitySeed}>
+      {identities
+        && identities.map((id) => (
+          <Grid item xs={12} md={6} key={id.identitySeed}>
             <ItemBox>
-              <ItemHeader text={`Identity: ${seed.name || 'Unnamed'}`} />
+              <ItemHeader text={`Identity: ${id.name || 'Unnamed'}`} />
               <CardContent>
                 <Stack spacing={1}>
                   {/* <Chip
@@ -248,7 +296,7 @@ function ManageIdentities(props) {
                   <Chip
                     label={`Chain: ${
                       DEFAULT_SUPPORTED_CHAINS.find(
-                        (network) => network.chainId === seed.chainId,
+                        (network) => network.chainId === id.chainId,
                       )?.chainName
                     }`}
                     color="default"
@@ -260,7 +308,7 @@ function ManageIdentities(props) {
                     }}
                   />
                   <Chip
-                    label={`Identity: ${seed.identityAddress}`}
+                    label={`Identity: ${id.identityAddress}`}
                     color="default"
                     variant="outlined"
                     sx={{
@@ -271,7 +319,7 @@ function ManageIdentities(props) {
                     }}
                   />
                   <Chip
-                    label={`Delegate: ${seed.delegateAddress}`}
+                    label={`Delegate: ${id.delegateAddress}`}
                     color="default"
                     variant="outlined"
                     sx={{
@@ -282,7 +330,7 @@ function ManageIdentities(props) {
                     }}
                   />
                   <Chip
-                    label={`Security: ${seed.securityAddress}`}
+                    label={`Security: ${id.securityAddress}`}
                     color="default"
                     variant="outlined"
                     sx={{
@@ -293,10 +341,10 @@ function ManageIdentities(props) {
                     }}
                   />
                   <Chip
-                    label={seed.locked ? 'Locked' : 'Unlocked'}
-                    color={seed.locked ? 'error' : 'success'}
-                    variant={seed.locked ? 'filled' : 'outlined'}
-                    icon={seed.locked ? <LockIcon /> : <LockOpenIcon />}
+                    label={id.locked ? 'Locked' : 'Unlocked'}
+                    color={id.locked ? 'error' : 'success'}
+                    variant={id.locked ? 'filled' : 'outlined'}
+                    icon={id.locked ? <LockIcon /> : <LockOpenIcon />}
                     sx={{
                       borderRadius: 0,
                       height: 28,
@@ -305,11 +353,11 @@ function ManageIdentities(props) {
                     }}
                   />
                   <Chip
-                    label={seed.registered ? 'Registered' : 'Unregistered'}
-                    color={seed.registered ? 'success' : 'warning'}
-                    variant={seed.registered ? 'outlined' : 'filled'}
+                    label={id.registered ? 'Registered' : 'Unregistered'}
+                    color={id.registered ? 'success' : 'warning'}
+                    variant={id.registered ? 'outlined' : 'filled'}
                     icon={
-                      seed.registered ? <HowToRegIcon /> : <ErrorOutlineIcon />
+                      id.registered ? <FingerprintIcon /> : <ErrorOutlineIcon />
                     }
                     sx={{
                       borderRadius: 0,
@@ -325,37 +373,37 @@ function ManageIdentities(props) {
                     color="inherit"
                     orientation={isSm ? 'horizontal' : 'vertical'}
                   >
-                    {!seed.registered && (
+                    {!id.registered && (
                       <Button
-                        onClick={(e) => onRegisterSeed(e, seed)}
+                        onClick={(e) => onRegisterSeed(e, id)}
                         color="primary"
                       >
                         Register
                       </Button>
                     )}
-                    <Button onClick={(e) => onRenameSeed(e, seed)}>
+                    <Button onClick={(e) => onRenameSeed(e, id)}>
                       Rename
                     </Button>
-                    {seed.registered && !seed.locked && (
-                      <Button onClick={(e) => onLockSeed(e, seed)}>Lock</Button>
+                    {id.registered && !id.locked && (
+                      <Button onClick={(e) => onLockSeed(e, id)}>Lock</Button>
                     )}
-                    {seed.registered && seed.locked && (
-                      <Button onClick={(e) => onUnlockSeed(e, seed)}>
+                    {id.registered && id.locked && (
+                      <Button onClick={(e) => onUnlockSeed(e, id)}>
                         Unlock
                       </Button>
                     )}
-                    {seed.registered && (
-                      <Button onClick={(e) => onRolloverSeed(e, seed)}>
+                    {id.registered && (
+                      <Button onClick={(e) => onRolloverSeed(e, id)}>
                         Rollover
                       </Button>
                     )}
-                    {seed.registered && (
-                      <Button onClick={(e) => onDestroySeed(e, seed)}>
+                    {id.registered && (
+                      <Button onClick={(e) => onDestroySeed(e, id)}>
                         Destroy
                       </Button>
                     )}
-                    {!seed.registered && (
-                      <Button onClick={(e) => onDeleteSeed(e, seed)}>
+                    {!id.registered && (
+                      <Button onClick={(e) => onDeleteSeed(e, id)}>
                         Delete
                       </Button>
                     )}
@@ -365,16 +413,86 @@ function ManageIdentities(props) {
             </ItemBox>
           </Grid>
         ))}
-
+      {nanoExists && (
+        <Grid item xs={12} md={6}>
+          <NanoIdentity />
+        </Grid>
+      )}
       <Grid item xs={12} md={6}>
         <ItemBox>
           <ItemHeader text="Add Identity" />
-          <CardContent>
-            <Stack spacing={1}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs
+              value={tabValue}
+              onChange={handleChangeTab}
+              textColor="secondary"
+              indicatorColor="secondary"
+              centered
+            >
+              <Tab label="Wallet" />
+              <Tab label="Independent" />
+              <Tab label="Nano" />
+            </Tabs>
+          </Box>
+          <TabPanel value={tabValue} index={0}>
+            <Stack spacing={1.5}>
               <Alert severity="info">
-                Signata identities can be created by generating new seeds below,
-                or specifying your own seeds if you want to import an existing
-                identity.
+                Wallet identities are linked to your connected wallet. These are
+                easy to use for authentication, but will link any on-chain
+                identity information with the wallet you have connected with.
+              </Alert>
+              <TextField
+                label="Identity Address"
+                variant="outlined"
+                color="info"
+                size="small"
+                value={account}
+                disabled
+              />
+              <TextField
+                label="Delegate Seed"
+                variant="outlined"
+                color="info"
+                size="small"
+                value={delegateSeed}
+              />
+              <TextField
+                label="Security Seed"
+                variant="outlined"
+                color="info"
+                size="small"
+                value={securitySeed}
+              />
+              <ButtonGroup
+                fullWidth
+                orientation={isSm ? 'horizontal' : 'vertical'}
+              >
+                <Button
+                  color="primary"
+                  onClick={onCreateIdentity}
+                  variant="contained"
+                  disabled={!identitySeed || !delegateSeed || !securitySeed}
+                  startIcon={<AddIcon />}
+                >
+                  Add Identity
+                </Button>
+                <Button
+                  color="inherit"
+                  variant="contained"
+                  startIcon={<RefreshIcon />}
+                  onClick={onClickGenerate}
+                >
+                  Generate
+                </Button>
+              </ButtonGroup>
+            </Stack>
+          </TabPanel>
+          <TabPanel value={tabValue} index={1}>
+            <Stack spacing={1.5}>
+              <Alert severity="info">
+                Independent identities have all seeds randomly generated. These
+                identities are useful for more privacy, but can be more
+                difficult to use in some scenarios.
               </Alert>
               <TextField
                 label="Identity Seed"
@@ -420,7 +538,47 @@ function ManageIdentities(props) {
                 </Button>
               </ButtonGroup>
             </Stack>
-          </CardContent>
+          </TabPanel>
+          <TabPanel value={tabValue} index={2}>
+            <Stack spacing={1.5}>
+              {nanoExists ? (
+                <Alert severity="success">
+                  You already have a nano identity on this network.
+                </Alert>
+              ) : (
+                <Alert severity="info">
+                  A nano identity is a limited version of a Signata identity. If
+                  you want to try out Signata, you can register your connected
+                  wallet as a Nano Identity. If you hold 10 SATA it is free to
+                  create a Nano identity, otherwise you&apos;ll have to pay a
+                  small fee.
+                </Alert>
+              )}
+              <TextField
+                label="Identity Address"
+                variant="outlined"
+                color="info"
+                size="small"
+                value={account}
+                disabled
+              />
+              <ButtonGroup
+                fullWidth
+                orientation={isSm ? 'horizontal' : 'vertical'}
+              >
+                <Button
+                  color="primary"
+                  onClick={onCreateNanoIdentity}
+                  variant="contained"
+                  disabled={isLoading || nanoExists}
+                  startIcon={<AddIcon />}
+                >
+                  Create Nano Identity
+                </Button>
+              </ButtonGroup>
+              <LoadingState state={createNanoState} />
+            </Stack>
+          </TabPanel>
         </ItemBox>
       </Grid>
     </>
