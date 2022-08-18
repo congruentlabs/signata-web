@@ -15,8 +15,8 @@ import {
   TextField,
   useMediaQuery,
 } from '@mui/material';
-import ItemHeader from '../app/ItemHeader';
-import ItemBox from '../app/ItemBox';
+import ItemHeader from './ItemHeader';
+import ItemBox from './ItemBox';
 
 function YourAccount(props) {
   const {
@@ -94,7 +94,6 @@ function YourAccount(props) {
       <ItemBox>
         <ItemHeader text="Your Account" />
         <CardContent>
-
           {(!config || !config.hasAccount) && (
             <form onSubmit={onCreatePassword}>
               <Stack spacing={1}>
@@ -107,6 +106,7 @@ function YourAccount(props) {
                   </Alert>
                 )}
                 <Alert severity="info">
+                  <AlertTitle>Account Password</AlertTitle>
                   Your password encrypts all of your identities. Your identities are
                   only saved on this device. If you clear your browser cache, or use
                   this app in a private window, you might lose your data once you

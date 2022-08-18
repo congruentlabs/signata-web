@@ -20,43 +20,16 @@ import {
   NetworkServices,
   ProductOverview,
   ManageIdentities,
+  YourAccount,
+  NanoIdentity,
 } from './components';
 import secureStorage from './utils/secureStorage';
-import NanoIdentity from './components/identity/NanoIdentity';
-import YourAccount from './components/account/YourAccount';
 
-const dSataContractAddress = '0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b';
+// const dSataContractAddress = '0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b';
 
 function App() {
   const { activateBrowserWallet, account, deactivate } = useEthers();
-  // const sataBalance = useTokenBalance(getTokenContractAddress(chainId), account);
-  // const dSataBalance = useTokenBalance(dSataContractAddress, account);
-  // const sataPriceData = useUniswapSataPriceData();
-  // const dSataPriceData = useUniswapDSataPriceData();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  // const [isSetup, setIsSetup] = useState(false);
-  // const [signataEncryptionKey, setSignataEncryptionKey] = useState(null);
-  // const [services, setServices] = useState([
-  //   {
-  //     id: 1,
-  //     name: 'Test Broker',
-  //     type: 'Broker',
-  //     network: 'Ethereum',
-  //     jurisdiction: 'Australia',
-  //     staked: 100000,
-  //     status: 'Active'
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'Test Oracle',
-  //     type: 'Risk Oracle',
-  //     network: 'Ethereum',
-  //     jurisdiction: 'Australia',
-  //     staked: 0,
-  //     status: 'Active'
-  //   }
-  // ]);
-
   const [config, setConfig, isPersistent] = useLocalStorageState('config', []);
   const [seeds, setSeeds] = useState([]);
   const [encryptionPassword, setEncryptionPassword] = useState('');
@@ -182,16 +155,6 @@ function App() {
                 unlocked={encryptionPassword !== ''}
               />
             )}
-            {/* {account && isSetup && (
-              <Extras
-                sataBalance={sataBalance}
-                dSataBalance={dSataBalance}
-                chainId={chainId}
-                sataPriceData={sataPriceData}
-                dSataPriceData={dSataPriceData}
-                ethPrice={ethPrice}
-              />
-            )} */}
             {account && encryptionPassword && <NetworkServices />}
           </Grid>
         </Box>
