@@ -10,13 +10,13 @@ function TabPanel(props) {
     <div
       role="tabpanel"
       hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
+      id={`identity-tabpanel-${index}`}
+      aria-labelledby={`identity-tab-${index}`}
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 2 }}>
           {children}
         </Box>
       )}
