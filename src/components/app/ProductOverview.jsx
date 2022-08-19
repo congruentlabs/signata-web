@@ -7,7 +7,6 @@ import {
   CardContent,
   Grid,
 } from '@mui/material';
-import { grey } from '@mui/material/colors';
 
 function ProductOverview() {
   return (

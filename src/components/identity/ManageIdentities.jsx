@@ -3,7 +3,6 @@ import { ethers } from 'ethers';
 import { useTheme } from '@mui/material/styles';
 import {
   useEthers,
-  shortenAddress,
   DEFAULT_SUPPORTED_CHAINS,
 } from '@usedapp/core';
 import { generateMnemonic } from 'ethereum-cryptography/bip39';
@@ -41,7 +40,7 @@ import {
   useGetSingleValue,
   useCreateNano,
 } from '../../hooks/chainHooks';
-import { NanoIdentity } from '..';
+import NanoIdentity from './NanoIdentity';
 
 function ManageIdentities(props) {
   const { identities, setIdentities } = props;

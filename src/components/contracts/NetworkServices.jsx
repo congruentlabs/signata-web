@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import { useEthers, DEFAULT_SUPPORTED_CHAINS } from '@usedapp/core';
-import { grey } from '@mui/material/colors';
 import {
   Grid,
-  Box,
   CardContent,
   Stack,
-  Typography,
   Chip,
   Alert,
   AlertTitle,
