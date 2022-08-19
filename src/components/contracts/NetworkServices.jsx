@@ -11,6 +11,8 @@ import {
   Alert,
   AlertTitle,
 } from '@mui/material';
+import ItemHeader from '../app/ItemHeader';
+import ItemBox from '../app/ItemBox';
 
 function NetworkServices() {
   const { chainId } = useEthers();
@@ -22,33 +24,10 @@ function NetworkServices() {
   )?.chainName;
   return (
     <Grid item xs={12} md={6}>
-      <Box
-        sx={{
-          minHeight: {
-            md: 350,
-          },
-          borderRadius: 0,
-          border: 1,
-          borderColor: grey[600],
-          backgroundColor: grey[50],
-        }}
-      >
-        <Typography
-          variant="h6"
-          align="center"
-          sx={{
-            background: grey[300],
-            fontFamily: 'Roboto Condensed',
-            borderBottom: 1,
-            borderColor: grey[600],
-          }}
-        >
-          {chainName}
-          {' '}
-          Network Services
-        </Typography>
+      <ItemBox>
+        <ItemHeader text={`${chainName} Network Services`} />
         <CardContent>
-          <Stack spacing={1}>
+          <Stack spacing={2}>
             {services && services.length < 1 && (
               <Alert severity="warning">
                 No services have been detected for this network.
@@ -76,7 +55,7 @@ function NetworkServices() {
             </Alert>
           </Stack>
         </CardContent>
-      </Box>
+      </ItemBox>
     </Grid>
   );
 }

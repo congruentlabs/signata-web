@@ -7,13 +7,10 @@ function ItemHeader(props) {
   return (
     <Box
       sx={{
-        minHeight: {
-          md: 300,
-        },
         borderRadius: 0,
         border: 1,
-        borderColor: grey[600],
-        backgroundColor: grey[50],
+        // borderColor: grey[600],
+        // backgroundColor: grey[50],
       }}
     >
       {children}

@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
-import { grey } from '@mui/material/colors';
 import { useTheme } from '@mui/material/styles';
 import CryptoJS from 'crypto-js';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
   Grid,
-  Chip,
   CardContent,
   ButtonGroup,
   Button,
@@ -96,7 +93,7 @@ function YourAccount(props) {
         <CardContent>
           {(!config || !config.hasAccount) && (
             <form onSubmit={onCreatePassword}>
-              <Stack spacing={1}>
+              <Stack spacing={2}>
                 {!isPersistent && (
                   <Alert severity="error">
                     <AlertTitle>Not Persistent</AlertTitle>
@@ -164,7 +161,7 @@ function YourAccount(props) {
 
           {config && config.hasAccount && !unlocked && (
             <form onSubmit={onUnlockPassword}>
-              <Stack spacing={1}>
+              <Stack spacing={2}>
                 {!isPersistent && (
                   <Alert severity="error">
                     <AlertTitle>Not Persistent</AlertTitle>
@@ -204,7 +201,7 @@ function YourAccount(props) {
           )}
 
           {config && config.hasAccount && unlocked && (
-            <Stack spacing={1}>
+            <Stack spacing={2}>
               <Alert severity="success">Account Unlocked</Alert>
               <ButtonGroup
                 fullWidth

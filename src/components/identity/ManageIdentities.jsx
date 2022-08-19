@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { useTheme } from '@mui/material/styles';
 import {
   useEthers,
-  shortenIfAddress,
+  shortenAddress,
   DEFAULT_SUPPORTED_CHAINS,
 } from '@usedapp/core';
 import { generateMnemonic } from 'ethereum-cryptography/bip39';
@@ -224,7 +224,7 @@ function ManageIdentities(props) {
                 and cannot be recovered.
               </Alert>
               <ButtonGroup fullWidth>
-                <Button onClick={onCloseDelete} color="inherit">
+                <Button onClick={onCloseDelete} color="secondary">
                   Cancel
                 </Button>
                 <Button
@@ -259,7 +259,7 @@ function ManageIdentities(props) {
                 onChange={(e) => setNewName(e.target.value)}
               />
               <ButtonGroup fullWidth>
-                <Button onClick={onCloseRename} color="inherit">
+                <Button onClick={onCloseRename} color="secondary">
                   Cancel
                 </Button>
                 <Button
@@ -276,14 +276,13 @@ function ManageIdentities(props) {
           </DialogContent>
         </form>
       </Dialog>
-      {identities
-        && identities.map((id) => (
-          <Grid item xs={12} md={6} key={id.identitySeed}>
-            <ItemBox>
-              <ItemHeader text={`Identity: ${id.name || 'Unnamed'}`} />
-              <CardContent>
-                <Stack spacing={1}>
-                  {/* <Chip
+      {identities && identities.map((id) => (
+        <Grid item xs={12} md={6} key={id.identitySeed}>
+          <ItemBox>
+            <ItemHeader text={`Identity: ${id.name || 'Unnamed'}`} />
+            <CardContent>
+              <Stack spacing={2}>
+                {/* <Chip
                     label={seed.address && shortenIfAddress(seed.address)}
                     color="default"
                     sx={{
@@ -293,126 +292,124 @@ function ManageIdentities(props) {
                       borderColor: 'black',
                     }}
                   /> */}
-                  <Chip
-                    label={`Chain: ${
-                      DEFAULT_SUPPORTED_CHAINS.find(
-                        (network) => network.chainId === id.chainId,
-                      )?.chainName
-                    }`}
-                    color="default"
-                    sx={{
-                      borderRadius: 0,
-                      height: 24,
-                      border: 1,
-                      borderColor: 'black',
-                    }}
-                  />
-                  <Chip
-                    label={`Identity: ${id.identityAddress}`}
-                    color="default"
-                    variant="outlined"
-                    sx={{
-                      borderRadius: 0,
-                      height: 24,
-                      border: 1,
-                      borderColor: 'black',
-                    }}
-                  />
-                  <Chip
-                    label={`Delegate: ${id.delegateAddress}`}
-                    color="default"
-                    variant="outlined"
-                    sx={{
-                      borderRadius: 0,
-                      height: 24,
-                      border: 1,
-                      borderColor: 'black',
-                    }}
-                  />
-                  <Chip
-                    label={`Security: ${id.securityAddress}`}
-                    color="default"
-                    variant="outlined"
-                    sx={{
-                      borderRadius: 0,
-                      height: 24,
-                      border: 1,
-                      borderColor: 'black',
-                    }}
-                  />
-                  <Chip
-                    label={id.locked ? 'Locked' : 'Unlocked'}
-                    color={id.locked ? 'error' : 'success'}
-                    variant={id.locked ? 'filled' : 'outlined'}
-                    icon={id.locked ? <LockIcon /> : <LockOpenIcon />}
-                    sx={{
-                      borderRadius: 0,
-                      height: 28,
-                      border: 1,
-                      borderColor: 'black',
-                    }}
-                  />
-                  <Chip
-                    label={id.registered ? 'Registered' : 'Unregistered'}
-                    color={id.registered ? 'success' : 'warning'}
-                    variant={id.registered ? 'outlined' : 'filled'}
-                    icon={
+                <Chip
+                  label={`Chain: ${
+                    DEFAULT_SUPPORTED_CHAINS.find(
+                      (network) => network.chainId === id.chainId,
+                    )?.chainName
+                  }`}
+                  color="default"
+                  sx={{
+                    borderRadius: 0,
+                    height: 24,
+                    border: 1,
+                    borderColor: 'black',
+                  }}
+                />
+                <Chip
+                  label={`Identity: ${id.identityAddress}`}
+                  color="default"
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 0,
+                    height: 24,
+                    border: 1,
+                    borderColor: 'black',
+                  }}
+                />
+                <Chip
+                  label={`Delegate: ${id.delegateAddress}`}
+                  color="default"
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 0,
+                    height: 24,
+                    border: 1,
+                    borderColor: 'black',
+                  }}
+                />
+                <Chip
+                  label={`Security: ${id.securityAddress}`}
+                  color="default"
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 0,
+                    height: 24,
+                    border: 1,
+                    borderColor: 'black',
+                  }}
+                />
+                <Chip
+                  label={id.locked ? 'Locked' : 'Unlocked'}
+                  color={id.locked ? 'error' : 'success'}
+                  variant={id.locked ? 'filled' : 'outlined'}
+                  icon={id.locked ? <LockIcon /> : <LockOpenIcon />}
+                  sx={{
+                    borderRadius: 0,
+                    height: 28,
+                    border: 1,
+                    borderColor: 'black',
+                  }}
+                />
+                <Chip
+                  label={id.registered ? 'Registered' : 'Unregistered'}
+                  color={id.registered ? 'success' : 'warning'}
+                  variant={id.registered ? 'outlined' : 'filled'}
+                  icon={
                       id.registered ? <FingerprintIcon /> : <ErrorOutlineIcon />
                     }
-                    sx={{
-                      borderRadius: 0,
-                      height: 28,
-                      border: 1,
-                      borderColor: 'black',
-                    }}
-                  />
-                  <ButtonGroup
-                    fullWidth
-                    size="small"
-                    variant="contained"
-                    color="inherit"
-                    orientation={isSm ? 'horizontal' : 'vertical'}
+                  sx={{
+                    borderRadius: 0,
+                    height: 28,
+                    border: 1,
+                    borderColor: 'black',
+                  }}
+                />
+                <ButtonGroup
+                  fullWidth
+                  size="small"
+                  variant="contained"
+                  color="secondary"
+                  orientation={isSm ? 'horizontal' : 'vertical'}
+                >
+                  {!id.registered && (
+                  <Button
+                    onClick={(e) => onRegisterSeed(e, id)}
+                    color="primary"
                   >
-                    {!id.registered && (
-                      <Button
-                        onClick={(e) => onRegisterSeed(e, id)}
-                        color="primary"
-                      >
-                        Register
-                      </Button>
-                    )}
-                    <Button onClick={(e) => onRenameSeed(e, id)}>
-                      Rename
-                    </Button>
-                    {id.registered && !id.locked && (
-                      <Button onClick={(e) => onLockSeed(e, id)}>Lock</Button>
-                    )}
-                    {id.registered && id.locked && (
-                      <Button onClick={(e) => onUnlockSeed(e, id)}>
-                        Unlock
-                      </Button>
-                    )}
-                    {id.registered && (
-                      <Button onClick={(e) => onRolloverSeed(e, id)}>
-                        Rollover
-                      </Button>
-                    )}
-                    {id.registered && (
-                      <Button onClick={(e) => onDestroySeed(e, id)}>
-                        Destroy
-                      </Button>
-                    )}
-                    {!id.registered && (
-                      <Button onClick={(e) => onDeleteSeed(e, id)}>
-                        Delete
-                      </Button>
-                    )}
-                  </ButtonGroup>
-                </Stack>
-              </CardContent>
-            </ItemBox>
-          </Grid>
-        ))}
+                    Register
+                  </Button>
+                  )}
+                  <Button onClick={(e) => onRenameSeed(e, id)}>Rename</Button>
+                  {id.registered && !id.locked && (
+                  <Button onClick={(e) => onLockSeed(e, id)}>Lock</Button>
+                  )}
+                  {id.registered && id.locked && (
+                  <Button onClick={(e) => onUnlockSeed(e, id)}>
+                    Unlock
+                  </Button>
+                  )}
+                  {id.registered && (
+                  <Button onClick={(e) => onRolloverSeed(e, id)}>
+                    Rollover
+                  </Button>
+                  )}
+                  {id.registered && (
+                  <Button onClick={(e) => onDestroySeed(e, id)}>
+                    Destroy
+                  </Button>
+                  )}
+                  {!id.registered && (
+                  <Button onClick={(e) => onDeleteSeed(e, id)}>
+                    Delete
+                  </Button>
+                  )}
+                </ButtonGroup>
+              </Stack>
+            </CardContent>
+          </ItemBox>
+        </Grid>
+      ))}
       {nanoExists && (
         <Grid item xs={12} md={6}>
           <NanoIdentity />
@@ -425,8 +422,8 @@ function ManageIdentities(props) {
             <Tabs
               value={tabValue}
               onChange={handleChangeTab}
-              textColor="secondary"
-              indicatorColor="secondary"
+              textColor="primary"
+              indicatorColor="primary"
               centered
             >
               <Tab label="Wallet" />
@@ -435,26 +432,21 @@ function ManageIdentities(props) {
             </Tabs>
           </Box>
           <TabPanel value={tabValue} index={0}>
-            <Stack spacing={1.5}>
-              <Alert severity="info">
-                Wallet identities are linked to your connected wallet. These are
-                easy to use for authentication, but will link any on-chain
-                identity information with the wallet you have connected with.
-              </Alert>
+            <Stack spacing={2}>
               <TextField
-                label="Identity Address"
+                label="Identity Seed"
+                variant="outlined"
+                color="info"
+                size="small"
+                value={identitySeed}
+              />
+              <TextField
+                label="Delegate Address"
                 variant="outlined"
                 color="info"
                 size="small"
                 value={account}
                 disabled
-              />
-              <TextField
-                label="Delegate Seed"
-                variant="outlined"
-                color="info"
-                size="small"
-                value={delegateSeed}
               />
               <TextField
                 label="Security Seed"
@@ -477,7 +469,7 @@ function ManageIdentities(props) {
                   Add Identity
                 </Button>
                 <Button
-                  color="inherit"
+                  color="secondary"
                   variant="contained"
                   startIcon={<RefreshIcon />}
                   onClick={onClickGenerate}
@@ -485,15 +477,15 @@ function ManageIdentities(props) {
                   Generate
                 </Button>
               </ButtonGroup>
+              <Alert severity="info">
+                Wallet identities are linked to your connected wallet. These are
+                easy to use for authentication, but will link any on-chain
+                identity information with the wallet you have connected with.
+              </Alert>
             </Stack>
           </TabPanel>
           <TabPanel value={tabValue} index={1}>
-            <Stack spacing={1.5}>
-              <Alert severity="info">
-                Independent identities have all seeds randomly generated. These
-                identities are useful for more privacy, but can be more
-                difficult to use in some scenarios.
-              </Alert>
+            <Stack spacing={2}>
               <TextField
                 label="Identity Seed"
                 variant="outlined"
@@ -529,7 +521,7 @@ function ManageIdentities(props) {
                   Add Identity
                 </Button>
                 <Button
-                  color="inherit"
+                  color="secondary"
                   variant="contained"
                   startIcon={<RefreshIcon />}
                   onClick={onClickGenerate}
@@ -537,23 +529,15 @@ function ManageIdentities(props) {
                   Generate
                 </Button>
               </ButtonGroup>
+              <Alert severity="info">
+                Independent identities have all seeds randomly generated. These
+                identities are useful for more privacy, but can be more
+                difficult to use in some scenarios.
+              </Alert>
             </Stack>
           </TabPanel>
           <TabPanel value={tabValue} index={2}>
-            <Stack spacing={1.5}>
-              {nanoExists ? (
-                <Alert severity="success">
-                  You already have a nano identity on this network.
-                </Alert>
-              ) : (
-                <Alert severity="info">
-                  A nano identity is a limited version of a Signata identity. If
-                  you want to try out Signata, you can register your connected
-                  wallet as a Nano Identity. If you hold 10 SATA it is free to
-                  create a Nano identity, otherwise you&apos;ll have to pay a
-                  small fee.
-                </Alert>
-              )}
+            <Stack spacing={2}>
               <TextField
                 label="Identity Address"
                 variant="outlined"
@@ -577,6 +561,19 @@ function ManageIdentities(props) {
                 </Button>
               </ButtonGroup>
               <LoadingState state={createNanoState} />
+              {nanoExists ? (
+                <Alert severity="success">
+                  You already have a nano identity on this network.
+                </Alert>
+              ) : (
+                <Alert severity="info">
+                  A nano identity is a limited version of a Signata identity. If
+                  you want to try out Signata, you can register your connected
+                  wallet as a Nano Identity. If you hold 10 SATA it is free to
+                  create a Nano identity, otherwise you&apos;ll have to pay a
+                  small fee.
+                </Alert>
+              )}
             </Stack>
           </TabPanel>
         </ItemBox>

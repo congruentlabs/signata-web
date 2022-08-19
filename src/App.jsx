@@ -11,7 +11,7 @@ import {
   Box, Container, Grid, CssBaseline,
 } from '@mui/material';
 import {
-  lime, blue, grey, orange, red,
+  lime, grey, orange, red,
 } from '@mui/material/colors';
 import {
   AppFooter,
@@ -72,7 +72,7 @@ function App() {
           main: lime.A700,
         },
         secondary: {
-          main: blue.A700,
+          main: grey[900],
         },
         warning: {
           main: orange.A700,
@@ -80,10 +80,7 @@ function App() {
         error: {
           main: red.A700,
         },
-        background: {
-          paper: grey.A100,
-        },
-        mode: prefersDarkMode ? 'light' : 'light',
+        mode: prefersDarkMode ? 'dark' : 'light',
         // mode: 'light',
       },
       typography: {
@@ -120,6 +117,7 @@ function App() {
       <CssBaseline />
       {account && (
         <AppHeader
+          darkMode={theme.palette.mode === 'dark'}
           account={account}
           handleClickDisconnect={handleClickDisconnect}
         />

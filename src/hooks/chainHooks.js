@@ -276,7 +276,7 @@ export function useDelegateNano(chainId) {
     state, send, events, resetState,
   } = useContractFunction(
     nanoContract,
-    'delegate',
+    'setDelegate',
     {
       transactionName: 'Delegate Nano Identity',
     },
