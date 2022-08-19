@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable react/no-unescaped-entities */
 import React from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
@@ -10,7 +11,7 @@ function LoadingState(props) {
     return (
       <Box
         sx={{
-          width: '100%', padding: 2, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 2,
+          width: '100%', padding: 2, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 0,
         }}
       >
         <CircularProgress />
@@ -23,7 +24,7 @@ function LoadingState(props) {
     return (
       <Box
         sx={{
-          width: '100%', padding: 2, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 2,
+          width: '100%', padding: 2, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 0,
         }}
       >
         <CircularProgress color="secondary" />
@@ -36,7 +37,7 @@ function LoadingState(props) {
     return (
       <Box
         sx={{
-          width: '100%', padding: 2, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 2,
+          width: '100%', padding: 2, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 0,
         }}
       >
         <CircularProgress color="error" variant="determinate" value={100} />
@@ -45,7 +46,7 @@ function LoadingState(props) {
     );
   }
 
-  return <div />;
+  return <></>;
 }
 
 export default LoadingState;

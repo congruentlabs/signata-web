@@ -1,6 +1,5 @@
 import React from 'react';
 import { useEthers } from '@usedapp/core';
-import { grey } from '@mui/material/colors';
 import {
   Typography,
   Grid,
@@ -70,11 +69,8 @@ export function NoConnectionWarning() {
         sx={{
           borderRadius: 0,
           border: 1,
-          borderColor: grey[600],
-          backgroundColor: grey[50],
           p: 2,
         }}
-        className=".MuiAlert-standardInfo"
       >
         <Stack spacing={1}>
           <Typography variant="body1" component="p" textAlign="center">

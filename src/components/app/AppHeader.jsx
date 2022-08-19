@@ -19,10 +19,7 @@ const pages = [
   { name: 'News', href: 'https://blog.congruentlabs.co' },
 ];
 
-function AppHeader({
-  account,
-  handleClickDisconnect,
-}) {
+function AppHeader({ darkMode, account, handleClickDisconnect }) {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
 
@@ -33,12 +30,12 @@ function AppHeader({
       {
         name: 'Terms & Conditions',
         href: 'terms.pdf',
-        color: 'secondary',
+        color: 'inherit',
       },
       {
         name: 'Privacy Policy',
         href: 'privacy.pdf',
-        color: 'secondary',
+        color: 'inherit',
       },
       {
         name: 'Disconnect',
@@ -51,12 +48,12 @@ function AppHeader({
       {
         name: 'Terms & Conditions',
         href: 'terms.pdf',
-        color: 'secondary',
+        color: 'inherit',
       },
       {
         name: 'Privacy Policy',
         href: 'privacy.pdf',
-        color: 'secondary',
+        color: 'inherit',
       },
     ];
 
@@ -79,11 +76,12 @@ function AppHeader({
   return (
     <AppBar
       position="sticky"
+      component="nav"
       sx={{
         boxShadow: 'none',
         borderColor: grey[600],
         borderBottom: 1,
-        background: grey[50],
+        // background: grey[50],
       }}
     >
       <Container maxWidth="md">
@@ -126,7 +124,7 @@ function AppHeader({
                     href={page.href}
                     target="_blank"
                     startIcon={page.startIcon}
-                    sx={{ color: 'black' }}
+                    color="inherit"
                   >
                     {page.name}
                   </Button>
@@ -143,9 +141,10 @@ function AppHeader({
                   component="a"
                   href={page.href}
                   target="_blank"
+                  color="inherit"
                   startIcon={page.startIcon}
                   // onClick={handleCloseNavMenu}
-                  sx={{ px: 2, color: 'black' }}
+                  sx={{ px: 2 }}
                   variant="text"
                 >
                   {page.name}
@@ -168,8 +167,8 @@ function AppHeader({
               <Tooltip title="Settings">
                 <Button
                   onClick={handleOpenUserMenu}
-                  variant="contained"
-                  color="primary"
+                  variant={darkMode ? 'contained' : 'outlined'}
+                  color="secondary"
                 >
                   {ens || shortenAddress(account)}
                 </Button>
@@ -193,20 +192,15 @@ function AppHeader({
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting.name} onClick={handleCloseUserMenu}>
-                  {setting.useClickEvent ? (
-                    <Button onClick={setting.onClick} color={setting.color}>
-                      {setting.name}
-                    </Button>
-                  ) : (
-                    <Button
-                      target="_blank"
-                      href={setting.href}
-                      color={setting.color}
-                    >
-                      {setting.name}
-                    </Button>
-                  )}
+                <MenuItem
+                  key={setting.name}
+                  onClick={setting.onClick || undefined}
+                  href={setting.href || undefined}
+                  color={setting.color}
+                  target={setting.href ? '_blank' : undefined}
+                  component="a"
+                >
+                  {setting.name}
                 </MenuItem>
               ))}
             </Menu>

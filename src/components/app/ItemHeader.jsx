@@ -1,21 +1,14 @@
 import React from 'react';
-import { Typography } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import { Paper } from '@mui/material';
 
 function ItemHeader({ text }) {
   return (
-    <Typography
-      variant="h6"
-      align="center"
-      sx={{
-        background: grey[300],
-        fontFamily: 'Roboto Condensed',
-        borderBottom: 1,
-        borderColor: grey[600],
-      }}
+    <Paper sx={{
+      textAlign: 'center', py: 1, borderRadius: 0, borderBottom: 1, boxShadow: 'none',
+    }}
     >
-      {text}
-    </Typography>
+      <b>{text}</b>
+    </Paper>
   );
 }
 

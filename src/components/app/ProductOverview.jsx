@@ -19,8 +19,6 @@ function ProductOverview() {
           },
           borderRadius: 0,
           border: 1,
-          borderColor: grey[600],
-          backgroundColor: grey[50],
         }}
       >
         <CardContent>
@@ -47,7 +45,7 @@ function ProductOverview() {
               target="_blank"
               href="https://docs.signata.net"
               variant="text"
-              color="secondary"
+              color="primary"
             >
               Read the Docs
             </Button>
@@ -63,7 +61,7 @@ function ProductOverview() {
               target="_blank"
               href="https://docs.signata.net/guides/dao-guide"
               variant="text"
-              color="secondary"
+              color="primary"
             >
               Learn More
             </Button>
