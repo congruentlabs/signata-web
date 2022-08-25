@@ -42,7 +42,6 @@ function NanoIdentity() {
     defaultMatches: true,
   });
 
-  const [delegateAddress, setDelegateAddress] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [openLock, setOpenLock] = useState(false);
   const [newDelegate, setNewDelegate] = useState('');

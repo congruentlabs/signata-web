@@ -21,6 +21,7 @@ import {
   ProductOverview,
   ManageIdentities,
   YourAccount,
+  Subscription,
 } from './components';
 import secureStorage from './utils/secureStorage';
 
@@ -151,6 +152,7 @@ function App() {
                 unlocked={encryptionPassword !== ''}
               />
             )}
+            {account && encryptionPassword && <Subscription />}
             {account && encryptionPassword && <NetworkServices />}
           </Grid>
         </Box>

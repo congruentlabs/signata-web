@@ -223,7 +223,7 @@ function ManageIdentities(props) {
                 and cannot be recovered.
               </Alert>
               <ButtonGroup fullWidth>
-                <Button onClick={onCloseDelete} color="secondary">
+                <Button onClick={onCloseDelete} color="secondary" variant="contained">
                   Cancel
                 </Button>
                 <Button
@@ -258,7 +258,7 @@ function ManageIdentities(props) {
                 onChange={(e) => setNewName(e.target.value)}
               />
               <ButtonGroup fullWidth>
-                <Button onClick={onCloseRename} color="secondary">
+                <Button onClick={onCloseRename} color="secondary" variant="contained">
                   Cancel
                 </Button>
                 <Button
