@@ -1,30 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { useTheme } from '@mui/material/styles';
-import {
-  useEthers,
-  DEFAULT_SUPPORTED_CHAINS,
-} from '@usedapp/core';
+import { useEthers, DEFAULT_SUPPORTED_CHAINS } from '@usedapp/core';
 import { generateMnemonic } from 'ethereum-cryptography/bip39';
 import { wordlist } from 'ethereum-cryptography/bip39/wordlists/english';
 import AddIcon from '@mui/icons-material/Add';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import FingerprintIcon from '@mui/icons-material/Fingerprint';
-import LockIcon from '@mui/icons-material/Lock';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Alert,
   Button,
   ButtonGroup,
-  DialogContent,
-  CardContent,
-  Chip,
-  Dialog,
   Grid,
   Stack,
   TextField,
-  DialogTitle,
   useMediaQuery,
   Box,
   Tabs,
@@ -39,8 +27,11 @@ import {
   getNanoContractAddress,
   useGetSingleValue,
   useCreateNano,
+  getIdContract,
+  getIdContractAddress,
 } from '../../hooks/chainHooks';
 import NanoIdentity from './NanoIdentity';
+import SignataIdentity from './SignataIdentity';
 
 function ManageIdentities(props) {
   const { identities, setIdentities } = props;
@@ -52,19 +43,80 @@ function ManageIdentities(props) {
   const [identitySeed, setIdentitySeed] = useState('');
   const [delegateSeed, setDelegateSeed] = useState('');
   const [securitySeed, setSecuritySeed] = useState('');
-  const [openRename, setOpenRename] = useState(false);
-  const [openDelete, setOpenDelete] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [editingId, setEditingId] = useState(null);
   const [tabValue, setTabValue] = useState(0);
   const nanoContract = getNanoContract(chainId);
+  const idContract = getIdContract(chainId);
   const [isLoading, setLoading] = useState(false);
+  const [DOMAIN_SEPARATOR, setDomainSeparator] = useState('');
 
   const {
     state: createNanoState,
     send: createNanoSend,
     resetState: createNanoResetState,
-  } = useCreateNano();
+  } = useCreateNano(chainId);
+
+  const EIP712DOMAINTYPE_DIGEST = useGetSingleValue(
+    'EIP712DOMAINTYPE_DIGEST',
+    [],
+    getIdContractAddress(chainId),
+    idContract,
+  );
+
+  const VERSION_DIGEST = useGetSingleValue(
+    'VERSION_DIGEST',
+    [],
+    getIdContractAddress(chainId),
+    idContract,
+  );
+
+  const NAME_DIGEST = useGetSingleValue(
+    'NAME_DIGEST',
+    [],
+    getIdContractAddress(chainId),
+    idContract,
+  );
+
+  const SALT = useGetSingleValue(
+    'SALT',
+    [],
+    getIdContractAddress(chainId),
+    idContract,
+  );
+
+  const TXTYPE_CREATE_DIGEST = useGetSingleValue(
+    'TXTYPE_CREATE_DIGEST',
+    [],
+    getIdContractAddress(chainId),
+    idContract,
+  );
+
+  const TXTYPE_DESTROY_DIGEST = useGetSingleValue(
+    'TXTYPE_DESTROY_DIGEST',
+    [],
+    getIdContractAddress(chainId),
+    idContract,
+  );
+
+  const TXTYPE_LOCK_DIGEST = useGetSingleValue(
+    'TXTYPE_LOCK_DIGEST',
+    [],
+    getIdContractAddress(chainId),
+    idContract,
+  );
+
+  const TXTYPE_UNLOCK_DIGEST = useGetSingleValue(
+    'TXTYPE_UNLOCK_DIGEST',
+    [],
+    getIdContractAddress(chainId),
+    idContract,
+  );
+
+  const TXTYPE_ROLLOVER_DIGEST = useGetSingleValue(
+    'TXTYPE_ROLLOVER_DIGEST',
+    [],
+    getIdContractAddress(chainId),
+    idContract,
+  );
 
   const nanoExists = useGetSingleValue(
     '_identityExists',
@@ -102,6 +154,36 @@ function ManageIdentities(props) {
   };
 
   useEffect(() => {
+    if (
+      EIP712DOMAINTYPE_DIGEST
+      && VERSION_DIGEST
+      && NAME_DIGEST
+      && SALT
+      && chainId
+      && idContract
+    ) {
+      const domainSeparator = ethers.utils
+        .keccak256(
+          EIP712DOMAINTYPE_DIGEST
+            + NAME_DIGEST.slice(2)
+            + VERSION_DIGEST.slice(2)
+            + chainId.toString().slice(2).padStart(64, '0')
+            + idContract.address.slice(2).padStart(64, '0')
+            + SALT.slice(2),
+        )
+        .toString('hex');
+      setDomainSeparator(domainSeparator);
+    }
+  }, [
+    EIP712DOMAINTYPE_DIGEST,
+    VERSION_DIGEST,
+    NAME_DIGEST,
+    chainId,
+    SALT,
+    idContract,
+  ]);
+
+  useEffect(() => {
     if (createNanoState) {
       console.log(createNanoState);
       if (createNanoState.status === 'PendingSignature') {
@@ -135,280 +217,30 @@ function ManageIdentities(props) {
     setSecuritySeed(generateMnemonic(wordlist));
   };
 
-  const onRenameSeed = (e, seed) => {
-    setNewName(seed.name || 'New Name');
-    setEditingId(seed);
-    setOpenRename(true);
-  };
-
-  const onRegisterSeed = (e, id) => {
-    e.preventDefault();
-    // get the first address for all three seeds
-    const identityWallet = ethers.Wallet.fromMnemonic(id.identitySeed);
-    const delegateWallet = ethers.Wallet.fromMnemonic(id.delegateSeed);
-    const securityWallet = ethers.Wallet.fromMnemonic(id.securitySeed);
-  };
-
-  const onLockSeed = (e, id) => {
-    e.preventDefault();
-  };
-
-  const onUnlockSeed = (e, id) => {
-    e.preventDefault();
-  };
-
-  const onRolloverSeed = (e, id) => {
-    e.preventDefault();
-  };
-
-  const onDeleteSeed = (e, id) => {
-    e.preventDefault();
-    setEditingId(id);
-    setOpenDelete(true);
-  };
-
-  const onDestroySeed = (e, id) => {
-    e.preventDefault();
-  };
-
-  const onCloseDelete = () => {
-    setOpenDelete(false);
-    setEditingId(null);
-  };
-
-  const onCloseRename = () => {
-    setOpenRename(false);
-    setNewName('');
-    setEditingId(null);
-  };
-
-  const onSubmitRename = (e) => {
-    e.preventDefault();
-    let newId = editingId;
-    const newIds = Array.from(identities);
-    newIds.forEach((s, idx) => {
-      if (s.identitySeed === newId.identitySeed) {
-        newId = { ...newId, name: newName };
-        newIds[idx] = newId;
-      }
-    });
-    setIdentities(newIds);
-    onCloseRename();
-  };
-
-  const onSubmitDelete = (e) => {
-    const newSeeds = [];
-    identities.forEach((s) => {
-      if (s.identitySeed !== editingId.identitySeed) {
-        newSeeds.push(s);
-      }
-    });
-    setIdentities(newSeeds);
-    onCloseDelete();
-  };
-
   const handleChangeTab = (e, newTabValue) => {
     setTabValue(newTabValue);
   };
 
   return (
     <>
-      <Dialog open={openDelete} onClose={onCloseDelete}>
-        <DialogTitle>Delete Identity?</DialogTitle>
-        <form onSubmit={onSubmitDelete}>
-          <DialogContent>
-            <Stack spacing={2}>
-              <Alert severity="warning">
-                Identities that have not been registered are deleted immediately
-                and cannot be recovered.
-              </Alert>
-              <ButtonGroup fullWidth>
-                <Button onClick={onCloseDelete} color="secondary" variant="contained">
-                  Cancel
-                </Button>
-                <Button
-                  // fullWidth
-                  type="submit"
-                  variant="contained"
-                  color="error"
-                  size="large"
-                >
-                  Delete Identity
-                </Button>
-              </ButtonGroup>
-            </Stack>
-          </DialogContent>
-        </form>
-      </Dialog>
-      <Dialog open={openRename} onClose={onCloseRename}>
-        <form onSubmit={onSubmitRename}>
-          <DialogContent>
-            <Stack spacing={2}>
-              <Alert severity="info">
-                Identity names are just so you can easily identify which
-                identity is which. The names are not visible to anyone else, and
-                are not written to the blockchain.
-              </Alert>
-              <TextField
-                label="New Name"
-                variant="outlined"
-                fullWidth
-                color="info"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-              />
-              <ButtonGroup fullWidth>
-                <Button onClick={onCloseRename} color="secondary" variant="contained">
-                  Cancel
-                </Button>
-                <Button
-                  fullWidth
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                >
-                  Save New Name
-                </Button>
-              </ButtonGroup>
-            </Stack>
-          </DialogContent>
-        </form>
-      </Dialog>
-      {identities && identities.map((id) => (
-        <Grid item xs={12} md={6} key={id.identitySeed}>
-          <ItemBox>
-            <ItemHeader text={`Identity: ${id.name || 'Unnamed'}`} />
-            <CardContent>
-              <Stack spacing={2}>
-                {/* <Chip
-                    label={seed.address && shortenIfAddress(seed.address)}
-                    color="default"
-                    sx={{
-                      borderRadius: 0,
-                      height: 48,
-                      border: 1,
-                      borderColor: 'black',
-                    }}
-                  /> */}
-                <Chip
-                  label={`Chain: ${
-                    DEFAULT_SUPPORTED_CHAINS.find(
-                      (network) => network.chainId === id.chainId,
-                    )?.chainName
-                  }`}
-                  color="default"
-                  sx={{
-                    borderRadius: 0,
-                    height: 24,
-                    border: 1,
-                    borderColor: 'black',
-                  }}
-                />
-                <Chip
-                  label={`Identity: ${id.identityAddress}`}
-                  color="default"
-                  variant="outlined"
-                  sx={{
-                    borderRadius: 0,
-                    height: 24,
-                    border: 1,
-                    borderColor: 'black',
-                  }}
-                />
-                <Chip
-                  label={`Delegate: ${id.delegateAddress}`}
-                  color="default"
-                  variant="outlined"
-                  sx={{
-                    borderRadius: 0,
-                    height: 24,
-                    border: 1,
-                    borderColor: 'black',
-                  }}
-                />
-                <Chip
-                  label={`Security: ${id.securityAddress}`}
-                  color="default"
-                  variant="outlined"
-                  sx={{
-                    borderRadius: 0,
-                    height: 24,
-                    border: 1,
-                    borderColor: 'black',
-                  }}
-                />
-                <Chip
-                  label={id.locked ? 'Locked' : 'Unlocked'}
-                  color={id.locked ? 'error' : 'success'}
-                  variant={id.locked ? 'filled' : 'outlined'}
-                  icon={id.locked ? <LockIcon /> : <LockOpenIcon />}
-                  sx={{
-                    borderRadius: 0,
-                    height: 28,
-                    border: 1,
-                    borderColor: 'black',
-                  }}
-                />
-                <Chip
-                  label={id.registered ? 'Registered' : 'Unregistered'}
-                  color={id.registered ? 'success' : 'warning'}
-                  variant={id.registered ? 'outlined' : 'filled'}
-                  icon={
-                      id.registered ? <FingerprintIcon /> : <ErrorOutlineIcon />
-                    }
-                  sx={{
-                    borderRadius: 0,
-                    height: 28,
-                    border: 1,
-                    borderColor: 'black',
-                  }}
-                />
-                <ButtonGroup
-                  fullWidth
-                  size="small"
-                  variant="contained"
-                  color="secondary"
-                  orientation={isSm ? 'horizontal' : 'vertical'}
-                >
-                  {!id.registered && (
-                  <Button
-                    onClick={(e) => onRegisterSeed(e, id)}
-                    color="primary"
-                  >
-                    Register
-                  </Button>
-                  )}
-                  <Button onClick={(e) => onRenameSeed(e, id)}>Rename</Button>
-                  {id.registered && !id.locked && (
-                  <Button onClick={(e) => onLockSeed(e, id)}>Lock</Button>
-                  )}
-                  {id.registered && id.locked && (
-                  <Button onClick={(e) => onUnlockSeed(e, id)}>
-                    Unlock
-                  </Button>
-                  )}
-                  {id.registered && (
-                  <Button onClick={(e) => onRolloverSeed(e, id)}>
-                    Rollover
-                  </Button>
-                  )}
-                  {id.registered && (
-                  <Button onClick={(e) => onDestroySeed(e, id)}>
-                    Destroy
-                  </Button>
-                  )}
-                  {!id.registered && (
-                  <Button onClick={(e) => onDeleteSeed(e, id)}>
-                    Delete
-                  </Button>
-                  )}
-                </ButtonGroup>
-              </Stack>
-            </CardContent>
-          </ItemBox>
-        </Grid>
-      ))}
+      {identities
+        && identities.map((id) => (
+          <Grid item xs={12} md={6} key={id.identitySeed}>
+            <SignataIdentity
+              identities={identities}
+              setIdentities={setIdentities}
+              chainId={chainId}
+              id={id}
+              idContract={idContract}
+              DOMAIN_SEPARATOR={DOMAIN_SEPARATOR}
+              TXTYPE_CREATE_DIGEST={TXTYPE_CREATE_DIGEST}
+              TXTYPE_LOCK_DIGEST={TXTYPE_LOCK_DIGEST}
+              TXTYPE_UNLOCK_DIGEST={TXTYPE_UNLOCK_DIGEST}
+              TXTYPE_DESTROY_DIGEST={TXTYPE_DESTROY_DIGEST}
+              TXTYPE_ROLLOVER_DIGEST={TXTYPE_ROLLOVER_DIGEST}
+            />
+          </Grid>
+        ))}
       {nanoExists && (
         <Grid item xs={12} md={6}>
           <NanoIdentity />

@@ -232,15 +232,72 @@ export function useCreateIdentity(chainId) {
   };
 }
 
-export function useDeleteIdentity(chainId) {
+export function useDestroyIdentity(chainId) {
   const identityContract = getIdContract(chainId);
   const {
     state, send, events, resetState,
   } = useContractFunction(
     identityContract,
-    'delete',
+    'destroy',
     {
-      transactionName: 'Delete Signata Identity',
+      transactionName: 'Destroy Signata Identity',
+    },
+  );
+  return {
+    state,
+    send,
+    events,
+    resetState,
+  };
+}
+
+export function useLockIdentity(chainId) {
+  const identityContract = getIdContract(chainId);
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(
+    identityContract,
+    'lock',
+    {
+      transactionName: 'Lock Signata Identity',
+    },
+  );
+  return {
+    state,
+    send,
+    events,
+    resetState,
+  };
+}
+
+export function useUnlockIdentity(chainId) {
+  const identityContract = getIdContract(chainId);
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(
+    identityContract,
+    'unlock',
+    {
+      transactionName: 'Unlock Signata Identity',
+    },
+  );
+  return {
+    state,
+    send,
+    events,
+    resetState,
+  };
+}
+
+export function useRolloverIdentity(chainId) {
+  const identityContract = getIdContract(chainId);
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(
+    identityContract,
+    'rollover',
+    {
+      transactionName: 'Rollover Signata Identity',
     },
   );
   return {
@@ -317,63 +374,6 @@ export function useSelfLockNano(chainId) {
     'selfLock',
     {
       transactionName: 'Self Lock Nano Identity',
-    },
-  );
-  return {
-    state,
-    send,
-    events,
-    resetState,
-  };
-}
-
-export function useMigrateIdentity(chainId) {
-  const identityContract = getIdContract(chainId);
-  const {
-    state, send, events, resetState,
-  } = useContractFunction(
-    identityContract,
-    'migrate',
-    {
-      transactionName: 'Migrate Signata Identity',
-    },
-  );
-  return {
-    state,
-    send,
-    events,
-    resetState,
-  };
-}
-
-export function useLockIdentity(chainId) {
-  const identityContract = getIdContract(chainId);
-  const {
-    state, send, events, resetState,
-  } = useContractFunction(
-    identityContract,
-    'lock',
-    {
-      transactionName: 'Lock Signata Identity',
-    },
-  );
-  return {
-    state,
-    send,
-    events,
-    resetState,
-  };
-}
-
-export function useUnlockIdentity(chainId) {
-  const identityContract = getIdContract(chainId);
-  const {
-    state, send, events, resetState,
-  } = useContractFunction(
-    identityContract,
-    'unlock',
-    {
-      transactionName: 'Unlock Signata Identity',
     },
   );
   return {
