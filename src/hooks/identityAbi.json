@@ -18,12 +18,17 @@
 			},
 			{
 				"internalType": "address",
+				"name": "identityAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
 				"name": "delegateAddress",
 				"type": "address"
 			},
 			{
 				"internalType": "address",
-				"name": "securityKey",
+				"name": "securityAddress",
 				"type": "address"
 			}
 		],
@@ -305,7 +310,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "_domainSeperator",
+		"name": "_domainSeparator",
 		"outputs": [
 			{
 				"internalType": "bytes32",

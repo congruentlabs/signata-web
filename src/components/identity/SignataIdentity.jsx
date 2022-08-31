@@ -270,7 +270,7 @@ function SignataIdentity({
       Buffer.from(hashToSign.slice(2), 'hex'),
     );
 
-    createSend(v, r, s, delegateWallet.address, securityWallet.address);
+    createSend(v, r, s, identityWallet.address, delegateWallet.address, securityWallet.address);
   };
 
   const handleClickLock = (e) => {
