@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { DEFAULT_SUPPORTED_CHAINS } from '@usedapp/core';
-import { useTheme } from '@mui/material/styles';
+import { useTheme, styled } from '@mui/material/styles';
 import LockIcon from '@mui/icons-material/Lock';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import LinkOffIcon from '@mui/icons-material/LinkOff';
+import LinkIcon from '@mui/icons-material/Link';
 import {
   Alert,
   Button,
@@ -18,6 +21,10 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  Box,
+  Typography,
+  IconButton,
+  Paper,
 } from '@mui/material';
 import {
   useCreateIdentity,
@@ -31,6 +38,10 @@ import {
 import LoadingState from './LoadingState';
 import ItemHeader from '../app/ItemHeader';
 import ItemBox from '../app/ItemBox';
+
+const ListItem = styled('li')(({ theme }) => ({
+  margin: theme.spacing(0.5),
+}));
 
 function SignataIdentity({
   identities,
@@ -250,27 +261,28 @@ function SignataIdentity({
     e.preventDefault();
     createResetState();
 
-    const inputHash = ethers.utils
-      .keccak256(
-        `${TXTYPE_CREATE_DIGEST}${delegateWallet.address
-          .slice(2)
-          .padStart(64, '0')}${securityWallet.address
-          .slice(2)
-          .padStart(64, '0')}`,
-      )
-      .toString('hex');
-
-    const hashToSign = ethers.utils
-      .keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`)
-      .toString('hex');
-
-    const signingKey = new ethers.utils.SigningKey(identityWallet.privateKey);
-
-    const { r, s, v } = signingKey.signDigest(
-      Buffer.from(hashToSign.slice(2), 'hex'),
+    const inputHash = ethers.utils.keccak256(
+      `${TXTYPE_CREATE_DIGEST}${delegateWallet.address
+        .slice(2)
+        .padStart(64, '0')}${securityWallet.address
+        .slice(2)
+        .padStart(64, '0')}`,
     );
+    const hashToSign = ethers.utils.keccak256(
+      `0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`,
+    );
+    const { r, s, v } = new ethers.utils.SigningKey(
+      identityWallet.privateKey,
+    ).signDigest(hashToSign);
 
-    createSend(v, r, s, identityWallet.address, delegateWallet.address, securityWallet.address);
+    createSend(
+      v,
+      r,
+      s,
+      identityWallet.address,
+      delegateWallet.address,
+      securityWallet.address,
+    );
   };
 
   const handleClickLock = (e) => {
@@ -285,23 +297,21 @@ function SignataIdentity({
 
   const onLockIdentity = (e) => {
     e.preventDefault();
+    setOpenLock(false);
     lockResetState();
 
-    const inputHash = ethers.utils
-      .keccak256(
-        `${TXTYPE_LOCK_DIGEST}${identityLockCount.slice(2).padStart(64, '0')}`,
-      )
-      .toString('hex');
-
-    const hashToSign = ethers.utils
-      .keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`)
-      .toString('hex');
-
-    const signingKey = new ethers.utils.SigningKey(delegateWallet.privateKey);
-
-    const { r, s, v } = signingKey.signDigest(
-      Buffer.from(hashToSign.slice(2), 'hex'),
+    const inputHash = ethers.utils.keccak256(
+      `${TXTYPE_LOCK_DIGEST}${identityLockCount
+        .toHexString()
+        .slice(2)
+        .padStart(64, '0')}`,
     );
+    const hashToSign = ethers.utils.keccak256(
+      `0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`,
+    );
+    const { r, s, v } = new ethers.utils.SigningKey(
+      delegateWallet.privateKey,
+    ).signDigest(hashToSign);
 
     lockSend(identityWallet.address, v, r, s);
   };
@@ -318,25 +328,21 @@ function SignataIdentity({
 
   const onUnlockIdentity = (e) => {
     e.preventDefault();
+    setOpenUnlock(false);
     unlockResetState();
 
-    const inputHash = ethers.utils
-      .keccak256(
-        `${TXTYPE_UNLOCK_DIGEST}${identityLockCount
-          .slice(2)
-          .padStart(64, '0')}`,
-      )
-      .toString('hex');
-
-    const hashToSign = ethers.utils
-      .keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`)
-      .toString('hex');
-
-    const signingKey = new ethers.utils.SigningKey(securityWallet.privateKey);
-
-    const { r, s, v } = signingKey.signDigest(
-      Buffer.from(hashToSign.slice(2), 'hex'),
+    const inputHash = ethers.utils.keccak256(
+      `${TXTYPE_UNLOCK_DIGEST}${identityLockCount
+        .toHexString()
+        .slice(2)
+        .padStart(64, '0')}`,
     );
+    const hashToSign = ethers.utils.keccak256(
+      `0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`,
+    );
+    const { r, s, v } = new ethers.utils.SigningKey(
+      securityWallet.privateKey,
+    ).signDigest(hashToSign);
 
     unlockSend(identityWallet.address, v, r, s);
   };
@@ -353,42 +359,36 @@ function SignataIdentity({
 
   const onRolloverIdentity = (e) => {
     e.preventDefault();
+    setOpenRollover(false);
     rolloverResetState();
 
-    const inputHash = ethers.utils
-      .keccak256(
-        `${TXTYPE_ROLLOVER_DIGEST}${newDelegate.address
-          .slice(2)
-          .padStart(64, '0')}${newSecurity.address
-          .slice(2)
-          .padStart(64, '0')}${identityRolloverCount
-          .slice(2)
-          .padStart(64, '0')}`,
-      )
-      .toString('hex');
-
-    const hashToSign = ethers.utils
-      .keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`)
-      .toString('hex');
-
-    const delegateSigningKey = new ethers.utils.SigningKey(
-      delegateWallet.privateKey,
+    const inputHash = ethers.utils.keccak256(
+      `${TXTYPE_ROLLOVER_DIGEST}${newDelegate.address
+        .slice(2)
+        .padStart(64, '0')}${newSecurity.address
+        .slice(2)
+        .padStart(64, '0')}${identityRolloverCount
+        .toHexString()
+        .slice(2)
+        .padStart(64, '0')}`,
     );
-    const securitySigningKey = new ethers.utils.SigningKey(
-      securityWallet.privateKey,
+    const hashToSign = ethers.utils.keccak256(
+      `0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`,
     );
-
     const {
       r: delegateR,
       s: delegateS,
       v: delegateV,
-    } = delegateSigningKey.signDigest(Buffer.from(hashToSign.slice(2), 'hex'));
-
+    } = new ethers.utils.SigningKey(delegateWallet.privateKey).signDigest(
+      hashToSign,
+    );
     const {
       r: securityR,
       s: securityS,
       v: securityV,
-    } = securitySigningKey.signDigest(Buffer.from(hashToSign.slice(2), 'hex'));
+    } = new ethers.utils.SigningKey(securityWallet.privateKey).signDigest(
+      hashToSign,
+    );
 
     rolloverSend(
       identityWallet.address,
@@ -415,34 +415,29 @@ function SignataIdentity({
 
   const onDestroyIdentity = (e) => {
     e.preventDefault();
+    setOpenDestroy(false);
     destroyResetState();
 
-    const inputHash = ethers.utils
-      .keccak256(`${TXTYPE_DESTROY_DIGEST}`)
-      .toString('hex');
-
-    const hashToSign = ethers.utils
-      .keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`)
-      .toString('hex');
-
-    const delegateSigningKey = new ethers.utils.SigningKey(
-      delegateWallet.privateKey,
+    const inputHash = ethers.utils.keccak256(
+      `${TXTYPE_DESTROY_DIGEST}`,
     );
-    const securitySigningKey = new ethers.utils.SigningKey(
-      securityWallet.privateKey,
+    const hashToSign = ethers.utils.keccak256(
+      `0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`,
     );
-
     const {
       r: delegateR,
       s: delegateS,
       v: delegateV,
-    } = delegateSigningKey.signDigest(Buffer.from(hashToSign.slice(2), 'hex'));
-
+    } = new ethers.utils.SigningKey(delegateWallet.privateKey).signDigest(
+      hashToSign,
+    );
     const {
       r: securityR,
       s: securityS,
       v: securityV,
-    } = securitySigningKey.signDigest(Buffer.from(hashToSign.slice(2), 'hex'));
+    } = new ethers.utils.SigningKey(securityWallet.privateKey).signDigest(
+      hashToSign,
+    );
 
     destroySend(
       identityWallet.address,
@@ -503,6 +498,11 @@ function SignataIdentity({
     });
     setIdentities(newSeeds);
     onCloseDelete();
+  };
+
+  const handleClickCopy = (e, dat) => {
+    e.preventDefault();
+    navigator.clipboard.writeText(dat);
   };
 
   return (
@@ -722,106 +722,101 @@ function SignataIdentity({
         <ItemHeader text={`Identity: ${id.name || 'Unnamed'}`} />
         <CardContent>
           <Stack spacing={2}>
-            <Chip
-              label={`Chain: ${
-                DEFAULT_SUPPORTED_CHAINS.find(
-                  (network) => network.chainId === id.chainId,
-                )?.chainName
-              }`}
-              color="default"
+            <Box
               sx={{
-                borderRadius: 0,
-                height: 24,
-                border: 1,
-                borderColor: 'black',
+                textAlign: 'center',
               }}
-            />
-            <Chip
-              label={`Identity: ${id.identityAddress}`}
-              color="default"
-              variant="outlined"
-              sx={{
-                borderRadius: 0,
-                height: 24,
-                border: 1,
-                borderColor: 'black',
-              }}
-            />
-            <Chip
-              label={`Delegate: ${id.delegateAddress}`}
-              color="default"
-              variant="outlined"
-              sx={{
-                borderRadius: 0,
-                height: 24,
-                border: 1,
-                borderColor: 'black',
-              }}
-            />
-            <Chip
-              label={`Security: ${id.securityAddress}`}
-              color="default"
-              variant="outlined"
-              sx={{
-                borderRadius: 0,
-                height: 24,
-                border: 1,
-                borderColor: 'black',
-              }}
-            />
-            <Chip
-              label={identityLocked ? 'Locked' : 'Unlocked'}
-              color={identityLocked ? 'error' : 'success'}
-              variant={identityLocked ? 'filled' : 'outlined'}
-              icon={identityLocked ? <LockIcon /> : <LockOpenIcon />}
-              sx={{
-                borderRadius: 0,
-                height: 28,
-                border: 1,
-                borderColor: 'black',
-              }}
-            />
-            <Chip
-              label={identityExists ? 'Registered' : 'Unregistered'}
-              color={identityExists ? 'success' : 'warning'}
-              variant={identityExists ? 'outlined' : 'filled'}
-              icon={identityExists ? <FingerprintIcon /> : <ErrorOutlineIcon />}
-              sx={{
-                borderRadius: 0,
-                height: 28,
-                border: 1,
-                borderColor: 'black',
-              }}
-            />
-            {identityExists && (
-              <Chip
-                label={identityDestroyed ? 'Active' : 'Destroyed'}
-                color={identityDestroyed ? 'success' : 'error'}
-                variant={identityDestroyed ? 'outlined' : 'filled'}
-                icon={
-                  identityDestroyed ? <FingerprintIcon /> : <ErrorOutlineIcon />
-                }
+            >
+              <Typography sx={{ fontFamily: 'Roboto Mono' }}>
+                Identity:
+                {id.identityAddress}
+                <IconButton aria-label="copy identity" size="small" onClick={(e) => handleClickCopy(e, id.identityAddress)}>
+                  <ContentCopyIcon />
+                </IconButton>
+              </Typography>
+              <Typography sx={{ fontFamily: 'Roboto Mono' }}>
+                Delegate:
+                {id.delegateAddress}
+                <IconButton aria-label="copy identity" size="small" onClick={(e) => handleClickCopy(e, id.delegateAddress)}>
+                  <ContentCopyIcon />
+                </IconButton>
+              </Typography>
+              <Typography sx={{ fontFamily: 'Roboto Mono' }}>
+                Security:
+                {id.securityAddress}
+                <IconButton aria-label="copy identity" size="small" onClick={(e) => handleClickCopy(e, id.securityAddress)}>
+                  <ContentCopyIcon />
+                </IconButton>
+              </Typography>
+              <Box
                 sx={{
-                  borderRadius: 0,
-                  height: 28,
-                  border: 1,
-                  borderColor: 'black',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  flexWrap: 'wrap',
+                  listStyle: 'none',
+                  p: 0.5,
+                  m: 0,
                 }}
-              />
-            )}
+                component="ul"
+              >
+                <ListItem>
+                  <Chip
+                    label={`Chain: ${
+                      DEFAULT_SUPPORTED_CHAINS.find(
+                        (network) => network.chainId === id.chainId,
+                      )?.chainName
+                    }`}
+                    color={id.chainId === chainId ? 'success' : 'warning'}
+                    variant="outlined"
+                    icon={id.chainId === chainId ? <LinkIcon /> : <LinkOffIcon />}
+                  />
+                </ListItem>
+                {id.chainId === chainId && !identityDestroyed && (
+                  <ListItem>
+                    <Chip
+                      label={identityExists ? 'Registered' : 'Unregistered'}
+                      color={identityExists ? 'success' : 'warning'}
+                      variant={identityExists ? 'outlined' : 'filled'}
+                      icon={identityExists ? <FingerprintIcon /> : <ErrorOutlineIcon />}
+                    />
+                  </ListItem>
+                )}
+                {id.chainId === chainId && !identityDestroyed && (
+                  <ListItem>
+                    <Chip
+                      label={identityLocked ? 'Locked' : 'Unlocked'}
+                      color={identityLocked ? 'error' : 'success'}
+                      variant={identityLocked ? 'filled' : 'outlined'}
+                      icon={identityLocked ? <LockIcon /> : <LockOpenIcon />}
+                    />
+                  </ListItem>
+                )}
+                {id.chainId === chainId && identityExists && identityDestroyed && (
+                  <ListItem>
+                    <Chip
+                      label="Destroyed"
+                      color="error"
+                      variant="filled"
+                      icon={<ErrorOutlineIcon />}
+                    />
+                  </ListItem>
+                )}
+              </Box>
+            </Box>
+            <LoadingState state={createState} />
+            <LoadingState state={lockState} />
+            <LoadingState state={unlockState} />
+            <LoadingState state={rolloverState} />
+            <LoadingState state={destroyState} />
             <ButtonGroup
               fullWidth
-              size="small"
               variant="contained"
+              disabled={isLoading || id.chainId !== chainId}
               color="secondary"
               orientation={isSm ? 'horizontal' : 'vertical'}
             >
               {!identityExists && (
-                <Button
-                  onClick={onCreateIdentity}
-                  color="primary"
-                  disabled={isLoading}
-                >
+                <Button onClick={onCreateIdentity} color="primary">
                   Register
                 </Button>
               )}
@@ -833,7 +828,7 @@ function SignataIdentity({
                 <Button onClick={handleClickUnlock}>Unlock</Button>
               )}
               {identityExists && (
-                <Button onClick={handleClickRollover}>Rollover</Button>
+                <Button onClick={handleClickRollover} disabled>Rollover</Button>
               )}
               {identityExists && (
                 <Button onClick={handleClickDestroy}>Destroy</Button>
@@ -842,11 +837,6 @@ function SignataIdentity({
                 <Button onClick={handleClickDelete}>Delete</Button>
               )}
             </ButtonGroup>
-            <LoadingState state={createState} />
-            <LoadingState state={lockState} />
-            <LoadingState state={unlockState} />
-            <LoadingState state={rolloverState} />
-            <LoadingState state={destroyState} />
           </Stack>
         </CardContent>
       </ItemBox>

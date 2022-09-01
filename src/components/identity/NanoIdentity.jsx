@@ -5,14 +5,16 @@ import {
   shortenIfAddress,
   DEFAULT_SUPPORTED_CHAINS,
 } from '@usedapp/core';
-import { useTheme } from '@mui/material/styles';
+import { useTheme, styled } from '@mui/material/styles';
 import EditIcon from '@mui/icons-material/Edit';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import PermIdentityIcon from '@mui/icons-material/PermIdentity';
+import LinkIcon from '@mui/icons-material/Link';
 import {
   Alert,
+  Box,
   Button,
   ButtonGroup,
   CardContent,
@@ -34,6 +36,10 @@ import {
 import LoadingState from './LoadingState';
 import ItemHeader from '../app/ItemHeader';
 import ItemBox from '../app/ItemBox';
+
+const ListItem = styled('li')(({ theme }) => ({
+  margin: theme.spacing(0.5),
+}));
 
 function NanoIdentity() {
   const { chainId, account } = useEthers();
@@ -236,69 +242,77 @@ function NanoIdentity() {
         <ItemHeader text="Nano Identity" />
         <CardContent>
           <Stack spacing={2}>
-            <Chip
-              label={`Chain: ${
-                DEFAULT_SUPPORTED_CHAINS.find(
-                  (network) => network.chainId === chainId,
-                )?.chainName
-              }`}
-              color="default"
+            <Box
               sx={{
-                borderRadius: 0,
+                display: 'flex',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+                listStyle: 'none',
+                p: 0.5,
+                m: 0,
               }}
-            />
-            <Chip
-              label={
-                identityDelegate === account
-                  ? 'Not Delegated'
-                  : `Delegated to ${shortenIfAddress(identityDelegate)}`
-              }
-              color={identityDelegate === account ? 'error' : 'success'}
-              variant={identityDelegate === account ? 'outlined' : 'outlined'}
-              icon={<PermIdentityIcon />}
-              sx={{
-                borderRadius: 0,
-              }}
-            />
-            <Chip
-              label={identityLocked ? 'Locked' : 'Unlocked'}
-              color={identityLocked ? 'error' : 'success'}
-              variant={identityLocked ? 'filled' : 'outlined'}
-              icon={identityLocked ? <LockIcon /> : <LockOpenIcon />}
-              sx={{
-                borderRadius: 0,
-              }}
-            />
-            <Chip
-              icon={<FingerprintIcon />}
-              label="Identity Registered"
-              color="default"
-              variant="outlined"
-              sx={{
-                borderRadius: 0,
-              }}
-            />
+              component="ul"
+            >
+              <ListItem>
+                <Chip
+                  icon={<LinkIcon />}
+                  label={`Chain: ${
+                    DEFAULT_SUPPORTED_CHAINS.find(
+                      (network) => network.chainId === chainId,
+                    )?.chainName
+                  }`}
+                  color="default"
+                />
+              </ListItem>
+              <ListItem>
+                <Chip
+                  icon={<FingerprintIcon />}
+                  label="Registered"
+                  color="success"
+                  variant="outlined"
+                />
+              </ListItem>
+              <ListItem>
+                <Chip
+                  label={
+                    identityDelegate === account
+                      ? 'Not Delegated'
+                      : `Delegated to ${shortenIfAddress(identityDelegate)}`
+                  }
+                  color={identityDelegate === account ? 'error' : 'success'}
+                  variant={identityDelegate === account ? 'outlined' : 'outlined'}
+                  icon={<PermIdentityIcon />}
+                />
+              </ListItem>
+              <ListItem>
+                <Chip
+                  label={identityLocked ? 'Locked' : 'Unlocked'}
+                  color={identityLocked ? 'error' : 'success'}
+                  variant={identityLocked ? 'filled' : 'outlined'}
+                  icon={identityLocked ? <LockIcon /> : <LockOpenIcon />}
+                />
+              </ListItem>
+            </Box>
             <LoadingState state={lockState} />
             <LoadingState state={delegateState} />
             <ButtonGroup
               fullWidth
               variant="contained"
+              color="secondary"
               orientation={isSm ? 'horizontal' : 'vertical'}
             >
               {identityLocked === false && (
                 <Button
-                  color="secondary"
                   disabled={isLoading}
-                  startIcon={<LockIcon />}
+                  // startIcon={<LockIcon />}
                   onClick={handleClickLock}
                 >
                   Lock
                 </Button>
               )}
               <Button
-                color="secondary"
                 disabled={isLoading}
-                startIcon={<EditIcon />}
+                // startIcon={<EditIcon />}
                 onClick={handleClickDelegate}
               >
                 Delegate

@@ -14,7 +14,7 @@ function LoadingState(props) {
           width: '100%', padding: 2, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 0,
         }}
       >
-        <CircularProgress />
+        <CircularProgress color="info" />
         <Typography>Transaction Pending...</Typography>
       </Box>
     );
@@ -27,7 +27,7 @@ function LoadingState(props) {
           width: '100%', padding: 2, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 0,
         }}
       >
-        <CircularProgress color="secondary" />
+        <CircularProgress color="info" />
         <Typography>Waiting for Wallet Signature...</Typography>
       </Box>
     );

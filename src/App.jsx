@@ -81,7 +81,7 @@ function App() {
         error: {
           main: red.A700,
         },
-        mode: prefersDarkMode ? 'dark' : 'light',
+        mode: prefersDarkMode ? 'light' : 'light',
         // mode: 'light',
       },
       typography: {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { useTheme } from '@mui/material/styles';
-import { useEthers, DEFAULT_SUPPORTED_CHAINS } from '@usedapp/core';
+import { useEthers } from '@usedapp/core';
 import { generateMnemonic } from 'ethereum-cryptography/bip39';
 import { wordlist } from 'ethereum-cryptography/bip39/wordlists/english';
 import AddIcon from '@mui/icons-material/Add';
@@ -167,7 +167,7 @@ function ManageIdentities(props) {
           EIP712DOMAINTYPE_DIGEST
             + NAME_DIGEST.slice(2)
             + VERSION_DIGEST.slice(2)
-            + chainId.toString().slice(2).padStart(64, '0')
+            + chainId.toString(16).padStart(64, '0')
             + idContract.address.slice(2).padStart(64, '0')
             + SALT.slice(2),
         )
@@ -225,7 +225,7 @@ function ManageIdentities(props) {
     <>
       {identities
         && identities.map((id) => (
-          <Grid item xs={12} md={6} key={id.identitySeed}>
+          <Grid item xs={12} key={id.identitySeed}>
             <SignataIdentity
               identities={identities}
               setIdentities={setIdentities}
@@ -242,7 +242,7 @@ function ManageIdentities(props) {
           </Grid>
         ))}
       {nanoExists && (
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12}>
           <NanoIdentity />
         </Grid>
       )}
