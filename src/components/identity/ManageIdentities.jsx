@@ -246,7 +246,7 @@ function ManageIdentities(props) {
           <NanoIdentity />
         </Grid>
       )}
-      <Grid item xs={12} md={6}>
+      <Grid item xs={12}>
         <ItemBox>
           <ItemHeader text="Add Identity" />
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

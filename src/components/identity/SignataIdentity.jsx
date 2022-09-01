@@ -151,22 +151,6 @@ function SignataIdentity({
     idContract,
   );
 
-  // useEffect(() => {
-  //   console.log({
-  //     identityExists,
-  //     identityDestroyed,
-  //     identityLocked,
-  //     identityLockCount,
-  //     identityRolloverCount,
-  //   });
-  // }, [
-  //   identityExists,
-  //   identityDestroyed,
-  //   identityLocked,
-  //   identityLockCount,
-  //   identityRolloverCount,
-  // ]);
-
   useEffect(() => {
     if (createState) {
       console.log(createState);
@@ -418,9 +402,7 @@ function SignataIdentity({
     setOpenDestroy(false);
     destroyResetState();
 
-    const inputHash = ethers.utils.keccak256(
-      `${TXTYPE_DESTROY_DIGEST}`,
-    );
+    const inputHash = ethers.utils.keccak256(`${TXTYPE_DESTROY_DIGEST}`);
     const hashToSign = ethers.utils.keccak256(
       `0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`,
     );
@@ -576,8 +558,10 @@ function SignataIdentity({
           <DialogContent>
             <Stack spacing={2}>
               <Alert severity="warning">
-                If you lock your identity it will become locked on the
-                blockchain.
+                If you want to prevent your identity from being modified or
+                used, you can lock it on the blockchain. If you believe your
+                identity might have been compromised, locking it is an easy way
+                to restrict its use.
               </Alert>
               <ButtonGroup fullWidth>
                 <Button
@@ -607,8 +591,10 @@ function SignataIdentity({
           <DialogContent>
             <Stack spacing={2}>
               <Alert severity="warning">
-                If you unlock your identity it will become unlocked on the
-                blockchain.
+                If your identity is locked and you believe it is safe to use
+                again, you can unlock it on the blockchain. Only unlock it if
+                you think the threat is gone. If you think your identity is
+                compromised, it is recommended to Rollover the identity instead.
               </Alert>
               <ButtonGroup fullWidth>
                 <Button
@@ -638,8 +624,10 @@ function SignataIdentity({
           <DialogContent>
             <Stack spacing={2}>
               <Alert severity="warning">
-                If you roll over your identity it will become unlocked on the
-                blockchain.
+                Rolling over an identity means your Delegate and Security
+                wallets will be changed for it. Your identity address remains
+                the same. Only rollover your identity if you think it might have
+                been compromised.
               </Alert>
               <TextField
                 label="New Delegate Seed"
@@ -684,9 +672,10 @@ function SignataIdentity({
           <DialogContent>
             <Stack spacing={2}>
               <Alert severity="info">
-                Identity names are just so you can easily identify which
-                identity is which. The names are not visible to anyone else, and
-                are not written to the blockchain.
+                Identity names are just so you can easily identify your
+                identities, like specifying if one is for a specific purpose.
+                The names are not visible to anyone else, and are not written to
+                the blockchain.
               </Alert>
               <TextField
                 label="New Name"
@@ -730,21 +719,33 @@ function SignataIdentity({
               <Typography sx={{ fontFamily: 'Roboto Mono' }}>
                 Identity:
                 {id.identityAddress}
-                <IconButton aria-label="copy identity" size="small" onClick={(e) => handleClickCopy(e, id.identityAddress)}>
+                <IconButton
+                  aria-label="copy identity"
+                  size="small"
+                  onClick={(e) => handleClickCopy(e, id.identityAddress)}
+                >
                   <ContentCopyIcon />
                 </IconButton>
               </Typography>
               <Typography sx={{ fontFamily: 'Roboto Mono' }}>
                 Delegate:
                 {id.delegateAddress}
-                <IconButton aria-label="copy identity" size="small" onClick={(e) => handleClickCopy(e, id.delegateAddress)}>
+                <IconButton
+                  aria-label="copy identity"
+                  size="small"
+                  onClick={(e) => handleClickCopy(e, id.delegateAddress)}
+                >
                   <ContentCopyIcon />
                 </IconButton>
               </Typography>
               <Typography sx={{ fontFamily: 'Roboto Mono' }}>
                 Security:
                 {id.securityAddress}
-                <IconButton aria-label="copy identity" size="small" onClick={(e) => handleClickCopy(e, id.securityAddress)}>
+                <IconButton
+                  aria-label="copy identity"
+                  size="small"
+                  onClick={(e) => handleClickCopy(e, id.securityAddress)}
+                >
                   <ContentCopyIcon />
                 </IconButton>
               </Typography>
@@ -768,7 +769,9 @@ function SignataIdentity({
                     }`}
                     color={id.chainId === chainId ? 'success' : 'warning'}
                     variant="outlined"
-                    icon={id.chainId === chainId ? <LinkIcon /> : <LinkOffIcon />}
+                    icon={
+                      id.chainId === chainId ? <LinkIcon /> : <LinkOffIcon />
+                    }
                   />
                 </ListItem>
                 {id.chainId === chainId && !identityDestroyed && (
@@ -777,7 +780,13 @@ function SignataIdentity({
                       label={identityExists ? 'Registered' : 'Unregistered'}
                       color={identityExists ? 'success' : 'warning'}
                       variant={identityExists ? 'outlined' : 'filled'}
-                      icon={identityExists ? <FingerprintIcon /> : <ErrorOutlineIcon />}
+                      icon={
+                        identityExists ? (
+                          <FingerprintIcon />
+                        ) : (
+                          <ErrorOutlineIcon />
+                        )
+                      }
                     />
                   </ListItem>
                 )}
@@ -828,7 +837,9 @@ function SignataIdentity({
                 <Button onClick={handleClickUnlock}>Unlock</Button>
               )}
               {identityExists && (
-                <Button onClick={handleClickRollover} disabled>Rollover</Button>
+                <Button onClick={handleClickRollover} disabled>
+                  Rollover
+                </Button>
               )}
               {identityExists && (
                 <Button onClick={handleClickDestroy}>Destroy</Button>
