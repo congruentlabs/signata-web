@@ -11,13 +11,21 @@ import {
   AlertTitle,
   TextField,
   useMediaQuery,
+  Switch,
+  FormControlLabel,
 } from '@mui/material';
 import ItemHeader from './ItemHeader';
 import ItemBox from './ItemBox';
 
 function YourAccount(props) {
   const {
-    config, setConfig, isPersistent, setEncryptionPassword, unlocked,
+    config,
+    setConfig,
+    isPersistent,
+    setEncryptionPassword,
+    unlocked,
+    advancedModeEnabled,
+    setAdvancedModeEnabled,
   } = props;
   const [password, setPassword] = useState('');
   const [passwordRepeat, setPasswordRepeat] = useState('');
@@ -97,17 +105,17 @@ function YourAccount(props) {
                 {!isPersistent && (
                   <Alert severity="error">
                     <AlertTitle>Not Persistent</AlertTitle>
-                    This device won&apos;t save your data once you leave this app.
-                    It is not safe to use Signata on this device as you may lose
-                    your identity data.
+                    This device won&apos;t save your data once you leave this
+                    app. It is not safe to use Signata on this device as you may
+                    lose your identity data.
                   </Alert>
                 )}
                 <Alert severity="info">
                   <AlertTitle>Account Password</AlertTitle>
-                  Your password encrypts all of your identities. Your identities are
-                  only saved on this device. If you clear your browser cache, or use
-                  this app in a private window, you might lose your data once you
-                  leave this app.
+                  Your password encrypts all of your identities. Your identities
+                  are only saved on this device. If you clear your browser
+                  cache, or use this app in a private window, you might lose
+                  your data once you leave this app.
                 </Alert>
                 <TextField
                   label="Password"
@@ -141,18 +149,18 @@ function YourAccount(props) {
                   orientation={isSm ? 'horizontal' : 'vertical'}
                 >
                   {(!config || !config.hasAccount) && (
-                  <Button
-                    color="primary"
-                    variant="contained"
-                    disabled={
-                          !password
-                          || password.length < 1
-                          || password !== passwordRepeat
-                        }
-                    onClick={onCreatePassword}
-                  >
-                    Set Password
-                  </Button>
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      disabled={
+                        !password
+                        || password.length < 1
+                        || password !== passwordRepeat
+                      }
+                      onClick={onCreatePassword}
+                    >
+                      Set Password
+                    </Button>
                   )}
                 </ButtonGroup>
               </Stack>
@@ -165,9 +173,9 @@ function YourAccount(props) {
                 {!isPersistent && (
                   <Alert severity="error">
                     <AlertTitle>Not Persistent</AlertTitle>
-                    This device won&apos;t save your data once you leave this app.
-                    It is not safe to use Signata on this device as you may lose
-                    your identity data.
+                    This device won&apos;t save your data once you leave this
+                    app. It is not safe to use Signata on this device as you may
+                    lose your identity data.
                   </Alert>
                 )}
                 <Alert severity="info">
@@ -186,7 +194,7 @@ function YourAccount(props) {
                   helperText={firstErrorMessage}
                 />
                 {showCapsWarning && (
-                <Alert severity="warning">Caps Lock is On</Alert>
+                  <Alert severity="warning">Caps Lock is On</Alert>
                 )}
                 <Button
                   color="primary"
@@ -214,6 +222,21 @@ function YourAccount(props) {
                   Restore Backup
                 </Button>
               </ButtonGroup>
+              <Alert severity="info">
+                Advanced mode unlocks some additional features of Signata. Only
+                use this if you understand what these extra features can be used
+                for.
+              </Alert>
+              <FormControlLabel
+                control={(
+                  <Switch
+                    value={advancedModeEnabled}
+                    onChange={() => setAdvancedModeEnabled(!advancedModeEnabled)}
+                  />
+                )}
+                label="Advanced Mode"
+              />
+
               {/* <TextField
                 label="New Password"
                 variant="outlined"

@@ -34,7 +34,7 @@ import NanoIdentity from './NanoIdentity';
 import SignataIdentity from './SignataIdentity';
 
 function ManageIdentities(props) {
-  const { identities, setIdentities } = props;
+  const { identities, setIdentities, advancedModeEnabled } = props;
   const { chainId, account } = useEthers();
   const theme = useTheme();
   const isSm = useMediaQuery(theme.breakpoints.up('sm'), {
@@ -258,8 +258,10 @@ function ManageIdentities(props) {
               centered
             >
               <Tab label="Wallet" />
-              <Tab label="Independent" />
               <Tab label="Nano" />
+              {advancedModeEnabled && (
+                <Tab label="Independent" />
+              )}
             </Tabs>
           </Box>
           <TabPanel value={tabValue} index={0}>
@@ -315,7 +317,7 @@ function ManageIdentities(props) {
               </Alert>
             </Stack>
           </TabPanel>
-          <TabPanel value={tabValue} index={1}>
+          <TabPanel value={tabValue} index={2}>
             <Stack spacing={2}>
               <TextField
                 label="Identity Seed"
@@ -367,7 +369,7 @@ function ManageIdentities(props) {
               </Alert>
             </Stack>
           </TabPanel>
-          <TabPanel value={tabValue} index={2}>
+          <TabPanel value={tabValue} index={1}>
             <Stack spacing={2}>
               <TextField
                 label="Identity Address"

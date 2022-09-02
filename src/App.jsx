@@ -33,6 +33,7 @@ function App() {
   const [config, setConfig, isPersistent] = useLocalStorageState('config', []);
   const [identities, setIdentities] = useState([]);
   const [encryptionPassword, setEncryptionPassword] = useState('');
+  const [advancedModeEnabled, setAdvancedModeEnabled] = useState(false);
 
   useEffect(() => {
     if (encryptionPassword) {
@@ -141,7 +142,11 @@ function App() {
             {!account && <ProductOverview />}
             {!account && <NoConnectionWarning />}
             {account && encryptionPassword && (
-              <ManageIdentities identities={identities} setIdentities={setIdentities} />
+              <ManageIdentities
+                identities={identities}
+                setIdentities={setIdentities}
+                advancedModeEnabled={advancedModeEnabled}
+              />
             )}
             {account && (
               <YourAccount
@@ -150,6 +155,8 @@ function App() {
                 isPersistent={isPersistent}
                 setEncryptionPassword={setEncryptionPassword}
                 unlocked={encryptionPassword !== ''}
+                advancedModeEnabled={advancedModeEnabled}
+                setAdvancedModeEnabled={setAdvancedModeEnabled}
               />
             )}
             {account && encryptionPassword && <Subscription />}

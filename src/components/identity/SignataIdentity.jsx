@@ -73,7 +73,6 @@ function SignataIdentity({
   const [openRollover, setOpenRollover] = useState(false);
   const [openDestroy, setOpenDestroy] = useState(false);
   const [newName, setNewName] = useState('');
-  const [editingId, setEditingId] = useState(null);
   const [identityWallet, setIdentityWallet] = useState(null);
   const [delegateWallet, setDelegateWallet] = useState(null);
   const [securityWallet, setSecurityWallet] = useState(null);
@@ -442,12 +441,11 @@ function SignataIdentity({
     e.preventDefault();
     setOpenRename(false);
     setNewName('');
-    setEditingId(null);
   };
 
   const onSubmitRename = (e) => {
     e.preventDefault();
-    let newId = editingId;
+    let newId = id;
     const newIds = Array.from(identities);
     newIds.forEach((s, idx) => {
       if (s.identitySeed === newId.identitySeed) {
@@ -456,7 +454,7 @@ function SignataIdentity({
       }
     });
     setIdentities(newIds);
-    onCloseRename();
+    onCloseRename(e);
   };
 
   const handleClickDelete = (e) => {
@@ -467,14 +465,13 @@ function SignataIdentity({
   const onCloseDelete = (e) => {
     e.preventDefault();
     setOpenDelete(false);
-    setEditingId(null);
   };
 
   const onSubmitDelete = (e) => {
     e.preventDefault();
     const newSeeds = [];
     identities.forEach((s) => {
-      if (s.identitySeed !== editingId.identitySeed) {
+      if (s.identitySeed !== id.identitySeed) {
         newSeeds.push(s);
       }
     });
@@ -716,7 +713,7 @@ function SignataIdentity({
                 textAlign: 'center',
               }}
             >
-              <Typography sx={{ fontFamily: 'Roboto Mono' }}>
+              <Typography sx={{ fontFamily: 'Roboto Mono' }} variant="overline" component="p">
                 Identity:
                 {id.identityAddress}
                 <IconButton
@@ -727,7 +724,7 @@ function SignataIdentity({
                   <ContentCopyIcon />
                 </IconButton>
               </Typography>
-              <Typography sx={{ fontFamily: 'Roboto Mono' }}>
+              <Typography sx={{ fontFamily: 'Roboto Mono' }} variant="overline" component="p">
                 Delegate:
                 {id.delegateAddress}
                 <IconButton
@@ -738,7 +735,7 @@ function SignataIdentity({
                   <ContentCopyIcon />
                 </IconButton>
               </Typography>
-              <Typography sx={{ fontFamily: 'Roboto Mono' }}>
+              <Typography sx={{ fontFamily: 'Roboto Mono' }} variant="overline" component="p">
                 Security:
                 {id.securityAddress}
                 <IconButton
