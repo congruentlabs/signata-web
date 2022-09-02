@@ -29,6 +29,7 @@ import {
   TOKEN_CONTRACT_MAINNET,
   TOKEN_CONTRACT_METIS,
   TOKEN_CONTRACT_RINKEBY,
+  ID_CONTRACT_MATIC,
 } from '../config';
 import TOKEN_ABI from './sataAbi.json';
 import NANO_ABI from './nanoAbi.json';
@@ -153,6 +154,10 @@ export const getIdContractAddress = (chainId) => {
   if (chainId === 56) {
     // bsc
     return ID_CONTRACT_BSC;
+  }
+  if (chainId === 137) {
+    // matic
+    return ID_CONTRACT_MATIC;
   }
   if (chainId === 250) {
     // fantom
