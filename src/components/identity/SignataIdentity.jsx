@@ -557,24 +557,24 @@ function SignataIdentity({
                 destroyed on the blockchain. You cannot restore a destroyed
                 identity.
               </Alert>
-              <ButtonGroup fullWidth>
-                <Button
-                  onClick={onCloseDestroy}
-                  color="secondary"
-                  variant="contained"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  // fullWidth
-                  type="submit"
-                  variant="contained"
-                  color="error"
-                  size="large"
-                >
-                  Destroy Identity
-                </Button>
-              </ButtonGroup>
+              <Paper>
+                <ButtonGroup fullWidth variant="text">
+                  <Button
+                    onClick={onCloseDestroy}
+                    color="secondary"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    // fullWidth
+                    type="submit"
+                    variant="contained"
+                    color="error"
+                  >
+                    Destroy Identity
+                  </Button>
+                </ButtonGroup>
+              </Paper>
             </Stack>
           </DialogContent>
         </form>
@@ -590,24 +590,24 @@ function SignataIdentity({
                 identity might have been compromised, locking it is an easy way
                 to restrict its use.
               </Alert>
-              <ButtonGroup fullWidth>
-                <Button
-                  onClick={onCloseLock}
-                  color="secondary"
-                  variant="contained"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  // fullWidth
-                  type="submit"
-                  variant="contained"
-                  color="warning"
-                  size="large"
-                >
-                  Lock Identity
-                </Button>
-              </ButtonGroup>
+              <Paper>
+                <ButtonGroup fullWidth variant="text">
+                  <Button
+                    onClick={onCloseLock}
+                    color="secondary"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    // fullWidth
+                    type="submit"
+                    variant="contained"
+                    color="warning"
+                  >
+                    Lock Identity
+                  </Button>
+                </ButtonGroup>
+              </Paper>
             </Stack>
           </DialogContent>
         </form>
@@ -623,24 +623,24 @@ function SignataIdentity({
                 you think the threat is gone. If you think your identity is
                 compromised, it is recommended to Rollover the identity instead.
               </Alert>
-              <ButtonGroup fullWidth>
-                <Button
-                  onClick={onCloseUnlock}
-                  color="secondary"
-                  variant="contained"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  // fullWidth
-                  type="submit"
-                  variant="contained"
-                  color="warning"
-                  size="large"
-                >
-                  Unlock Identity
-                </Button>
-              </ButtonGroup>
+              <Paper>
+                <ButtonGroup fullWidth variant="text">
+                  <Button
+                    onClick={onCloseUnlock}
+                    color="secondary"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    // fullWidth
+                    type="submit"
+                    variant="contained"
+                    color="warning"
+                  >
+                    Unlock Identity
+                  </Button>
+                </ButtonGroup>
+              </Paper>
             </Stack>
           </DialogContent>
         </form>
@@ -672,24 +672,24 @@ function SignataIdentity({
                 value={newSecurity}
                 onChange={(e) => setNewSecurity(e.target.value)}
               />
-              <ButtonGroup fullWidth>
-                <Button
-                  onClick={onCloseRollover}
-                  color="secondary"
-                  variant="contained"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  // fullWidth
-                  type="submit"
-                  variant="contained"
-                  color="warning"
-                  size="large"
-                >
-                  Rollover Identity
-                </Button>
-              </ButtonGroup>
+              <Paper>
+                <ButtonGroup fullWidth variant="text">
+                  <Button
+                    onClick={onCloseRollover}
+                    color="secondary"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    // fullWidth
+                    type="submit"
+                    variant="contained"
+                    color="warning"
+                  >
+                    Rollover Identity
+                  </Button>
+                </ButtonGroup>
+              </Paper>
             </Stack>
           </DialogContent>
         </form>
@@ -713,24 +713,24 @@ function SignataIdentity({
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
               />
-              <ButtonGroup fullWidth>
-                <Button
-                  onClick={onCloseRename}
-                  color="secondary"
-                  variant="contained"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  fullWidth
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                >
-                  Save New Name
-                </Button>
-              </ButtonGroup>
+              <Paper>
+                <ButtonGroup fullWidth variant="text">
+                  <Button
+                    onClick={onCloseRename}
+                    color="secondary"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    fullWidth
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                  >
+                    Save New Name
+                  </Button>
+                </ButtonGroup>
+              </Paper>
             </Stack>
           </DialogContent>
         </form>

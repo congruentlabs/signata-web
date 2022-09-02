@@ -11,7 +11,7 @@ import {
   Box, Container, Grid, CssBaseline,
 } from '@mui/material';
 import {
-  lime, orange, red, purple,
+  lime, orange, red, blue,
 } from '@mui/material/colors';
 import {
   AppFooter,
@@ -74,7 +74,7 @@ function App() {
           main: lime.A700,
         },
         secondary: {
-          main: purple.A400,
+          main: blue.A700,
         },
         warning: {
           main: orange.A700,
