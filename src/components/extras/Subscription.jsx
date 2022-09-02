@@ -8,6 +8,7 @@ import {
   Button,
   Alert,
   AlertTitle,
+  Paper,
 } from '@mui/material';
 import ItemHeader from '../app/ItemHeader';
 import ItemBox from '../app/ItemBox';
@@ -23,9 +24,11 @@ function Subscription() {
         <ItemHeader text={`${chainName} Subscription`} />
         <CardContent>
           <Stack spacing={2}>
-            <ButtonGroup fullWidth>
-              <Button color="secondary" variant="contained">Deposit SATA</Button>
-            </ButtonGroup>
+            <Paper>
+              <ButtonGroup fullWidth variant="text" disabled>
+                <Button color="secondary">Deposit SATA</Button>
+              </ButtonGroup>
+            </Paper>
             <Alert severity="info">
               <AlertTitle>About Subscriptions</AlertTitle>
               Deposit SATA tokens to fund delegated modifications to identities

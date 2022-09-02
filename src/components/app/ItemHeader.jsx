@@ -1,13 +1,21 @@
 import React from 'react';
-import { Paper } from '@mui/material';
+import { Paper, useTheme } from '@mui/material';
 
 function ItemHeader({ text }) {
+  const theme = useTheme();
   return (
-    <Paper sx={{
-      textAlign: 'center', py: 1, borderRadius: 0, borderBottom: 1, boxShadow: 'none',
-    }}
+    <Paper
+      sx={{
+        textAlign: 'center',
+        py: 1,
+        borderRadius: 0,
+        borderBottom: 1,
+        boxShadow: 'none',
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
+      }}
     >
-      <b>{text}</b>
+      {text}
     </Paper>
   );
 }

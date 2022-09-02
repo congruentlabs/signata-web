@@ -17,6 +17,7 @@ import {
   Box,
   Tabs,
   Tab,
+  Paper,
 } from '@mui/material';
 import ItemHeader from '../app/ItemHeader';
 import ItemBox from '../app/ItemBox';
@@ -143,8 +144,35 @@ function ManageIdentities(props) {
       identityAddress,
       delegateAddress,
       securityAddress,
-      name: 'New Identity',
+      name: 'New Independent Identity',
       chainId,
+      type: 'independent',
+      creator: account,
+    });
+    setIdentities(newIds);
+    setIdentitySeed('');
+    setDelegateSeed('');
+    setSecuritySeed('');
+  };
+
+  const onCreateWalletIdentity = (e) => {
+    e.preventDefault();
+    console.log(identities);
+    const newIds = Array.from(identities);
+
+    const identityWallet = ethers.Wallet.fromMnemonic(identitySeed);
+    const identityAddress = identityWallet.address;
+    const securityWallet = ethers.Wallet.fromMnemonic(securitySeed);
+    const securityAddress = securityWallet.address;
+    newIds.push({
+      identitySeed,
+      securitySeed,
+      identityAddress,
+      delegateAddress: account,
+      securityAddress,
+      name: 'New Wallet Identity',
+      chainId,
+      type: 'wallet',
       creator: account,
     });
     setIdentities(newIds);
@@ -225,7 +253,7 @@ function ManageIdentities(props) {
     <>
       {identities
         && identities.map((id) => (
-          <Grid item xs={12} key={id.identitySeed}>
+          <Grid item xs={12} md={8} key={id.identitySeed}>
             <SignataIdentity
               identities={identities}
               setIdentities={setIdentities}
@@ -242,11 +270,11 @@ function ManageIdentities(props) {
           </Grid>
         ))}
       {nanoExists && (
-        <Grid item xs={12}>
+        <Grid item xs={12} md={8}>
           <NanoIdentity />
         </Grid>
       )}
-      <Grid item xs={12}>
+      <Grid item xs={12} md={8}>
         <ItemBox>
           <ItemHeader text="Add Identity" />
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -288,28 +316,29 @@ function ManageIdentities(props) {
                 size="small"
                 value={securitySeed}
               />
-              <ButtonGroup
-                fullWidth
-                orientation={isSm ? 'horizontal' : 'vertical'}
-              >
-                <Button
-                  color="primary"
-                  onClick={onCreateIdentity}
-                  variant="contained"
-                  disabled={!identitySeed || !delegateSeed || !securitySeed}
-                  startIcon={<AddIcon />}
+              <Paper>
+                <ButtonGroup
+                  fullWidth
+                  variant="text"
+                  orientation={isSm ? 'horizontal' : 'vertical'}
                 >
-                  Add Identity
-                </Button>
-                <Button
-                  color="secondary"
-                  variant="contained"
-                  startIcon={<RefreshIcon />}
-                  onClick={onClickGenerate}
-                >
-                  Generate
-                </Button>
-              </ButtonGroup>
+                  <Button
+                    color="primary"
+                    onClick={onCreateWalletIdentity}
+                    disabled={!identitySeed || !delegateSeed || !securitySeed}
+                    startIcon={<AddIcon />}
+                  >
+                    Add Identity
+                  </Button>
+                  <Button
+                    color="secondary"
+                    startIcon={<RefreshIcon />}
+                    onClick={onClickGenerate}
+                  >
+                    Generate
+                  </Button>
+                </ButtonGroup>
+              </Paper>
               <Alert severity="info">
                 Wallet identities are linked to your connected wallet. These are
                 easy to use for authentication, but will link any on-chain
@@ -340,28 +369,29 @@ function ManageIdentities(props) {
                 size="small"
                 value={securitySeed}
               />
-              <ButtonGroup
-                fullWidth
-                orientation={isSm ? 'horizontal' : 'vertical'}
-              >
-                <Button
-                  color="primary"
-                  onClick={onCreateIdentity}
-                  variant="contained"
-                  disabled={!identitySeed || !delegateSeed || !securitySeed}
-                  startIcon={<AddIcon />}
+              <Paper>
+                <ButtonGroup
+                  fullWidth
+                  variant="text"
+                  orientation={isSm ? 'horizontal' : 'vertical'}
                 >
-                  Add Identity
-                </Button>
-                <Button
-                  color="secondary"
-                  variant="contained"
-                  startIcon={<RefreshIcon />}
-                  onClick={onClickGenerate}
-                >
-                  Generate
-                </Button>
-              </ButtonGroup>
+                  <Button
+                    color="primary"
+                    onClick={onCreateIdentity}
+                    disabled={!identitySeed || !delegateSeed || !securitySeed}
+                    startIcon={<AddIcon />}
+                  >
+                    Add Identity
+                  </Button>
+                  <Button
+                    color="secondary"
+                    startIcon={<RefreshIcon />}
+                    onClick={onClickGenerate}
+                  >
+                    Generate
+                  </Button>
+                </ButtonGroup>
+              </Paper>
               <Alert severity="info">
                 Independent identities have all seeds randomly generated. These
                 identities are useful for more privacy, but can be more
@@ -379,20 +409,22 @@ function ManageIdentities(props) {
                 value={account}
                 disabled
               />
-              <ButtonGroup
-                fullWidth
-                orientation={isSm ? 'horizontal' : 'vertical'}
-              >
-                <Button
-                  color="primary"
-                  onClick={onCreateNanoIdentity}
-                  variant="contained"
-                  disabled={isLoading || nanoExists}
-                  startIcon={<AddIcon />}
+              <Paper>
+                <ButtonGroup
+                  fullWidth
+                  variant="text"
+                  orientation={isSm ? 'horizontal' : 'vertical'}
                 >
-                  Create Nano Identity
-                </Button>
-              </ButtonGroup>
+                  <Button
+                    color="primary"
+                    onClick={onCreateNanoIdentity}
+                    disabled={isLoading || nanoExists}
+                    startIcon={<AddIcon />}
+                  >
+                    Create Nano Identity
+                  </Button>
+                </ButtonGroup>
+              </Paper>
               <LoadingState state={createNanoState} />
               {nanoExists ? (
                 <Alert severity="success">

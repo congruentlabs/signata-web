@@ -11,7 +11,7 @@ import {
   Box, Container, Grid, CssBaseline,
 } from '@mui/material';
 import {
-  lime, grey, orange, red,
+  lime, orange, red, purple,
 } from '@mui/material/colors';
 import {
   AppFooter,
@@ -74,7 +74,7 @@ function App() {
           main: lime.A700,
         },
         secondary: {
-          main: grey[900],
+          main: purple.A400,
         },
         warning: {
           main: orange.A700,
@@ -82,7 +82,7 @@ function App() {
         error: {
           main: red.A700,
         },
-        mode: prefersDarkMode ? 'light' : 'light',
+        mode: prefersDarkMode ? 'dark' : 'light',
         // mode: 'light',
       },
       typography: {
@@ -159,8 +159,8 @@ function App() {
                 setAdvancedModeEnabled={setAdvancedModeEnabled}
               />
             )}
-            {account && encryptionPassword && <Subscription />}
-            {account && encryptionPassword && <NetworkServices />}
+            {/* {account && encryptionPassword && <Subscription />} */}
+            {/* {account && encryptionPassword && <NetworkServices />} */}
           </Grid>
         </Box>
       </Container>

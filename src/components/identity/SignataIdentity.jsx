@@ -80,7 +80,9 @@ function SignataIdentity({
   useEffect(() => {
     if (id) {
       setIdentityWallet(ethers.Wallet.fromMnemonic(id.identitySeed));
-      setDelegateWallet(ethers.Wallet.fromMnemonic(id.delegateSeed));
+      if (id.type !== 'wallet') {
+        setDelegateWallet(ethers.Wallet.fromMnemonic(id.delegateSeed));
+      }
       setSecurityWallet(ethers.Wallet.fromMnemonic(id.securitySeed));
     }
   }, [id]);
@@ -264,6 +266,34 @@ function SignataIdentity({
       s,
       identityWallet.address,
       delegateWallet.address,
+      securityWallet.address,
+    );
+  };
+
+  const onCreateWalletIdentity = async (e) => {
+    e.preventDefault();
+    createResetState();
+
+    const inputHash = ethers.utils.keccak256(
+      `${TXTYPE_CREATE_DIGEST}${id.delegateAddress
+        .slice(2)
+        .padStart(64, '0')}${securityWallet.address
+        .slice(2)
+        .padStart(64, '0')}`,
+    );
+    const hashToSign = ethers.utils.keccak256(
+      `0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`,
+    );
+    const { r, s, v } = new ethers.utils.SigningKey(
+      identityWallet.privateKey,
+    ).signDigest(hashToSign);
+
+    createSend(
+      v,
+      r,
+      s,
+      identityWallet.address,
+      id.delegateAddress,
       securityWallet.address,
     );
   };
@@ -476,7 +506,7 @@ function SignataIdentity({
       }
     });
     setIdentities(newSeeds);
-    onCloseDelete();
+    setOpenDelete(false);
   };
 
   const handleClickCopy = (e, dat) => {
@@ -495,30 +525,30 @@ function SignataIdentity({
                 Identities that have not been registered are deleted immediately
                 and cannot be recovered.
               </Alert>
-              <ButtonGroup fullWidth>
-                <Button
-                  onClick={onCloseDelete}
-                  color="secondary"
-                  variant="contained"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  // fullWidth
-                  type="submit"
-                  variant="contained"
-                  color="error"
-                  size="large"
-                >
-                  Delete Identity
-                </Button>
-              </ButtonGroup>
+              <Paper>
+                <ButtonGroup fullWidth variant="text">
+                  <Button
+                    onClick={onCloseDelete}
+                    color="secondary"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    // fullWidth
+                    type="submit"
+                    variant="contained"
+                    color="error"
+                  >
+                    Delete Identity
+                  </Button>
+                </ButtonGroup>
+              </Paper>
             </Stack>
           </DialogContent>
         </form>
       </Dialog>
       <Dialog open={openDestroy} onClose={onCloseDestroy}>
-        <DialogTitle>Destory Identity?</DialogTitle>
+        <DialogTitle>Destroy Identity?</DialogTitle>
         <form onSubmit={onDestroyIdentity}>
           <DialogContent>
             <Stack spacing={2}>
@@ -665,6 +695,7 @@ function SignataIdentity({
         </form>
       </Dialog>
       <Dialog open={openRename} onClose={onCloseRename}>
+        <DialogTitle>Rename Identity?</DialogTitle>
         <form onSubmit={onSubmitRename}>
           <DialogContent>
             <Stack spacing={2}>
@@ -814,37 +845,39 @@ function SignataIdentity({
             <LoadingState state={unlockState} />
             <LoadingState state={rolloverState} />
             <LoadingState state={destroyState} />
-            <ButtonGroup
-              fullWidth
-              variant="contained"
-              disabled={isLoading || id.chainId !== chainId}
-              color="secondary"
-              orientation={isSm ? 'horizontal' : 'vertical'}
-            >
-              {!identityExists && (
-                <Button onClick={onCreateIdentity} color="primary">
-                  Register
-                </Button>
-              )}
-              <Button onClick={handleClickRename}>Rename</Button>
-              {identityExists && !identityLocked && (
-                <Button onClick={handleClickLock}>Lock</Button>
-              )}
-              {identityExists && identityLocked && (
-                <Button onClick={handleClickUnlock}>Unlock</Button>
-              )}
-              {identityExists && (
-                <Button onClick={handleClickRollover} disabled>
-                  Rollover
-                </Button>
-              )}
-              {identityExists && (
-                <Button onClick={handleClickDestroy}>Destroy</Button>
-              )}
-              {!identityExists && (
-                <Button onClick={handleClickDelete}>Delete</Button>
-              )}
-            </ButtonGroup>
+            <Paper>
+              <ButtonGroup
+                fullWidth
+                variant="text"
+                disabled={isLoading || id.chainId !== chainId}
+                color="secondary"
+                orientation={isSm ? 'horizontal' : 'vertical'}
+              >
+                {!identityExists && (
+                  <Button onClick={id.type === 'wallet' ? onCreateWalletIdentity : onCreateIdentity} color="primary">
+                    Register
+                  </Button>
+                )}
+                <Button onClick={handleClickRename}>Rename</Button>
+                {identityExists && !identityLocked && (
+                  <Button onClick={handleClickLock}>Lock</Button>
+                )}
+                {identityExists && identityLocked && (
+                  <Button onClick={handleClickUnlock}>Unlock</Button>
+                )}
+                {identityExists && (
+                  <Button onClick={handleClickRollover} disabled>
+                    Rollover
+                  </Button>
+                )}
+                {identityExists && (
+                  <Button onClick={handleClickDestroy}>Destroy</Button>
+                )}
+                {!identityExists && (
+                  <Button onClick={handleClickDelete}>Delete</Button>
+                )}
+              </ButtonGroup>
+            </Paper>
           </Stack>
         </CardContent>
       </ItemBox>

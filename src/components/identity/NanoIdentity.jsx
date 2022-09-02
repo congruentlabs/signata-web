@@ -25,6 +25,8 @@ import {
   DialogContent,
   AlertTitle,
   TextField,
+  Paper,
+  DialogTitle,
 } from '@mui/material';
 import {
   getNanoContract,
@@ -170,6 +172,7 @@ function NanoIdentity() {
   return (
     <>
       <Dialog open={openLock} onClose={onCloseLock}>
+        <DialogTitle>Lock Nano Identity?</DialogTitle>
         <DialogContent>
           <Stack spacing={2}>
             {identityDelegate === account && (
@@ -185,24 +188,27 @@ function NanoIdentity() {
               You should only lock your identity if you think your wallet has
               been compromised.
             </Alert>
-            <ButtonGroup fullWidth>
-              <Button onClick={onCloseLock} color="secondary">
-                Cancel
-              </Button>
-              <Button
-                fullWidth
-                onClick={handleConfirmLock}
-                variant="contained"
-                color="error"
-                startIcon={<LockIcon />}
-              >
-                Lock
-              </Button>
-            </ButtonGroup>
+            <Paper>
+              <ButtonGroup fullWidth>
+                <Button onClick={onCloseLock} color="secondary" variant="text">
+                  Cancel
+                </Button>
+                <Button
+                  fullWidth
+                  onClick={handleConfirmLock}
+                  variant="contained"
+                  color="error"
+                  startIcon={<LockIcon />}
+                >
+                  Lock
+                </Button>
+              </ButtonGroup>
+            </Paper>
           </Stack>
         </DialogContent>
       </Dialog>
       <Dialog open={openDelegateNano} onClose={onCloseDelegate}>
+        <DialogTitle>Delegate Nano Identity?</DialogTitle>
         <form onSubmit={onSubmitDelegateNano}>
           <DialogContent>
             <Stack spacing={2}>
@@ -219,21 +225,22 @@ function NanoIdentity() {
                 value={newDelegate}
                 onChange={onChangeNewDelegate}
               />
-              <ButtonGroup fullWidth>
-                <Button onClick={onCloseDelegate} color="secondary">
-                  Cancel
-                </Button>
-                <Button
-                  fullWidth
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  disabled={newDelegateValid === false}
-                >
-                  Set New Delegate
-                </Button>
-              </ButtonGroup>
+              <Paper>
+                <ButtonGroup fullWidth variant="text">
+                  <Button onClick={onCloseDelegate} color="secondary">
+                    Cancel
+                  </Button>
+                  <Button
+                    fullWidth
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={newDelegateValid === false}
+                  >
+                    Set New Delegate
+                  </Button>
+                </ButtonGroup>
+              </Paper>
             </Stack>
           </DialogContent>
         </form>
@@ -295,29 +302,31 @@ function NanoIdentity() {
             </Box>
             <LoadingState state={lockState} />
             <LoadingState state={delegateState} />
-            <ButtonGroup
-              fullWidth
-              variant="contained"
-              color="secondary"
-              orientation={isSm ? 'horizontal' : 'vertical'}
-            >
-              {identityLocked === false && (
+            <Paper>
+              <ButtonGroup
+                fullWidth
+                variant="text"
+                color="secondary"
+                orientation={isSm ? 'horizontal' : 'vertical'}
+              >
+                {identityLocked === false && (
+                  <Button
+                    disabled={isLoading}
+                    // startIcon={<LockIcon />}
+                    onClick={handleClickLock}
+                  >
+                    Lock
+                  </Button>
+                )}
                 <Button
                   disabled={isLoading}
-                  // startIcon={<LockIcon />}
-                  onClick={handleClickLock}
+                  // startIcon={<EditIcon />}
+                  onClick={handleClickDelegate}
                 >
-                  Lock
+                  Delegate
                 </Button>
-              )}
-              <Button
-                disabled={isLoading}
-                // startIcon={<EditIcon />}
-                onClick={handleClickDelegate}
-              >
-                Delegate
-              </Button>
-            </ButtonGroup>
+              </ButtonGroup>
+            </Paper>
           </Stack>
         </CardContent>
       </ItemBox>
