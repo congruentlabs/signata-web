@@ -126,6 +126,29 @@ function ManageIdentities(props) {
     nanoContract,
   );
 
+  // useEffect(() => {
+  //   if (idContract && idContract.address) {
+  //     console.log({
+  //       TXTYPE_CREATE_DIGEST,
+  //       TXTYPE_DESTROY_DIGEST,
+  //       TXTYPE_LOCK_DIGEST,
+  //       TXTYPE_UNLOCK_DIGEST,
+  //       TXTYPE_ROLLOVER_DIGEST,
+  //       chainId,
+  //       idContract,
+  //       contractAddress: getIdContractAddress(chainId),
+  //     });
+  //   }
+  // }, [
+  //   TXTYPE_CREATE_DIGEST,
+  //   TXTYPE_DESTROY_DIGEST,
+  //   TXTYPE_LOCK_DIGEST,
+  //   TXTYPE_UNLOCK_DIGEST,
+  //   TXTYPE_ROLLOVER_DIGEST,
+  //   chainId,
+  //   idContract,
+  // ]);
+
   const onCreateIdentity = (e) => {
     e.preventDefault();
     console.log(identities);
@@ -287,9 +310,7 @@ function ManageIdentities(props) {
             >
               <Tab label="Wallet" />
               <Tab label="Nano" />
-              {advancedModeEnabled && (
-                <Tab label="Independent" />
-              )}
+              {advancedModeEnabled && <Tab label="Independent" />}
             </Tabs>
           </Box>
           <TabPanel value={tabValue} index={0}>

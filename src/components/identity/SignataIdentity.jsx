@@ -153,8 +153,8 @@ function SignataIdentity({
   );
 
   useEffect(() => {
-    if (createState) {
-      console.log(createState);
+    if (createState && createState.status !== 'None') {
+      console.log({ createState });
       if (createState.status === 'PendingSignature') {
         setLoading(true);
       }
@@ -171,8 +171,8 @@ function SignataIdentity({
   }, [createState]);
 
   useEffect(() => {
-    if (lockState) {
-      console.log(lockState);
+    if (lockState && lockState.status !== 'None') {
+      console.log({ lockState });
       if (lockState.status === 'PendingSignature') {
         setLoading(true);
       }
@@ -189,8 +189,8 @@ function SignataIdentity({
   }, [lockState]);
 
   useEffect(() => {
-    if (unlockState) {
-      console.log(unlockState);
+    if (unlockState && unlockState.status !== 'None') {
+      console.log({ unlockState });
       if (unlockState.status === 'PendingSignature') {
         setLoading(true);
       }
@@ -207,8 +207,8 @@ function SignataIdentity({
   }, [unlockState]);
 
   useEffect(() => {
-    if (destroyState) {
-      console.log(destroyState);
+    if (destroyState && destroyState.status !== 'None') {
+      console.log({ destroyState });
       if (destroyState.status === 'PendingSignature') {
         setLoading(true);
       }
@@ -225,8 +225,8 @@ function SignataIdentity({
   }, [destroyState]);
 
   useEffect(() => {
-    if (rolloverState) {
-      console.log(rolloverState);
+    if (rolloverState && rolloverState.status !== 'None') {
+      console.log({ rolloverState });
       if (rolloverState.status === 'PendingSignature') {
         setLoading(true);
       }
