@@ -76,6 +76,7 @@ function SignataIdentity({
   const [identityWallet, setIdentityWallet] = useState(null);
   const [delegateWallet, setDelegateWallet] = useState(null);
   const [securityWallet, setSecurityWallet] = useState(null);
+  const [hasKycNft, setHasKycNft] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -514,6 +515,20 @@ function SignataIdentity({
     navigator.clipboard.writeText(dat);
   };
 
+  const handleClickRequestKyc = (e) => {
+    e.preventDefault();
+    // eslint-disable-next-line no-undef
+    const blockpass = new BlockpassKYCConnect('signata_f812a', {
+      refId: id.identityAddress,
+      elementId: `blockpass-kyc-connect-${id.identityAddress}`,
+    });
+    blockpass.startKYCConnect();
+  };
+
+  const handleClickClaimKycNft = (e) => {
+    e.preventDefault();
+  };
+
   return (
     <>
       <Dialog open={openDelete} onClose={onCloseDelete}>
@@ -878,6 +893,30 @@ function SignataIdentity({
                 )}
               </ButtonGroup>
             </Paper>
+            {identityExists && !hasKycNft && (
+              <Paper>
+                <ButtonGroup
+                  fullWidth
+                  variant="text"
+                  size="small"
+                  disabled={isLoading || id.chainId !== chainId}
+                  color="secondary"
+                  orientation={isSm ? 'horizontal' : 'vertical'}
+                >
+                  <Button
+                    onClick={handleClickRequestKyc}
+                    id={`blockpass-kyc-connect-${id.identityAddress}`}
+                  >
+                    KYC Identity
+                  </Button>
+                  <Button
+                    onClick={handleClickClaimKycNft}
+                  >
+                    Claim KYC Right
+                  </Button>
+                </ButtonGroup>
+              </Paper>
+            )}
           </Stack>
         </CardContent>
       </ItemBox>
