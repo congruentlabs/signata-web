@@ -4,37 +4,12 @@ import { useEffect, useState } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import { useContractFunction, useCall, useBlockNumber } from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
-import {
-  ID_CONTRACT_AVAX,
-  ID_CONTRACT_BSC,
-  ID_CONTRACT_FTM,
-  ID_CONTRACT_MAINNET,
-  ID_CONTRACT_METIS,
-  ID_CONTRACT_RINKEBY,
-  NANO_CONTRACT_AVAX,
-  NANO_CONTRACT_BSC,
-  NANO_CONTRACT_FTM,
-  NANO_CONTRACT_MAINNET,
-  NANO_CONTRACT_RINKEBY,
-  NANO_CONTRACT_METIS,
-  RIGHTS_CONTRACT_AVAX,
-  RIGHTS_CONTRACT_BSC,
-  RIGHTS_CONTRACT_FTM,
-  RIGHTS_CONTRACT_MAINNET,
-  RIGHTS_CONTRACT_METIS,
-  RIGHTS_CONTRACT_RINKEBY,
-  TOKEN_CONTRACT_AVAX,
-  TOKEN_CONTRACT_BSC,
-  TOKEN_CONTRACT_FTM,
-  TOKEN_CONTRACT_MAINNET,
-  TOKEN_CONTRACT_METIS,
-  TOKEN_CONTRACT_RINKEBY,
-  ID_CONTRACT_MATIC,
-} from '../config';
+import * as consts from '../config';
 import TOKEN_ABI from './sataAbi.json';
 import NANO_ABI from './nanoAbi.json';
 import ID_ABI from './identityAbi.json';
 import RIGHTS_ABI from './rightsAbi.json';
+import KYC_CLAIM_ABI from './kycClaimAbi.json';
 
 const sataPriceQuery = gql`
   {
@@ -62,119 +37,151 @@ const dSataPriceQuery = gql`
 
 export const getRightsContractAddress = (chainId) => {
   if (chainId === 1) {
-    return RIGHTS_CONTRACT_MAINNET;
+    return consts.RIGHTS_CONTRACT_MAINNET;
   }
   if (chainId === 4) {
-    return RIGHTS_CONTRACT_RINKEBY;
+    return consts.RIGHTS_CONTRACT_RINKEBY;
   }
   if (chainId === 56) {
     // bsc
-    return RIGHTS_CONTRACT_BSC;
+    return consts.RIGHTS_CONTRACT_BSC;
   }
   if (chainId === 250) {
     // fantom
-    return RIGHTS_CONTRACT_FTM;
+    return consts.RIGHTS_CONTRACT_FTM;
   }
   if (chainId === 1088) {
     // metis
-    return RIGHTS_CONTRACT_METIS;
+    return consts.RIGHTS_CONTRACT_METIS;
   }
   if (chainId === 43114) {
     // avax
-    return RIGHTS_CONTRACT_AVAX;
+    return consts.RIGHTS_CONTRACT_AVAX;
   }
-  return RIGHTS_CONTRACT_MAINNET;
+  return consts.RIGHTS_CONTRACT_MAINNET;
 };
 
 export const getRightsContract = (chainId) => new Contract(getRightsContractAddress(chainId), RIGHTS_ABI);
 
 export const getNanoContractAddress = (chainId) => {
   if (chainId === 1) {
-    return NANO_CONTRACT_MAINNET;
+    return consts.NANO_CONTRACT_MAINNET;
   }
   if (chainId === 4) {
-    return NANO_CONTRACT_RINKEBY;
+    return consts.NANO_CONTRACT_RINKEBY;
   }
   if (chainId === 56) {
     // bsc
-    return NANO_CONTRACT_BSC;
+    return consts.NANO_CONTRACT_BSC;
   }
   if (chainId === 250) {
     // fantom
-    return NANO_CONTRACT_FTM;
+    return consts.NANO_CONTRACT_FTM;
   }
   if (chainId === 1088) {
     // metis
-    return NANO_CONTRACT_METIS;
+    return consts.NANO_CONTRACT_METIS;
   }
   if (chainId === 43114) {
     // avax
-    return NANO_CONTRACT_AVAX;
+    return consts.NANO_CONTRACT_AVAX;
   }
-  return NANO_CONTRACT_MAINNET;
+  return consts.NANO_CONTRACT_MAINNET;
 };
 
 export const getNanoContract = (chainId) => new Contract(getNanoContractAddress(chainId), NANO_ABI);
 
 export const getTokenContractAddress = (chainId) => {
   if (chainId === 1) {
-    return TOKEN_CONTRACT_MAINNET;
+    return consts.TOKEN_CONTRACT_MAINNET;
   }
   if (chainId === 4) {
-    return TOKEN_CONTRACT_RINKEBY;
+    return consts.TOKEN_CONTRACT_RINKEBY;
   }
   if (chainId === 56) {
     // bsc
-    return TOKEN_CONTRACT_BSC;
+    return consts.TOKEN_CONTRACT_BSC;
   }
   if (chainId === 250) {
     // fantom
-    return TOKEN_CONTRACT_FTM;
+    return consts.TOKEN_CONTRACT_FTM;
   }
   if (chainId === 1088) {
     // metis
-    return TOKEN_CONTRACT_METIS;
+    return consts.TOKEN_CONTRACT_METIS;
   }
   if (chainId === 43114) {
     // avax
-    return TOKEN_CONTRACT_AVAX;
+    return consts.TOKEN_CONTRACT_AVAX;
   }
-  return TOKEN_CONTRACT_MAINNET;
+  return consts.TOKEN_CONTRACT_MAINNET;
 };
 
 export const getTokenContract = (chainId) => new Contract(getTokenContractAddress(chainId), TOKEN_ABI);
 
 export const getIdContractAddress = (chainId) => {
   if (chainId === 1) {
-    return ID_CONTRACT_MAINNET;
+    return consts.ID_CONTRACT_MAINNET;
   }
   if (chainId === 4) {
-    return ID_CONTRACT_RINKEBY;
+    return consts.ID_CONTRACT_RINKEBY;
   }
   if (chainId === 56) {
     // bsc
-    return ID_CONTRACT_BSC;
+    return consts.ID_CONTRACT_BSC;
   }
   if (chainId === 137) {
     // matic
-    return ID_CONTRACT_MATIC;
+    return consts.ID_CONTRACT_MATIC;
   }
   if (chainId === 250) {
     // fantom
-    return ID_CONTRACT_FTM;
+    return consts.ID_CONTRACT_FTM;
   }
   if (chainId === 1088) {
     // metis
-    return ID_CONTRACT_METIS;
+    return consts.ID_CONTRACT_METIS;
   }
   if (chainId === 43114) {
     // avax
-    return ID_CONTRACT_AVAX;
+    return consts.ID_CONTRACT_AVAX;
   }
-  return ID_CONTRACT_MAINNET;
+  return consts.ID_CONTRACT_MAINNET;
 };
 
 export const getIdContract = (chainId) => new Contract(getIdContractAddress(chainId), ID_ABI);
+
+export const getKycClaimContractAddress = (chainId) => {
+  if (chainId === 1) {
+    return consts.KYC_RIGHTS_CLAIM_MAINNET;
+  }
+  if (chainId === 4) {
+    return consts.KYC_RIGHTS_CLAIM_RINKEBY;
+  }
+  if (chainId === 56) {
+    // bsc
+    return consts.KYC_RIGHTS_CLAIM_BSC;
+  }
+  if (chainId === 137) {
+    // matic
+    return consts.KYC_RIGHTS_CLAIM_MATIC;
+  }
+  if (chainId === 250) {
+    // fantom
+    return consts.KYC_RIGHTS_CLAIM_FTM;
+  }
+  if (chainId === 1088) {
+    // metis
+    return consts.KYC_RIGHTS_CLAIM_METIS;
+  }
+  if (chainId === 43114) {
+    // avax
+    return consts.KYC_RIGHTS_CLAIM_AVAX;
+  }
+  return consts.KYC_RIGHTS_CLAIM_MAINNET;
+};
+
+export const getKycClaimContract = (chainId) => new Contract(getKycClaimContractAddress(chainId), KYC_CLAIM_ABI);
 
 export const useGetValue = (method, args, contractAddress, contract) => {
   const { value, error } = useCall(
