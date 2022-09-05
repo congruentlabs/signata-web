@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import {
-  useEthers,
-  shortenIfAddress,
-} from '@usedapp/core';
+import { useEthers, shortenIfAddress } from '@usedapp/core';
 import { useTheme, styled } from '@mui/material/styles';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
@@ -15,16 +12,12 @@ import {
   Box,
   Button,
   ButtonGroup,
-  CardContent,
   Chip,
   Stack,
   useMediaQuery,
-  Dialog,
-  DialogContent,
-  AlertTitle,
+  Typography,
   TextField,
   Paper,
-  DialogTitle,
 } from '@mui/material';
 import {
   getNanoContract,
@@ -37,6 +30,7 @@ import LoadingState from './LoadingState';
 import ItemHeader from '../app/ItemHeader';
 import ItemBox from '../app/ItemBox';
 import { shouldBeLoading, logLoading, SUPPORTED_CHAINS } from '../../hooks/helpers';
+import ChangeDialog from './ChangeDialog';
 
 const ListItem = styled('li')(({ theme }) => ({
   margin: theme.spacing(0.5),
@@ -48,6 +42,9 @@ function NanoIdentity() {
   const isSm = useMediaQuery(theme.breakpoints.up('sm'), {
     defaultMatches: true,
   });
+  const isXs = useMediaQuery(theme.breakpoints.down('sm'), {
+    defaultMatches: true,
+  });
 
   const [isLoading, setLoading] = useState(false);
   const [openLock, setOpenLock] = useState(false);
@@ -56,12 +53,7 @@ function NanoIdentity() {
   const [openDelegateNano, setOpenDelegateNano] = useState(false);
 
   const nanoContract = getNanoContract(chainId);
-  const identityLocked = useGetSingleValue(
-    '_identityLocked',
-    [account],
-    getNanoContractAddress(chainId),
-    nanoContract,
-  );
+  const identityLocked = useGetSingleValue('_identityLocked', [account], getNanoContractAddress(chainId), nanoContract);
 
   const identityDelegate = useGetSingleValue(
     '_identityDelegate',
@@ -70,17 +62,9 @@ function NanoIdentity() {
     nanoContract,
   );
 
-  const {
-    state: lockState,
-    send: lockSend,
-    resetState: lockResetState,
-  } = useSelfLockNano(chainId);
+  const { state: lockState, send: lockSend, resetState: lockResetState } = useSelfLockNano(chainId);
 
-  const {
-    state: delegateState,
-    send: delegateSend,
-    resetState: delegateResetState,
-  } = useDelegateNano(chainId);
+  const { state: delegateState, send: delegateSend, resetState: delegateResetState } = useDelegateNano(chainId);
 
   useEffect(() => {
     if (lockState) {
@@ -109,7 +93,8 @@ function NanoIdentity() {
     setOpenLock(false);
   };
 
-  const handleConfirmLock = () => {
+  const handleConfirmLock = (e) => {
+    e.preventDefault();
     setOpenLock(false);
     resetStates();
     lockSend();
@@ -148,84 +133,76 @@ function NanoIdentity() {
 
   return (
     <>
-      <Dialog open={openLock} onClose={onCloseLock}>
-        <DialogTitle>Lock Nano Identity?</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2}>
-            {identityDelegate === account && (
-              <Alert severity="warning">
-                <AlertTitle>Identity Not Delegated!</AlertTitle>
-                Your nano identity is not delegated. If you lock your identity,
-                you cannot unlock it until you delegate it.
-              </Alert>
-            )}
-            <Alert severity="info">
-              Locking your identity will prevent it from being used to
-              authenticate or by smart contracts that use Signata identities.
-              You should only lock your identity if you think your wallet has
-              been compromised.
+      <ChangeDialog
+        open={openLock}
+        onClose={onCloseLock}
+        onSubmit={handleConfirmLock}
+        title="Lock Nano Identity?"
+        alertSeverity="warning"
+        alertText="Locking your identity will prevent it from being used to authenticate or by smart contracts that use Signata identities. You should only lock your identity if you think your wallet has been compromised."
+        submitColor="error"
+        submitText="Lock Nano Identity"
+        fields={
+          identityDelegate === account && (
+            <Alert severity="warning" variant="filled" key="undelegated-warning">
+              Your nano identity is not delegated. If you lock your identity, you cannot unlock it until you delegate
+              it.
             </Alert>
-            <Paper>
-              <ButtonGroup fullWidth>
-                <Button onClick={onCloseLock} color="secondary" variant="text">
-                  Cancel
-                </Button>
-                <Button
-                  fullWidth
-                  onClick={handleConfirmLock}
-                  variant="contained"
-                  color="error"
-                  startIcon={<LockIcon />}
-                >
-                  Lock
-                </Button>
-              </ButtonGroup>
-            </Paper>
-          </Stack>
-        </DialogContent>
-      </Dialog>
-      <Dialog open={openDelegateNano} onClose={onCloseDelegate}>
-        <DialogTitle>Delegate Nano Identity?</DialogTitle>
-        <form onSubmit={onSubmitDelegateNano}>
-          <DialogContent>
-            <Stack spacing={2}>
-              <Alert severity="info">
-                Delegating your identity to another address means the delegate
-                can make changes to your identity on your behalf. Make sure you
-                only delegate to a trusted address.
-              </Alert>
-              <TextField
-                label="New Delegate"
-                variant="outlined"
-                fullWidth
-                color="info"
-                value={newDelegate}
-                onChange={onChangeNewDelegate}
-              />
-              <Paper>
-                <ButtonGroup fullWidth variant="text">
-                  <Button onClick={onCloseDelegate} color="secondary">
-                    Cancel
-                  </Button>
-                  <Button
-                    fullWidth
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    disabled={newDelegateValid === false}
-                  >
-                    Set New Delegate
-                  </Button>
-                </ButtonGroup>
-              </Paper>
-            </Stack>
-          </DialogContent>
-        </form>
-      </Dialog>
+          )
+        }
+      />
+      <ChangeDialog
+        open={openDelegateNano}
+        onClose={onCloseDelegate}
+        onSubmit={onSubmitDelegateNano}
+        title="Lock Nano Identity?"
+        alertSeverity="info"
+        alertText="Delegating your identity to another address means the delegate can make changes to your identity on your behalf. Make sure you only delegate to a trusted address."
+        submitColor="primary"
+        submitText="Delegate Nano Identity"
+        fields={[
+          <TextField
+            label="New Delegate"
+            key="new-delegate"
+            variant="outlined"
+            fullWidth
+            required
+            color="info"
+            value={newDelegate}
+            onChange={onChangeNewDelegate}
+          />,
+        ]}
+      />
       <ItemBox>
-        <ItemHeader text="Nano Identity" />
-        <CardContent>
-          <Stack spacing={2}>
+        <ItemHeader text="Nano Identity" logo="logo.png" />
+        <Stack spacing={2} sx={{ marginTop: 1 }}>
+          <Box
+            sx={{
+              textAlign: 'center',
+            }}
+          >
+            <Typography sx={{ fontFamily: 'Roboto Mono' }} variant="body2" component="p">
+              Identity:
+              {isXs ? shortenIfAddress(account) : account}
+              {/* <IconButton
+                aria-label="copy identity"
+                size="small"
+                onClick={(e) => handleClickCopy(e, id.identityAddress)}
+              >
+                <ContentCopyIcon />
+              </IconButton> */}
+            </Typography>
+            <Typography sx={{ fontFamily: 'Roboto Mono' }} variant="body2" component="p">
+              Delegate:
+              {isXs ? shortenIfAddress(identityDelegate) : identityDelegate}
+              {/* <IconButton
+                aria-label="copy identity"
+                size="small"
+                onClick={(e) => handleClickCopy(e, id.delegateAddress)}
+              >
+                <ContentCopyIcon />
+              </IconButton> */}
+            </Typography>
             <Box
               sx={{
                 display: 'flex',
@@ -240,21 +217,12 @@ function NanoIdentity() {
               <ListItem>
                 <Chip
                   icon={<LinkIcon />}
-                  label={`Chain: ${
-                    SUPPORTED_CHAINS.find(
-                      (network) => network.chainId === chainId,
-                    )?.chainName
-                  }`}
+                  label={`Chain: ${SUPPORTED_CHAINS.find((network) => network.chainId === chainId)?.chainName}`}
                   color="default"
                 />
               </ListItem>
               <ListItem>
-                <Chip
-                  icon={<FingerprintIcon />}
-                  label="Registered"
-                  color="success"
-                  variant="outlined"
-                />
+                <Chip icon={<FingerprintIcon />} label="Registered" color="success" variant="outlined" />
               </ListItem>
               <ListItem>
                 <Chip
@@ -267,9 +235,7 @@ function NanoIdentity() {
               <ListItem>
                 <Chip
                   label={
-                    identityDelegate === account
-                      ? 'Not Delegated'
-                      : `Delegated to ${shortenIfAddress(identityDelegate)}`
+                    identityDelegate === account ? 'Not Delegated' : `Delegated to ${shortenIfAddress(identityDelegate)}`
                   }
                   color={identityDelegate === account ? 'warning' : 'success'}
                   variant="outlined"
@@ -277,35 +243,30 @@ function NanoIdentity() {
                 />
               </ListItem>
             </Box>
-            <LoadingState state={lockState} />
-            <LoadingState state={delegateState} />
-            <Paper>
-              <ButtonGroup
-                fullWidth
-                variant="text"
-                color="secondary"
-                orientation={isSm ? 'horizontal' : 'vertical'}
-              >
-                {identityLocked === false && (
-                  <Button
-                    disabled={isLoading}
-                    // startIcon={<LockIcon />}
-                    onClick={handleClickLock}
-                  >
-                    Lock
-                  </Button>
-                )}
+          </Box>
+          <LoadingState state={lockState} />
+          <LoadingState state={delegateState} />
+          <Paper>
+            <ButtonGroup fullWidth variant="text" color="secondary" orientation={isSm ? 'horizontal' : 'vertical'}>
+              {identityLocked === false && (
                 <Button
                   disabled={isLoading}
-                  // startIcon={<EditIcon />}
-                  onClick={handleClickDelegate}
+                  // startIcon={<LockIcon />}
+                  onClick={handleClickLock}
                 >
-                  Delegate
+                  Lock
                 </Button>
-              </ButtonGroup>
-            </Paper>
-          </Stack>
-        </CardContent>
+              )}
+              <Button
+                disabled={isLoading}
+                // startIcon={<EditIcon />}
+                onClick={handleClickDelegate}
+              >
+                Delegate
+              </Button>
+            </ButtonGroup>
+          </Paper>
+        </Stack>
       </ItemBox>
     </>
   );

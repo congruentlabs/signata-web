@@ -1,12 +1,13 @@
 import React from 'react';
-import { Paper, useTheme } from '@mui/material';
+import {
+  Avatar, Stack, Paper, useTheme, Typography,
+} from '@mui/material';
 
-function ItemHeader({ text, colored }) {
+function ItemHeader({ text, colored, logo }) {
   const theme = useTheme();
   return (
     <Paper
       sx={{
-        textAlign: 'center',
         py: 1,
         borderRadius: 0,
         borderBottom: 1,
@@ -15,7 +16,17 @@ function ItemHeader({ text, colored }) {
         color: theme.palette.secondary.contrastText,
       }}
     >
-      {text}
+      <Stack direction="row" spacing={1} justifyContent="center">
+        {logo && (
+          <Avatar
+            src={logo}
+            style={{
+              height: 24, width: 24,
+            }}
+          />
+        )}
+        <Typography>{text}</Typography>
+      </Stack>
     </Paper>
   );
 }

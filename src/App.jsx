@@ -140,7 +140,7 @@ function App() {
           supportedChain={supportedChain}
         />
       )}
-      <Container maxWidth="md" sx={{ marginTop: 2 }}>
+      <Container maxWidth="md" sx={{ marginTop: 1 }}>
         <Box
           sx={{
             minHeight: '80vh',
@@ -150,7 +150,7 @@ function App() {
         >
           <Grid
             container
-            spacing={2}
+            spacing={4}
             direction="row"
             justifyContent="center"
             alignItems="stretch"
