@@ -696,7 +696,7 @@ function SignataIdentity({
         </form>
       </Dialog>
       <ItemBox>
-        <ItemHeader text={`Identity: ${id.name || 'Unnamed'}`} />
+        <ItemHeader text={`Identity: ${id.name || 'Unnamed'}`} colored={id.chainId === chainId} />
         {/* <CardContent> */}
         <Stack spacing={2} sx={{ marginTop: 1 }}>
           <Box

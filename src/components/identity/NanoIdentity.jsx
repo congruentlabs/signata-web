@@ -258,22 +258,22 @@ function NanoIdentity() {
               </ListItem>
               <ListItem>
                 <Chip
+                  label={identityLocked ? 'Locked' : 'Unlocked'}
+                  color={identityLocked ? 'error' : 'success'}
+                  variant={identityLocked ? 'filled' : 'outlined'}
+                  icon={identityLocked ? <LockIcon /> : <LockOpenIcon />}
+                />
+              </ListItem>
+              <ListItem>
+                <Chip
                   label={
                     identityDelegate === account
                       ? 'Not Delegated'
                       : `Delegated to ${shortenIfAddress(identityDelegate)}`
                   }
-                  color={identityDelegate === account ? 'error' : 'success'}
-                  variant={identityDelegate === account ? 'outlined' : 'outlined'}
+                  color={identityDelegate === account ? 'warning' : 'success'}
+                  variant="outlined"
                   icon={<PermIdentityIcon />}
-                />
-              </ListItem>
-              <ListItem>
-                <Chip
-                  label={identityLocked ? 'Locked' : 'Unlocked'}
-                  color={identityLocked ? 'error' : 'success'}
-                  variant={identityLocked ? 'filled' : 'outlined'}
-                  icon={identityLocked ? <LockIcon /> : <LockOpenIcon />}
                 />
               </ListItem>
             </Box>

@@ -99,7 +99,6 @@ function App() {
           main: red.A700,
         },
         mode: prefersDarkMode ? 'dark' : 'light',
-        // mode: 'light',
       },
       typography: {
         fontFamily: 'Roboto Condensed',

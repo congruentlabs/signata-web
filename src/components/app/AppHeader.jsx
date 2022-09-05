@@ -87,7 +87,7 @@ function AppHeader({
         // background: grey[50],
       }}
     >
-      <Container maxWidth="md">
+      <Container maxWidth="lg">
         <Toolbar disableGutters>
           <Avatar alt="Logo" src="logo.png" />
 
@@ -185,7 +185,7 @@ function AppHeader({
                   onClick={handleOpenUserMenu}
                   variant="contained"
                   color="secondary"
-                  size="small"
+                  size="large"
                 >
                   {ens || shortenAddress(account)}
                 </Button>
