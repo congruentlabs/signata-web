@@ -13,13 +13,16 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import { shortenAddress, useLookupAddress } from '@usedapp/core';
 import { Typography, ButtonGroup } from '@mui/material';
+import { SUPPORTED_CHAINS } from '../../hooks/helpers';
 
 const pages = [
   { name: 'Docs', href: 'https://docs.signata.net' },
   { name: 'News', href: 'https://blog.congruentlabs.co' },
 ];
 
-function AppHeader({ darkMode, account, handleClickDisconnect }) {
+function AppHeader({
+  account, handleClickDisconnect, chainId, supportedChain,
+}) {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
 
@@ -162,13 +165,27 @@ function AppHeader({ darkMode, account, handleClickDisconnect }) {
             <i>Signata Identity Manager</i>
           </Typography>
 
+          {chainId && supportedChain && (
+            <Box sx={{ px: 1, textAlign: 'right' }}>
+              <Typography variant="caption" sx={{ paddingBottom: -1, marginBottom: -1 }} color="text.secondary">
+                Connected Chain
+              </Typography>
+              <Typography variant="body1" sx={{ paddingTop: -1, marginTop: -1 }}>
+                {SUPPORTED_CHAINS.find(
+                  (network) => network.chainId === chainId,
+                )?.chainName}
+              </Typography>
+            </Box>
+          )}
+
           <Box sx={{ flexGrow: 0 }}>
             {account && (
               <Tooltip title="Settings">
                 <Button
                   onClick={handleOpenUserMenu}
-                  variant={darkMode ? 'contained' : 'outlined'}
+                  variant="contained"
                   color="secondary"
+                  size="small"
                 >
                   {ens || shortenAddress(account)}
                 </Button>

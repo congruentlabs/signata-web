@@ -3,10 +3,8 @@ import { ethers } from 'ethers';
 import {
   useEthers,
   shortenIfAddress,
-  DEFAULT_SUPPORTED_CHAINS,
 } from '@usedapp/core';
 import { useTheme, styled } from '@mui/material/styles';
-import EditIcon from '@mui/icons-material/Edit';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
@@ -38,6 +36,7 @@ import {
 import LoadingState from './LoadingState';
 import ItemHeader from '../app/ItemHeader';
 import ItemBox from '../app/ItemBox';
+import { shouldBeLoading, logLoading, SUPPORTED_CHAINS } from '../../hooks/helpers';
 
 const ListItem = styled('li')(({ theme }) => ({
   margin: theme.spacing(0.5),
@@ -85,37 +84,15 @@ function NanoIdentity() {
 
   useEffect(() => {
     if (lockState) {
-      console.log(lockState);
-      if (lockState.status === 'PendingSignature') {
-        setLoading(true);
-      }
-      if (lockState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (lockState.status === 'Mining') {
-        setLoading(true);
-      }
-      if (lockState.status === 'Success') {
-        setLoading(false);
-      }
+      logLoading(lockState, 'lockNano');
+      setLoading(shouldBeLoading(lockState.status));
     }
   }, [lockState]);
 
   useEffect(() => {
     if (delegateState) {
-      console.log(delegateState);
-      if (delegateState.status === 'PendingSignature') {
-        setLoading(true);
-      }
-      if (delegateState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (delegateState.status === 'Mining') {
-        setLoading(true);
-      }
-      if (delegateState.status === 'Success') {
-        setLoading(false);
-      }
+      logLoading(delegateState, 'delegateNano');
+      setLoading(shouldBeLoading(delegateState.status));
     }
   }, [delegateState]);
 
@@ -264,7 +241,7 @@ function NanoIdentity() {
                 <Chip
                   icon={<LinkIcon />}
                   label={`Chain: ${
-                    DEFAULT_SUPPORTED_CHAINS.find(
+                    SUPPORTED_CHAINS.find(
                       (network) => network.chainId === chainId,
                     )?.chainName
                   }`}

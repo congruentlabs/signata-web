@@ -33,6 +33,7 @@ import {
 } from '../../hooks/chainHooks';
 import NanoIdentity from './NanoIdentity';
 import SignataIdentity from './SignataIdentity';
+import { logLoading, shouldBeLoading } from '../../hooks/helpers';
 
 function ManageIdentities(props) {
   const { identities, setIdentities, advancedModeEnabled } = props;
@@ -55,6 +56,13 @@ function ManageIdentities(props) {
     send: createNanoSend,
     resetState: createNanoResetState,
   } = useCreateNano(chainId);
+
+  useEffect(() => {
+    if (createNanoState) {
+      logLoading(createNanoState, 'createNano');
+      setLoading(shouldBeLoading(createNanoState.status));
+    }
+  }, [createNanoState]);
 
   const EIP712DOMAINTYPE_DIGEST = useGetSingleValue(
     'EIP712DOMAINTYPE_DIGEST',
@@ -233,24 +241,6 @@ function ManageIdentities(props) {
     SALT,
     idContract,
   ]);
-
-  useEffect(() => {
-    if (createNanoState) {
-      console.log(createNanoState);
-      if (createNanoState.status === 'PendingSignature') {
-        setLoading(true);
-      }
-      if (createNanoState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (createNanoState.status === 'Mining') {
-        setLoading(true);
-      }
-      if (createNanoState.status === 'Success') {
-        setLoading(false);
-      }
-    }
-  }, [createNanoState]);
 
   const resetStates = () => {
     createNanoResetState();

@@ -17,23 +17,39 @@ import {
   AppFooter,
   AppHeader,
   NoConnectionWarning,
-  NetworkServices,
+  // NetworkServices,
   ProductOverview,
   ManageIdentities,
   YourAccount,
-  Subscription,
+  // Subscription,
 } from './components';
 import secureStorage from './utils/secureStorage';
+import UnsupportedChain from './components/app/UnsupportedChain';
+import { SUPPORTED_CHAINS } from './hooks/helpers';
 
 // const dSataContractAddress = '0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b';
 
 function App() {
-  const { activateBrowserWallet, account, deactivate } = useEthers();
+  const {
+    activateBrowserWallet, account, deactivate, chainId,
+  } = useEthers();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [config, setConfig, isPersistent] = useLocalStorageState('config', []);
   const [identities, setIdentities] = useState([]);
   const [encryptionPassword, setEncryptionPassword] = useState('');
   const [advancedModeEnabled, setAdvancedModeEnabled] = useState(false);
+  const [supportedChain, setSupportedChain] = useState(false);
+
+  useEffect(() => {
+    const chainName = SUPPORTED_CHAINS.find(
+      (network) => network.chainId === chainId,
+    )?.chainName;
+    if (chainName) {
+      setSupportedChain(true);
+    } else {
+      setSupportedChain(false);
+    }
+  }, [chainId]);
 
   useEffect(() => {
     if (encryptionPassword) {
@@ -119,12 +135,13 @@ function App() {
       <CssBaseline />
       {account && (
         <AppHeader
-          darkMode={theme.palette.mode === 'dark'}
           account={account}
           handleClickDisconnect={handleClickDisconnect}
+          chainId={chainId}
+          supportedChain={supportedChain}
         />
       )}
-      <Container maxWidth="md" sx={{ marginTop: 4 }}>
+      <Container maxWidth="md" sx={{ marginTop: 2 }}>
         <Box
           sx={{
             minHeight: '80vh',
@@ -141,7 +158,10 @@ function App() {
           >
             {!account && <ProductOverview />}
             {!account && <NoConnectionWarning />}
-            {account && encryptionPassword && (
+            {account && encryptionPassword && !supportedChain && (
+              <UnsupportedChain SUPPORTED_CHAINS={SUPPORTED_CHAINS} />
+            )}
+            {account && encryptionPassword && supportedChain && (
               <ManageIdentities
                 identities={identities}
                 setIdentities={setIdentities}

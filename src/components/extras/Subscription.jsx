@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useEthers, DEFAULT_SUPPORTED_CHAINS } from '@usedapp/core';
+import { useEthers } from '@usedapp/core';
 import {
   Grid,
   CardContent,
@@ -12,10 +12,11 @@ import {
 } from '@mui/material';
 import ItemHeader from '../app/ItemHeader';
 import ItemBox from '../app/ItemBox';
+import { SUPPORTED_CHAINS } from '../../hooks/helpers';
 
 function Subscription() {
   const { chainId } = useEthers();
-  const chainName = DEFAULT_SUPPORTED_CHAINS.find(
+  const chainName = SUPPORTED_CHAINS.find(
     (network) => network.chainId === chainId,
   )?.chainName;
   return (

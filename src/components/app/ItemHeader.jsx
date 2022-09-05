@@ -11,8 +11,8 @@ function ItemHeader({ text }) {
         borderRadius: 0,
         borderBottom: 1,
         boxShadow: 'none',
-        backgroundColor: theme.palette.primary.main,
-        color: theme.palette.primary.contrastText,
+        backgroundColor: theme.palette.secondary.dark,
+        color: theme.palette.secondary.contrastText,
       }}
     >
       {text}

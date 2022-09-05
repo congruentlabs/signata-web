@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { DEFAULT_SUPPORTED_CHAINS } from '@usedapp/core';
 import { useTheme, styled } from '@mui/material/styles';
 import LockIcon from '@mui/icons-material/Lock';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -38,6 +37,7 @@ import {
 import LoadingState from './LoadingState';
 import ItemHeader from '../app/ItemHeader';
 import ItemBox from '../app/ItemBox';
+import { shouldBeLoading, logLoading, SUPPORTED_CHAINS } from '../../hooks/helpers';
 
 const ListItem = styled('li')(({ theme }) => ({
   margin: theme.spacing(0.5),
@@ -154,92 +154,37 @@ function SignataIdentity({
   );
 
   useEffect(() => {
-    if (createState && createState.status !== 'None') {
-      console.log({ createState });
-      if (createState.status === 'PendingSignature') {
-        setLoading(true);
-      }
-      if (createState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (createState.status === 'Mining') {
-        setLoading(true);
-      }
-      if (createState.status === 'Success') {
-        setLoading(false);
-      }
+    if (createState) {
+      logLoading(createState, 'create');
+      setLoading(shouldBeLoading(createState.status));
     }
   }, [createState]);
 
   useEffect(() => {
-    if (lockState && lockState.status !== 'None') {
-      console.log({ lockState });
-      if (lockState.status === 'PendingSignature') {
-        setLoading(true);
-      }
-      if (lockState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (lockState.status === 'Mining') {
-        setLoading(true);
-      }
-      if (lockState.status === 'Success') {
-        setLoading(false);
-      }
+    if (lockState) {
+      logLoading(lockState, 'lock');
+      setLoading(shouldBeLoading(lockState.status));
     }
   }, [lockState]);
 
   useEffect(() => {
-    if (unlockState && unlockState.status !== 'None') {
-      console.log({ unlockState });
-      if (unlockState.status === 'PendingSignature') {
-        setLoading(true);
-      }
-      if (unlockState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (unlockState.status === 'Mining') {
-        setLoading(true);
-      }
-      if (unlockState.status === 'Success') {
-        setLoading(false);
-      }
+    if (unlockState) {
+      logLoading(unlockState, 'unlock');
+      setLoading(shouldBeLoading(unlockState.status));
     }
   }, [unlockState]);
 
   useEffect(() => {
-    if (destroyState && destroyState.status !== 'None') {
-      console.log({ destroyState });
-      if (destroyState.status === 'PendingSignature') {
-        setLoading(true);
-      }
-      if (destroyState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (destroyState.status === 'Mining') {
-        setLoading(true);
-      }
-      if (destroyState.status === 'Success') {
-        setLoading(false);
-      }
+    if (destroyState) {
+      logLoading(destroyState, 'destroy');
+      setLoading(shouldBeLoading(destroyState.status));
     }
   }, [destroyState]);
 
   useEffect(() => {
-    if (rolloverState && rolloverState.status !== 'None') {
-      console.log({ rolloverState });
-      if (rolloverState.status === 'PendingSignature') {
-        setLoading(true);
-      }
-      if (rolloverState.status === 'Exception') {
-        setLoading(false);
-      }
-      if (rolloverState.status === 'Mining') {
-        setLoading(true);
-      }
-      if (rolloverState.status === 'Success') {
-        setLoading(false);
-      }
+    if (rolloverState) {
+      logLoading(rolloverState, 'rollover');
+      setLoading(shouldBeLoading(rolloverState.status));
     }
   }, [rolloverState]);
 
@@ -752,173 +697,186 @@ function SignataIdentity({
       </Dialog>
       <ItemBox>
         <ItemHeader text={`Identity: ${id.name || 'Unnamed'}`} />
-        <CardContent>
-          <Stack spacing={2}>
+        {/* <CardContent> */}
+        <Stack spacing={2} sx={{ marginTop: 1 }}>
+          <Box
+            sx={{
+              textAlign: 'center',
+            }}
+          >
+            <Typography sx={{ fontFamily: 'Roboto Mono' }} variant="overline" component="p">
+              Identity:
+              {id.identityAddress}
+              <IconButton
+                aria-label="copy identity"
+                size="small"
+                onClick={(e) => handleClickCopy(e, id.identityAddress)}
+              >
+                <ContentCopyIcon />
+              </IconButton>
+            </Typography>
+            <Typography sx={{ fontFamily: 'Roboto Mono' }} variant="overline" component="p">
+              Delegate:
+              {id.delegateAddress}
+              <IconButton
+                aria-label="copy identity"
+                size="small"
+                onClick={(e) => handleClickCopy(e, id.delegateAddress)}
+              >
+                <ContentCopyIcon />
+              </IconButton>
+            </Typography>
+            <Typography sx={{ fontFamily: 'Roboto Mono' }} variant="overline" component="p">
+              Security:
+              {id.securityAddress}
+              <IconButton
+                aria-label="copy identity"
+                size="small"
+                onClick={(e) => handleClickCopy(e, id.securityAddress)}
+              >
+                <ContentCopyIcon />
+              </IconButton>
+            </Typography>
             <Box
               sx={{
-                textAlign: 'center',
+                display: 'flex',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+                listStyle: 'none',
+                px: 0.5,
+                m: 0,
               }}
+              component="ul"
             >
-              <Typography sx={{ fontFamily: 'Roboto Mono' }} variant="overline" component="p">
-                Identity:
-                {id.identityAddress}
-                <IconButton
-                  aria-label="copy identity"
-                  size="small"
-                  onClick={(e) => handleClickCopy(e, id.identityAddress)}
-                >
-                  <ContentCopyIcon />
-                </IconButton>
-              </Typography>
-              <Typography sx={{ fontFamily: 'Roboto Mono' }} variant="overline" component="p">
-                Delegate:
-                {id.delegateAddress}
-                <IconButton
-                  aria-label="copy identity"
-                  size="small"
-                  onClick={(e) => handleClickCopy(e, id.delegateAddress)}
-                >
-                  <ContentCopyIcon />
-                </IconButton>
-              </Typography>
-              <Typography sx={{ fontFamily: 'Roboto Mono' }} variant="overline" component="p">
-                Security:
-                {id.securityAddress}
-                <IconButton
-                  aria-label="copy identity"
-                  size="small"
-                  onClick={(e) => handleClickCopy(e, id.securityAddress)}
-                >
-                  <ContentCopyIcon />
-                </IconButton>
-              </Typography>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  flexWrap: 'wrap',
-                  listStyle: 'none',
-                  p: 0.5,
-                  m: 0,
-                }}
-                component="ul"
-              >
-                <ListItem>
+              <ListItem>
+                {id.chainId === chainId ? (
                   <Chip
                     label={`Chain: ${
-                      DEFAULT_SUPPORTED_CHAINS.find(
+                      SUPPORTED_CHAINS.find(
                         (network) => network.chainId === id.chainId,
                       )?.chainName
                     }`}
-                    color={id.chainId === chainId ? 'success' : 'warning'}
+                    color="success"
                     variant="outlined"
-                    icon={
-                      id.chainId === chainId ? <LinkIcon /> : <LinkOffIcon />
-                    }
+                    icon={<LinkIcon />}
                   />
-                </ListItem>
-                {id.chainId === chainId && !identityDestroyed && (
-                  <ListItem>
-                    <Chip
-                      label={identityExists ? 'Registered' : 'Unregistered'}
-                      color={identityExists ? 'success' : 'warning'}
-                      variant={identityExists ? 'outlined' : 'filled'}
-                      icon={
+                ) : (
+                  <Chip
+                    label={`Connect to ${
+                      SUPPORTED_CHAINS.find(
+                        (network) => network.chainId === id.chainId,
+                      )?.chainName
+                    } to manage this Identity`}
+                    color="warning"
+                    variant="outlined"
+                    icon={<LinkOffIcon />}
+                  />
+                )}
+              </ListItem>
+              {id.chainId === chainId && !identityDestroyed && (
+              <ListItem>
+                <Chip
+                  label={identityExists ? 'Registered' : 'Unregistered'}
+                  color={identityExists ? 'success' : 'warning'}
+                  variant={identityExists ? 'outlined' : 'filled'}
+                  icon={
                         identityExists ? (
                           <FingerprintIcon />
                         ) : (
                           <ErrorOutlineIcon />
                         )
                       }
-                    />
-                  </ListItem>
-                )}
-                {id.chainId === chainId && !identityDestroyed && (
-                  <ListItem>
-                    <Chip
-                      label={identityLocked ? 'Locked' : 'Unlocked'}
-                      color={identityLocked ? 'error' : 'success'}
-                      variant={identityLocked ? 'filled' : 'outlined'}
-                      icon={identityLocked ? <LockIcon /> : <LockOpenIcon />}
-                    />
-                  </ListItem>
-                )}
-                {id.chainId === chainId && identityExists && identityDestroyed && (
-                  <ListItem>
-                    <Chip
-                      label="Destroyed"
-                      color="error"
-                      variant="filled"
-                      icon={<ErrorOutlineIcon />}
-                    />
-                  </ListItem>
-                )}
-              </Box>
+                />
+              </ListItem>
+              )}
+              {id.chainId === chainId && !identityDestroyed && (
+              <ListItem>
+                <Chip
+                  label={identityLocked ? 'Locked' : 'Unlocked'}
+                  color={identityLocked ? 'error' : 'success'}
+                  variant={identityLocked ? 'filled' : 'outlined'}
+                  icon={identityLocked ? <LockIcon /> : <LockOpenIcon />}
+                />
+              </ListItem>
+              )}
+              {id.chainId === chainId && identityExists && identityDestroyed && (
+              <ListItem>
+                <Chip
+                  label="Destroyed"
+                  color="error"
+                  variant="filled"
+                  icon={<ErrorOutlineIcon />}
+                />
+              </ListItem>
+              )}
             </Box>
-            <LoadingState state={createState} />
-            <LoadingState state={lockState} />
-            <LoadingState state={unlockState} />
-            <LoadingState state={rolloverState} />
-            <LoadingState state={destroyState} />
-            <Paper>
-              <ButtonGroup
-                fullWidth
-                variant="text"
-                disabled={isLoading || id.chainId !== chainId}
-                color="secondary"
-                orientation={isSm ? 'horizontal' : 'vertical'}
+          </Box>
+          <LoadingState state={createState} />
+          <LoadingState state={lockState} />
+          <LoadingState state={unlockState} />
+          <LoadingState state={rolloverState} />
+          <LoadingState state={destroyState} />
+          {id.chainId === chainId && (
+          <Paper>
+            <ButtonGroup
+              fullWidth
+              variant="text"
+              disabled={isLoading || id.chainId !== chainId}
+              color="secondary"
+              orientation={isSm ? 'horizontal' : 'vertical'}
+            >
+              {!identityExists && (
+              <Button onClick={id.type === 'wallet' ? onCreateWalletIdentity : onCreateIdentity} color="primary">
+                Register
+              </Button>
+              )}
+              <Button onClick={handleClickRename}>Rename</Button>
+              {identityExists && !identityLocked && (
+              <Button onClick={handleClickLock}>Lock</Button>
+              )}
+              {identityExists && identityLocked && (
+              <Button onClick={handleClickUnlock}>Unlock</Button>
+              )}
+              {identityExists && (
+              <Button onClick={handleClickRollover} disabled>
+                Rollover
+              </Button>
+              )}
+              {identityExists && (
+              <Button onClick={handleClickDestroy}>Destroy</Button>
+              )}
+              {!identityExists && (
+              <Button onClick={handleClickDelete}>Delete</Button>
+              )}
+            </ButtonGroup>
+          </Paper>
+          )}
+          {id.chainId === chainId && identityExists && !hasKycNft && (
+          <Paper>
+            <ButtonGroup
+              fullWidth
+              variant="text"
+              size="small"
+              disabled={isLoading || id.chainId !== chainId}
+              color="secondary"
+              orientation={isSm ? 'horizontal' : 'vertical'}
+            >
+              <Button
+                onClick={handleClickRequestKyc}
+                id={`blockpass-kyc-connect-${id.identityAddress}`}
               >
-                {!identityExists && (
-                  <Button onClick={id.type === 'wallet' ? onCreateWalletIdentity : onCreateIdentity} color="primary">
-                    Register
-                  </Button>
-                )}
-                <Button onClick={handleClickRename}>Rename</Button>
-                {identityExists && !identityLocked && (
-                  <Button onClick={handleClickLock}>Lock</Button>
-                )}
-                {identityExists && identityLocked && (
-                  <Button onClick={handleClickUnlock}>Unlock</Button>
-                )}
-                {identityExists && (
-                  <Button onClick={handleClickRollover} disabled>
-                    Rollover
-                  </Button>
-                )}
-                {identityExists && (
-                  <Button onClick={handleClickDestroy}>Destroy</Button>
-                )}
-                {!identityExists && (
-                  <Button onClick={handleClickDelete}>Delete</Button>
-                )}
-              </ButtonGroup>
-            </Paper>
-            {identityExists && !hasKycNft && (
-              <Paper>
-                <ButtonGroup
-                  fullWidth
-                  variant="text"
-                  size="small"
-                  disabled={isLoading || id.chainId !== chainId}
-                  color="secondary"
-                  orientation={isSm ? 'horizontal' : 'vertical'}
-                >
-                  <Button
-                    onClick={handleClickRequestKyc}
-                    id={`blockpass-kyc-connect-${id.identityAddress}`}
-                  >
-                    KYC Identity
-                  </Button>
-                  <Button
-                    onClick={handleClickClaimKycNft}
-                  >
-                    Claim KYC Right
-                  </Button>
-                </ButtonGroup>
-              </Paper>
-            )}
-          </Stack>
-        </CardContent>
+                KYC Identity
+              </Button>
+              <Button
+                onClick={handleClickClaimKycNft}
+              >
+                Claim KYC Right
+              </Button>
+            </ButtonGroup>
+          </Paper>
+          )}
+        </Stack>
+        {/* </CardContent> */}
       </ItemBox>
     </>
   );
