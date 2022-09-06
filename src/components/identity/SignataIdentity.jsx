@@ -170,12 +170,20 @@ function SignataIdentity({
     }
   }, [rolloverState]);
 
+  const resetStates = () => {
+    createResetState();
+    lockResetState();
+    unlockResetState();
+    destroyResetState();
+    rolloverResetState();
+  };
+
   const onCreateIdentity = async (e) => {
     e.preventDefault();
     try {
       setErrorMessage('');
       setLoading(true);
-      createResetState();
+      resetStates();
 
       const inputHash = ethers.utils.keccak256(
         `${TXTYPE_CREATE_DIGEST}${delegateWallet.address.slice(2).padStart(64, '0')}${securityWallet.address
@@ -199,7 +207,7 @@ function SignataIdentity({
     try {
       setLoading(true);
       setErrorMessage('');
-      createResetState();
+      resetStates();
 
       const inputHash = ethers.utils.keccak256(
         `${TXTYPE_CREATE_DIGEST}${id.delegateAddress.slice(2).padStart(64, '0')}${securityWallet.address
@@ -234,7 +242,7 @@ function SignataIdentity({
       setErrorMessage('');
       setLoading(true);
       setOpenLock(false);
-      lockResetState();
+      resetStates();
 
       const inputHash = ethers.utils.keccak256(
         `${TXTYPE_LOCK_DIGEST}${identityLockCount.toHexString().slice(2).padStart(64, '0')}`,
@@ -277,7 +285,7 @@ function SignataIdentity({
       setErrorMessage('');
       setLoading(true);
       setOpenUnlock(false);
-      unlockResetState();
+      resetStates();
 
       const inputHash = ethers.utils.keccak256(
         `${TXTYPE_UNLOCK_DIGEST}${identityLockCount.toHexString().slice(2).padStart(64, '0')}`,
@@ -310,7 +318,7 @@ function SignataIdentity({
       setErrorMessage('');
       setLoading(true);
       setOpenRollover(false);
-      rolloverResetState();
+      resetStates();
 
       const inputHash = ethers.utils.keccak256(
         `${TXTYPE_ROLLOVER_DIGEST}${newDelegate.address.slice(2).padStart(64, '0')}${newSecurity.address
@@ -384,7 +392,7 @@ function SignataIdentity({
       setErrorMessage('');
       setLoading(true);
       setOpenDestroy(false);
-      destroyResetState();
+      resetStates();
 
       const inputHash = ethers.utils.keccak256(`${TXTYPE_DESTROY_DIGEST}`);
       const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);

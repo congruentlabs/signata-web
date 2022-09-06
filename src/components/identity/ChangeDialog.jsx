@@ -1,12 +1,12 @@
 import React from 'react';
 import {
-  Dialog, DialogTitle, Paper, DialogContent, Stack, Alert, ButtonGroup, Button,
+  Dialog, DialogTitle, Paper, DialogContent, Stack, Alert, ButtonGroup, Button, AlertTitle,
 } from '@mui/material';
 
 function ChangeDialog(props) {
   // no success message for approvals
   const {
-    open, onClose, onSubmit, title, alertSeverity, alertText, submitColor, submitText, fields,
+    open, onClose, onSubmit, title, alertSeverity, alertText, submitColor, submitText, fields, disableSubmit, errorMessage,
   } = props;
 
   return (
@@ -19,6 +19,12 @@ function ChangeDialog(props) {
               {alertText}
             </Alert>
             {fields}
+            {errorMessage && (
+              <Alert severity="error">
+                <AlertTitle>Error</AlertTitle>
+                {errorMessage}
+              </Alert>
+            )}
             <Paper>
               <ButtonGroup fullWidth variant="text">
                 <Button
@@ -32,6 +38,7 @@ function ChangeDialog(props) {
                   type="submit"
                   variant="contained"
                   color={submitColor}
+                  disabled={disableSubmit}
                 >
                   {submitText}
                 </Button>

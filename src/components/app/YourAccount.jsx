@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import ItemHeader from './ItemHeader';
 import ItemBox from './ItemBox';
+import ChangeDialog from '../identity/ChangeDialog';
 
 function YourAccount(props) {
   const {
@@ -26,12 +27,19 @@ function YourAccount(props) {
     isPersistent,
     setEncryptionPassword,
     unlocked,
+    identities,
+    setIdentities,
   } = props;
   const [password, setPassword] = useState('');
   const [passwordRepeat, setPasswordRepeat] = useState('');
   const [firstErrorMessage, setFirstErrorMessage] = useState('');
+  const [restoreErrorMessage, setRestoreErrorMessage] = useState('');
   const [secondErrorMessage, setSecondErrorMessage] = useState('');
   const [showCapsWarning, setShowCapsWarning] = useState(false);
+  const [openDownloadBackup, setOpenDownloadBackup] = useState(false);
+  const [openRestoreBackup, setOpenRestoreBackup] = useState(false);
+  const [backupFileName, setBackupFileName] = useState('');
+  const [backupDataPassword, setBackupDataPassword] = useState('');
   const [advancedModeEnabled, setAdvancedModeEnabled] = useLocalStorageState('advancedModeEnabled', { defaultValue: false });
   const theme = useTheme();
   const isSm = useMediaQuery(theme.breakpoints.up('sm'), {
@@ -95,8 +103,129 @@ function YourAccount(props) {
     }
   };
 
+  const onClickDownloadBackup = () => {
+    setOpenDownloadBackup(true);
+  };
+
+  const onSubmitDownloadBackup = (e) => {
+    e.preventDefault();
+    const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(identities), backupDataPassword).toString();
+    const element = document.createElement('a');
+    const file = new Blob([encryptedData], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = `Signata-Backup-${new Date().toISOString()}.txt`;
+    document.body.appendChild(element);
+    element.click();
+  };
+
+  const onCloseDownloadBackup = () => {
+    setOpenDownloadBackup(false);
+  };
+
+  const onClickRestoreBackup = () => {
+    setOpenRestoreBackup(true);
+    setBackupFileName('');
+  };
+
+  const onSubmitRestoreBackup = (e) => {
+    e.preventDefault();
+    try {
+      setRestoreErrorMessage('');
+      const file = e.target[2].files[0];
+
+      if (file) {
+        console.log(file);
+        const reader = new FileReader();
+
+        const onLoad = (evt) => {
+          const fileContents = evt.target.result;
+          const decryptedData = CryptoJS.AES.decrypt(fileContents, backupDataPassword).toString(CryptoJS.enc.Utf8);
+          const parsedData = JSON.parse(decryptedData);
+          // TODO: validate that it is an identity array before saving it
+          setIdentities(parsedData);
+          setBackupFileName('');
+        };
+
+        reader.onload = onLoad;
+        reader.readAsText(file);
+      }
+      setOpenRestoreBackup(false);
+    } catch (error) {
+      console.error(error);
+      setRestoreErrorMessage(error.message);
+    }
+  };
+
+  const onChangeBackupFile = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setBackupFileName(file.name);
+    }
+  };
+
+  const onCloseRestoreBackup = () => {
+    setOpenRestoreBackup(false);
+  };
+
   return (
     <Grid item xs={12} md={6}>
+      <ChangeDialog
+        open={openDownloadBackup}
+        onSubmit={onSubmitDownloadBackup}
+        onClose={onCloseDownloadBackup}
+        title="Download Backup?"
+        alertSeverity="info"
+        alertText="Download an encrypted backup of your Signata account to keep safe. Your backup password can be different to your account password."
+        submitText="Download Backup"
+        fields={[
+          <TextField
+            label="Backup Password"
+            key="backup-data-password"
+            type="password"
+            variant="outlined"
+            fullWidth
+            required
+            color="info"
+            value={backupDataPassword}
+            onChange={(e) => setBackupDataPassword(e.target.value)}
+          />,
+        ]}
+      />
+      <ChangeDialog
+        open={openRestoreBackup}
+        onSubmit={onSubmitRestoreBackup}
+        onClose={onCloseRestoreBackup}
+        title="Restore Backup?"
+        alertSeverity="warning"
+        alertText="Restoring will overwrite any identities you have saved on this device. If you've added identities since you created this backup, export them now or you will lose them."
+        submitText="Restore Backup"
+        disableSubmit={!backupFileName}
+        errorMessage={restoreErrorMessage}
+        fields={[
+          <TextField
+            label="Backup Password"
+            key="restore-data-password"
+            type="password"
+            variant="outlined"
+            fullWidth
+            required
+            color="info"
+            value={backupDataPassword}
+            onChange={(e) => setBackupDataPassword(e.target.value)}
+          />,
+          <Button key="upload-button" variant="contained" component="label" color="secondary">
+            Upload Backup
+            <input hidden accept="text/plain" multiple={false} type="file" onChange={onChangeBackupFile} />
+          </Button>,
+          <TextField
+            key="file-name"
+            label="File to Upload"
+            value={backupFileName}
+            variant="standard"
+            disabled
+          />,
+        ]}
+      />
       <ItemBox>
         <ItemHeader text="Your Account" />
         <CardContent>
@@ -216,10 +345,10 @@ function YourAccount(props) {
                 fullWidth
                 orientation={isSm ? 'horizontal' : 'vertical'}
               >
-                <Button color="secondary" variant="contained" disabled>
+                <Button color="secondary" variant="contained" onClick={onClickDownloadBackup}>
                   Download Backup
                 </Button>
-                <Button color="secondary" variant="contained" disabled>
+                <Button color="secondary" variant="contained" onClick={onClickRestoreBackup}>
                   Restore Backup
                 </Button>
               </ButtonGroup>

@@ -182,6 +182,8 @@ function App() {
                 unlocked={encryptionPassword !== ''}
                 advancedModeEnabled={advancedModeEnabled}
                 setAdvancedModeEnabled={setAdvancedModeEnabled}
+                identities={identities}
+                setIdentities={setIdentities}
               />
             )}
             {/* {account && encryptionPassword && <Subscription />} */}
