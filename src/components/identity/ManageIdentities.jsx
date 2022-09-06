@@ -308,6 +308,7 @@ function ManageIdentities(props) {
             <SignataIdentity
               identities={identities}
               setIdentities={setIdentities}
+              account={account}
               chainId={chainId}
               id={id}
               idContract={idContract}

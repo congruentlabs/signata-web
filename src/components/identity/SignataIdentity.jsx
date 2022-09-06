@@ -10,7 +10,7 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 import LinkIcon from '@mui/icons-material/Link';
 import {
-  Button, ButtonGroup, Chip, Stack, useMediaQuery, TextField, Box, Typography, Paper,
+  Button, ButtonGroup, Chip, Stack, useMediaQuery, TextField, Box, Typography, Paper, Alert, AlertTitle,
 } from '@mui/material';
 import {
   useCreateIdentity,
@@ -34,6 +34,7 @@ const ListItem = styled('li')(({ theme }) => ({
 function SignataIdentity({
   identities,
   setIdentities,
+  account,
   chainId,
   id,
   DOMAIN_SEPARATOR,
@@ -70,10 +71,12 @@ function SignataIdentity({
   const [securityWallet, setSecurityWallet] = useState(null);
   const [hasKycNft, setHasKycNft] = useState(false);
   const [exportData, setExportData] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     if (id) {
       try {
+        setLoading(true);
         setIdentityWallet(ethers.Wallet.fromMnemonic(id.identitySeed));
         if (id.type !== 'wallet') {
           setDelegateWallet(ethers.Wallet.fromMnemonic(id.delegateSeed));
@@ -81,6 +84,8 @@ function SignataIdentity({
         setSecurityWallet(ethers.Wallet.fromMnemonic(id.securitySeed));
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     }
   }, [id]);
@@ -167,32 +172,50 @@ function SignataIdentity({
 
   const onCreateIdentity = async (e) => {
     e.preventDefault();
-    createResetState();
+    try {
+      setErrorMessage('');
+      setLoading(true);
+      createResetState();
 
-    const inputHash = ethers.utils.keccak256(
-      `${TXTYPE_CREATE_DIGEST}${delegateWallet.address.slice(2).padStart(64, '0')}${securityWallet.address
-        .slice(2)
-        .padStart(64, '0')}`,
-    );
-    const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
-    const { r, s, v } = new ethers.utils.SigningKey(identityWallet.privateKey).signDigest(hashToSign);
+      const inputHash = ethers.utils.keccak256(
+        `${TXTYPE_CREATE_DIGEST}${delegateWallet.address.slice(2).padStart(64, '0')}${securityWallet.address
+          .slice(2)
+          .padStart(64, '0')}`,
+      );
+      const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
+      const { r, s, v } = new ethers.utils.SigningKey(identityWallet.privateKey).signDigest(hashToSign);
 
-    createSend(v, r, s, identityWallet.address, delegateWallet.address, securityWallet.address);
+      createSend(v, r, s, identityWallet.address, delegateWallet.address, securityWallet.address);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onCreateWalletIdentity = async (e) => {
     e.preventDefault();
-    createResetState();
+    try {
+      setLoading(true);
+      setErrorMessage('');
+      createResetState();
 
-    const inputHash = ethers.utils.keccak256(
-      `${TXTYPE_CREATE_DIGEST}${id.delegateAddress.slice(2).padStart(64, '0')}${securityWallet.address
-        .slice(2)
-        .padStart(64, '0')}`,
-    );
-    const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
-    const { r, s, v } = new ethers.utils.SigningKey(identityWallet.privateKey).signDigest(hashToSign);
+      const inputHash = ethers.utils.keccak256(
+        `${TXTYPE_CREATE_DIGEST}${id.delegateAddress.slice(2).padStart(64, '0')}${securityWallet.address
+          .slice(2)
+          .padStart(64, '0')}`,
+      );
+      const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
+      const { r, s, v } = new ethers.utils.SigningKey(identityWallet.privateKey).signDigest(hashToSign);
 
-    createSend(v, r, s, identityWallet.address, id.delegateAddress, securityWallet.address);
+      createSend(v, r, s, identityWallet.address, id.delegateAddress, securityWallet.address);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClickLock = (e) => {
@@ -205,18 +228,37 @@ function SignataIdentity({
     setOpenLock(false);
   };
 
-  const onLockIdentity = (e) => {
+  const onLockIdentity = async (e) => {
     e.preventDefault();
-    setOpenLock(false);
-    lockResetState();
+    try {
+      setErrorMessage('');
+      setLoading(true);
+      setOpenLock(false);
+      lockResetState();
 
-    const inputHash = ethers.utils.keccak256(
-      `${TXTYPE_LOCK_DIGEST}${identityLockCount.toHexString().slice(2).padStart(64, '0')}`,
-    );
-    const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
-    const { r, s, v } = new ethers.utils.SigningKey(delegateWallet.privateKey).signDigest(hashToSign);
+      const inputHash = ethers.utils.keccak256(
+        `${TXTYPE_LOCK_DIGEST}${identityLockCount.toHexString().slice(2).padStart(64, '0')}`,
+      );
+      const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
 
-    lockSend(identityWallet.address, v, r, s);
+      if (!id.delegateSeed) { // it's a wallet identity without a delegateSeed
+        // eslint-disable-next-line no-undef
+        const ethResult = await ethereum.request({ method: 'eth_sign', params: [account, hashToSign] });
+        const sig = ethResult.substr(2);
+        const r = `0x${sig.slice(0, 64)}`;
+        const s = `0x${sig.slice(64, 128)}`;
+        const v = `0x${sig.slice(128, 130)}`;
+        lockSend(identityWallet.address, v, r, s);
+      } else {
+        const { r, s, v } = new ethers.utils.SigningKey(delegateWallet.privateKey).signDigest(hashToSign);
+        lockSend(identityWallet.address, v, r, s);
+      }
+    } catch (error) {
+      console.error(error);
+      setErrorMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClickUnlock = (e) => {
@@ -231,16 +273,25 @@ function SignataIdentity({
 
   const onUnlockIdentity = (e) => {
     e.preventDefault();
-    setOpenUnlock(false);
-    unlockResetState();
+    try {
+      setErrorMessage('');
+      setLoading(true);
+      setOpenUnlock(false);
+      unlockResetState();
 
-    const inputHash = ethers.utils.keccak256(
-      `${TXTYPE_UNLOCK_DIGEST}${identityLockCount.toHexString().slice(2).padStart(64, '0')}`,
-    );
-    const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
-    const { r, s, v } = new ethers.utils.SigningKey(securityWallet.privateKey).signDigest(hashToSign);
+      const inputHash = ethers.utils.keccak256(
+        `${TXTYPE_UNLOCK_DIGEST}${identityLockCount.toHexString().slice(2).padStart(64, '0')}`,
+      );
+      const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
+      const { r, s, v } = new ethers.utils.SigningKey(securityWallet.privateKey).signDigest(hashToSign);
 
-    unlockSend(identityWallet.address, v, r, s);
+      unlockSend(identityWallet.address, v, r, s);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClickRollover = (e) => {
@@ -253,39 +304,68 @@ function SignataIdentity({
     setOpenRollover(false);
   };
 
-  const onRolloverIdentity = (e) => {
+  const onRolloverIdentity = async (e) => {
     e.preventDefault();
-    setOpenRollover(false);
-    rolloverResetState();
+    try {
+      setErrorMessage('');
+      setLoading(true);
+      setOpenRollover(false);
+      rolloverResetState();
 
-    const inputHash = ethers.utils.keccak256(
-      `${TXTYPE_ROLLOVER_DIGEST}${newDelegate.address.slice(2).padStart(64, '0')}${newSecurity.address
-        .slice(2)
-        .padStart(64, '0')}${identityRolloverCount.toHexString().slice(2).padStart(64, '0')}`,
-    );
-    const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
-    const {
-      r: delegateR,
-      s: delegateS,
-      v: delegateV,
-    } = new ethers.utils.SigningKey(delegateWallet.privateKey).signDigest(hashToSign);
-    const {
-      r: securityR,
-      s: securityS,
-      v: securityV,
-    } = new ethers.utils.SigningKey(securityWallet.privateKey).signDigest(hashToSign);
+      const inputHash = ethers.utils.keccak256(
+        `${TXTYPE_ROLLOVER_DIGEST}${newDelegate.address.slice(2).padStart(64, '0')}${newSecurity.address
+          .slice(2)
+          .padStart(64, '0')}${identityRolloverCount.toHexString().slice(2).padStart(64, '0')}`,
+      );
+      const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
+      const {
+        r: securityR,
+        s: securityS,
+        v: securityV,
+      } = new ethers.utils.SigningKey(securityWallet.privateKey).signDigest(hashToSign);
 
-    rolloverSend(
-      identityWallet.address,
-      delegateV,
-      delegateR,
-      delegateS,
-      securityV,
-      securityR,
-      securityS,
-      newDelegate,
-      newSecurity,
-    );
+      if (!id.delegateSeed) { // it's a wallet identity without a delegateSeed
+        // eslint-disable-next-line no-undef
+        const ethResult = await ethereum.request({ method: 'eth_sign', params: [account, hashToSign] });
+        const sig = ethResult.substr(2);
+        const delegateR = `0x${sig.slice(0, 64)}`;
+        const delegateS = `0x${sig.slice(64, 128)}`;
+        const delegateV = `0x${sig.slice(128, 130)}`;
+        rolloverSend(
+          identityWallet.address,
+          delegateV,
+          delegateR,
+          delegateS,
+          securityV,
+          securityR,
+          securityS,
+          newDelegate,
+          newSecurity,
+        );
+      } else {
+        const {
+          r: delegateR,
+          s: delegateS,
+          v: delegateV,
+        } = new ethers.utils.SigningKey(delegateWallet.privateKey).signDigest(hashToSign);
+        rolloverSend(
+          identityWallet.address,
+          delegateV,
+          delegateR,
+          delegateS,
+          securityV,
+          securityR,
+          securityS,
+          newDelegate,
+          newSecurity,
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      setErrorMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClickDestroy = (e) => {
@@ -298,25 +378,45 @@ function SignataIdentity({
     setOpenDestroy(false);
   };
 
-  const onDestroyIdentity = (e) => {
+  const onDestroyIdentity = async (e) => {
     e.preventDefault();
-    setOpenDestroy(false);
-    destroyResetState();
+    try {
+      setErrorMessage('');
+      setLoading(true);
+      setOpenDestroy(false);
+      destroyResetState();
 
-    const inputHash = ethers.utils.keccak256(`${TXTYPE_DESTROY_DIGEST}`);
-    const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
-    const {
-      r: delegateR,
-      s: delegateS,
-      v: delegateV,
-    } = new ethers.utils.SigningKey(delegateWallet.privateKey).signDigest(hashToSign);
-    const {
-      r: securityR,
-      s: securityS,
-      v: securityV,
-    } = new ethers.utils.SigningKey(securityWallet.privateKey).signDigest(hashToSign);
+      const inputHash = ethers.utils.keccak256(`${TXTYPE_DESTROY_DIGEST}`);
+      const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
 
-    destroySend(identityWallet.address, delegateV, delegateR, delegateS, securityV, securityR, securityS);
+      const {
+        r: securityR,
+        s: securityS,
+        v: securityV,
+      } = new ethers.utils.SigningKey(securityWallet.privateKey).signDigest(hashToSign);
+
+      if (!id.delegateSeed) { // it's a wallet identity without a delegateSeed
+        // eslint-disable-next-line no-undef
+        const ethResult = await ethereum.request({ method: 'eth_sign', params: [account, hashToSign] });
+        const sig = ethResult.substr(2);
+        const delegateR = `0x${sig.slice(0, 64)}`;
+        const delegateS = `0x${sig.slice(64, 128)}`;
+        const delegateV = `0x${sig.slice(128, 130)}`;
+        destroySend(identityWallet.address, delegateV, delegateR, delegateS, securityV, securityR, securityS);
+      } else {
+        const {
+          r: delegateR,
+          s: delegateS,
+          v: delegateV,
+        } = new ethers.utils.SigningKey(delegateWallet.privateKey).signDigest(hashToSign);
+        destroySend(identityWallet.address, delegateV, delegateR, delegateS, securityV, securityR, securityS);
+      }
+    } catch (error) {
+      console.error(error);
+      setErrorMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClickRename = (e) => {
@@ -333,16 +433,25 @@ function SignataIdentity({
 
   const onSubmitRename = (e) => {
     e.preventDefault();
-    let newId = id;
-    const newIds = Array.from(identities);
-    newIds.forEach((s, idx) => {
-      if (s.identitySeed === newId.identitySeed) {
-        newId = { ...newId, name: newName };
-        newIds[idx] = newId;
-      }
-    });
-    setIdentities(newIds);
-    onCloseRename(e);
+    try {
+      setLoading(true);
+      setErrorMessage('');
+      let newId = id;
+      const newIds = Array.from(identities);
+      newIds.forEach((s, idx) => {
+        if (s.identitySeed === newId.identitySeed) {
+          newId = { ...newId, name: newName };
+          newIds[idx] = newId;
+        }
+      });
+      setIdentities(newIds);
+      onCloseRename(e);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClickDelete = (e) => {
@@ -357,6 +466,7 @@ function SignataIdentity({
 
   const onSubmitDelete = (e) => {
     e.preventDefault();
+    setLoading(true);
     const newSeeds = [];
     identities.forEach((s) => {
       if (s.identitySeed !== id.identitySeed) {
@@ -365,6 +475,7 @@ function SignataIdentity({
     });
     setIdentities(newSeeds);
     setOpenDelete(false);
+    setLoading(false);
   };
 
   const handleClickCopy = (e, dat) => {
@@ -635,6 +746,12 @@ function SignataIdentity({
           )}
           {exportData && (
             <TextField multiline value={exportData} />
+          )}
+          {errorMessage && (
+            <Alert severity="error">
+              <AlertTitle>Error</AlertTitle>
+              {errorMessage}
+            </Alert>
           )}
           {id.chainId === chainId && identityExists && !hasKycNft && (
             <Paper>
