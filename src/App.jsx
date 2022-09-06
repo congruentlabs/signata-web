@@ -21,6 +21,8 @@ import {
   ProductOverview,
   ManageIdentities,
   YourAccount,
+  UnderConstructionWarning,
+  DevModeWarning,
   // Subscription,
 } from './components';
 import secureStorage from './utils/secureStorage';
@@ -161,6 +163,12 @@ function App() {
             justifyContent="center"
             alignItems="stretch"
           >
+            {window.location.hostname !== 'localhost' && (
+              <UnderConstructionWarning />
+            )}
+            {window.location.hostname === 'localhost' && (
+              <DevModeWarning />
+            )}
             {!account && <ProductOverview />}
             {!account && <NoConnectionWarning />}
             {account && encryptionPassword && !supportedChain && (
