@@ -7,6 +7,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 import LinkIcon from '@mui/icons-material/Link';
 import {
@@ -684,6 +685,28 @@ function SignataIdentity({
                   />
                 )}
               </ListItem>
+              {id.chainId === chainId && !id.delegateSeed && id.delegateAddress === account && (
+                <ListItem>
+                  <Chip
+                    label="Connected Wallet"
+                    color="success"
+                    variant="outlined"
+                    size={isXs ? 'small' : 'medium'}
+                    icon={<AccountBalanceWalletIcon />}
+                  />
+                </ListItem>
+              )}
+              {id.chainId === chainId && !id.delegateSeed && id.delegateAddress !== account && (
+                <ListItem>
+                  <Chip
+                    label="Connect to Delegate Wallet"
+                    color="warning"
+                    variant="outlined"
+                    size={isXs ? 'small' : 'medium'}
+                    icon={<AccountBalanceWalletIcon />}
+                  />
+                </ListItem>
+              )}
               {id.chainId === chainId && !identityDestroyed && (
                 <ListItem>
                   <Chip
@@ -724,12 +747,40 @@ function SignataIdentity({
           <LoadingState state={unlockState} />
           <LoadingState state={rolloverState} />
           <LoadingState state={destroyState} />
-          {id.chainId === chainId && (
+          {id.chainId === chainId && !id.delegateSeed && (
             <Paper>
               <ButtonGroup
                 fullWidth
                 variant="text"
-                disabled={isLoading || id.chainId !== chainId}
+                disabled={isLoading || id.delegateAddress !== account}
+                color="secondary"
+                orientation={isSm ? 'horizontal' : 'vertical'}
+              >
+                {!identityExists && (
+                  <Button onClick={id.type === 'wallet' ? onCreateWalletIdentity : onCreateIdentity} color="primary">
+                    Register
+                  </Button>
+                )}
+                <Button onClick={handleClickRename}>Rename</Button>
+                {identityExists && !identityLocked && <Button onClick={handleClickLock}>Lock</Button>}
+                {identityExists && identityLocked && <Button onClick={handleClickUnlock}>Unlock</Button>}
+                {identityExists && (
+                  <Button onClick={handleClickRollover} disabled>
+                    Rollover
+                  </Button>
+                )}
+                {identityExists && <Button onClick={handleClickDestroy}>Destroy</Button>}
+                {(!identityExists || advancedModeEnabled) && <Button onClick={handleClickDelete}>Delete</Button>}
+                {identityExists && advancedModeEnabled && <Button onClick={handleClickExport}>Export</Button>}
+              </ButtonGroup>
+            </Paper>
+          )}
+          {id.chainId === chainId && id.delegateSeed && (
+            <Paper>
+              <ButtonGroup
+                fullWidth
+                variant="text"
+                disabled={isLoading}
                 color="secondary"
                 orientation={isSm ? 'horizontal' : 'vertical'}
               >

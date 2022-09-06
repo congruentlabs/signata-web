@@ -54,11 +54,7 @@ function ManageIdentities(props) {
   const [importData, setImportData] = useState('');
   const [importError, setImportError] = useState('');
 
-  const {
-    state: createNanoState,
-    send: createNanoSend,
-    resetState: createNanoResetState,
-  } = useCreateNano(chainId);
+  const { state: createNanoState, send: createNanoSend, resetState: createNanoResetState } = useCreateNano(chainId);
 
   useEffect(() => {
     if (createNanoState) {
@@ -74,33 +70,13 @@ function ManageIdentities(props) {
     idContract,
   );
 
-  const VERSION_DIGEST = useGetSingleValue(
-    'VERSION_DIGEST',
-    [],
-    getIdContractAddress(chainId),
-    idContract,
-  );
+  const VERSION_DIGEST = useGetSingleValue('VERSION_DIGEST', [], getIdContractAddress(chainId), idContract);
 
-  const NAME_DIGEST = useGetSingleValue(
-    'NAME_DIGEST',
-    [],
-    getIdContractAddress(chainId),
-    idContract,
-  );
+  const NAME_DIGEST = useGetSingleValue('NAME_DIGEST', [], getIdContractAddress(chainId), idContract);
 
-  const SALT = useGetSingleValue(
-    'SALT',
-    [],
-    getIdContractAddress(chainId),
-    idContract,
-  );
+  const SALT = useGetSingleValue('SALT', [], getIdContractAddress(chainId), idContract);
 
-  const TXTYPE_CREATE_DIGEST = useGetSingleValue(
-    'TXTYPE_CREATE_DIGEST',
-    [],
-    getIdContractAddress(chainId),
-    idContract,
-  );
+  const TXTYPE_CREATE_DIGEST = useGetSingleValue('TXTYPE_CREATE_DIGEST', [], getIdContractAddress(chainId), idContract);
 
   const TXTYPE_DESTROY_DIGEST = useGetSingleValue(
     'TXTYPE_DESTROY_DIGEST',
@@ -109,19 +85,9 @@ function ManageIdentities(props) {
     idContract,
   );
 
-  const TXTYPE_LOCK_DIGEST = useGetSingleValue(
-    'TXTYPE_LOCK_DIGEST',
-    [],
-    getIdContractAddress(chainId),
-    idContract,
-  );
+  const TXTYPE_LOCK_DIGEST = useGetSingleValue('TXTYPE_LOCK_DIGEST', [], getIdContractAddress(chainId), idContract);
 
-  const TXTYPE_UNLOCK_DIGEST = useGetSingleValue(
-    'TXTYPE_UNLOCK_DIGEST',
-    [],
-    getIdContractAddress(chainId),
-    idContract,
-  );
+  const TXTYPE_UNLOCK_DIGEST = useGetSingleValue('TXTYPE_UNLOCK_DIGEST', [], getIdContractAddress(chainId), idContract);
 
   const TXTYPE_ROLLOVER_DIGEST = useGetSingleValue(
     'TXTYPE_ROLLOVER_DIGEST',
@@ -130,12 +96,7 @@ function ManageIdentities(props) {
     idContract,
   );
 
-  const nanoExists = useGetSingleValue(
-    '_identityExists',
-    [account],
-    getNanoContractAddress(chainId),
-    nanoContract,
-  );
+  const nanoExists = useGetSingleValue('_identityExists', [account], getNanoContractAddress(chainId), nanoContract);
 
   // useEffect(() => {
   //   if (idContract && idContract.address) {
@@ -216,14 +177,7 @@ function ManageIdentities(props) {
   };
 
   useEffect(() => {
-    if (
-      EIP712DOMAINTYPE_DIGEST
-      && VERSION_DIGEST
-      && NAME_DIGEST
-      && SALT
-      && chainId
-      && idContract
-    ) {
+    if (EIP712DOMAINTYPE_DIGEST && VERSION_DIGEST && NAME_DIGEST && SALT && chainId && idContract) {
       const domainSeparator = ethers.utils
         .keccak256(
           EIP712DOMAINTYPE_DIGEST
@@ -236,14 +190,7 @@ function ManageIdentities(props) {
         .toString('hex');
       setDomainSeparator(domainSeparator);
     }
-  }, [
-    EIP712DOMAINTYPE_DIGEST,
-    VERSION_DIGEST,
-    NAME_DIGEST,
-    chainId,
-    SALT,
-    idContract,
-  ]);
+  }, [EIP712DOMAINTYPE_DIGEST, VERSION_DIGEST, NAME_DIGEST, chainId, SALT, idContract]);
 
   const resetStates = () => {
     createNanoResetState();
@@ -331,15 +278,9 @@ function ManageIdentities(props) {
         <ItemBox>
           <ItemHeader text="Add Identity" />
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs
-              value={tabValue}
-              onChange={handleChangeTab}
-              textColor="primary"
-              indicatorColor="primary"
-              centered
-            >
+            <Tabs value={tabValue} onChange={handleChangeTab} textColor="primary" indicatorColor="primary" centered>
               <Tab label="Wallet" />
-              <Tab label="Nano" />
+              {advancedModeEnabled && <Tab label="Nano" />}
               {advancedModeEnabled && <Tab label="Independent" />}
               {advancedModeEnabled && <Tab label="Import" />}
             </Tabs>
@@ -371,11 +312,7 @@ function ManageIdentities(props) {
                 onChange={onChangeSecuritySeed}
               />
               <Paper>
-                <ButtonGroup
-                  fullWidth
-                  variant="text"
-                  orientation={isSm ? 'horizontal' : 'vertical'}
-                >
+                <ButtonGroup fullWidth variant="text" orientation={isSm ? 'horizontal' : 'vertical'}>
                   <Button
                     color="primary"
                     onClick={onCreateWalletIdentity}
@@ -384,19 +321,14 @@ function ManageIdentities(props) {
                   >
                     Add Identity
                   </Button>
-                  <Button
-                    color="secondary"
-                    startIcon={<RefreshIcon />}
-                    onClick={onClickGenerate}
-                  >
+                  <Button color="secondary" startIcon={<RefreshIcon />} onClick={onClickGenerate}>
                     Generate
                   </Button>
                 </ButtonGroup>
               </Paper>
               <Alert severity="info">
-                Wallet identities are linked to your connected wallet. These are
-                easy to use for authentication, but will link any on-chain
-                identity information with the wallet you have connected with.
+                Wallet identities are linked to your connected wallet. These are easy to use for authentication, but
+                will link any on-chain identity information with the wallet you have connected with.
               </Alert>
             </Stack>
           </TabPanel>
@@ -428,11 +360,7 @@ function ManageIdentities(props) {
                   onChange={onChangeSecuritySeed}
                 />
                 <Paper>
-                  <ButtonGroup
-                    fullWidth
-                    variant="text"
-                    orientation={isSm ? 'horizontal' : 'vertical'}
-                  >
+                  <ButtonGroup fullWidth variant="text" orientation={isSm ? 'horizontal' : 'vertical'}>
                     <Button
                       color="primary"
                       type="submit"
@@ -441,19 +369,14 @@ function ManageIdentities(props) {
                     >
                       Add Identity
                     </Button>
-                    <Button
-                      color="secondary"
-                      startIcon={<RefreshIcon />}
-                      onClick={onClickGenerate}
-                    >
+                    <Button color="secondary" startIcon={<RefreshIcon />} onClick={onClickGenerate}>
                       Generate
                     </Button>
                   </ButtonGroup>
                 </Paper>
                 <Alert severity="info">
-                  Independent identities have all seeds randomly generated. These
-                  identities are useful for more privacy, but can be more
-                  difficult to use in some scenarios.
+                  Independent identities have all seeds randomly generated. These identities are useful for more
+                  privacy, but can be more difficult to use in some scenarios.
                 </Alert>
               </Stack>
             </form>
@@ -470,33 +393,20 @@ function ManageIdentities(props) {
                   disabled
                 />
                 <Paper>
-                  <ButtonGroup
-                    fullWidth
-                    variant="text"
-                    orientation={isSm ? 'horizontal' : 'vertical'}
-                  >
-                    <Button
-                      color="primary"
-                      type="submit"
-                      disabled={isLoading || nanoExists}
-                      startIcon={<AddIcon />}
-                    >
+                  <ButtonGroup fullWidth variant="text" orientation={isSm ? 'horizontal' : 'vertical'}>
+                    <Button color="primary" type="submit" disabled={isLoading || nanoExists} startIcon={<AddIcon />}>
                       Create Nano Identity
                     </Button>
                   </ButtonGroup>
                 </Paper>
                 <LoadingState state={createNanoState} />
                 {nanoExists ? (
-                  <Alert severity="success">
-                    You already have a nano identity on this chain.
-                  </Alert>
+                  <Alert severity="success">You already have a nano identity on this chain.</Alert>
                 ) : (
                   <Alert severity="info">
-                    A nano identity is a limited version of a Signata identity. If
-                    you want to try out Signata, you can register your connected
-                    wallet as a Nano Identity. If you hold 10 SATA it is free to
-                    create a Nano identity, otherwise you&apos;ll have to pay a
-                    small fee.
+                    A nano identity is a limited version of a Signata identity. If you want to try out Signata, you can
+                    register your connected wallet as a Nano Identity. If you hold 10 SATA it is free to create a Nano
+                    identity, otherwise you&apos;ll have to pay a small fee.
                   </Alert>
                 )}
               </Stack>
@@ -514,17 +424,8 @@ function ManageIdentities(props) {
                   onChange={(e) => setImportData(e.target.value)}
                 />
                 <Paper>
-                  <ButtonGroup
-                    fullWidth
-                    variant="text"
-                    orientation={isSm ? 'horizontal' : 'vertical'}
-                  >
-                    <Button
-                      color="primary"
-                      type="submit"
-                      disabled={!importData}
-                      startIcon={<AddIcon />}
-                    >
+                  <ButtonGroup fullWidth variant="text" orientation={isSm ? 'horizontal' : 'vertical'}>
+                    <Button color="primary" type="submit" disabled={!importData} startIcon={<AddIcon />}>
                       Import Identity
                     </Button>
                   </ButtonGroup>
@@ -535,6 +436,10 @@ function ManageIdentities(props) {
                     {importError}
                   </Alert>
                 )}
+                <Alert severity="info">
+                  An imported identity needs to be correctly formatted as JSON data. Only import an identity if you know
+                  what you are doing, as you may encounter unexpected system behaviour with an invalid format identity.
+                </Alert>
                 {/* <Alert severity="info">
 
                 </Alert> */}

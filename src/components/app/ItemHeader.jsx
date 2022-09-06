@@ -12,8 +12,8 @@ function ItemHeader({ text, colored, logo }) {
         borderRadius: 0,
         borderBottom: 1,
         boxShadow: 'none',
-        backgroundColor: colored ? theme.palette.secondary.dark : theme.palette.grey[900],
-        color: theme.palette.secondary.contrastText,
+        backgroundColor: colored ? theme.palette.primary.main : theme.palette.grey[900],
+        color: colored ? theme.palette.primary.contrastText : '#fff',
       }}
     >
       <Stack direction="row" spacing={1} justifyContent="center">
