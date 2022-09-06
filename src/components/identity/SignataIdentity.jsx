@@ -43,6 +43,7 @@ function SignataIdentity({
   TXTYPE_UNLOCK_DIGEST,
   TXTYPE_DESTROY_DIGEST,
   TXTYPE_ROLLOVER_DIGEST,
+  advancedModeEnabled,
 }) {
   const theme = useTheme();
   const isSm = useMediaQuery(theme.breakpoints.up('sm'), {
@@ -68,14 +69,19 @@ function SignataIdentity({
   const [delegateWallet, setDelegateWallet] = useState(null);
   const [securityWallet, setSecurityWallet] = useState(null);
   const [hasKycNft, setHasKycNft] = useState(false);
+  const [exportData, setExportData] = useState(false);
 
   useEffect(() => {
     if (id) {
-      setIdentityWallet(ethers.Wallet.fromMnemonic(id.identitySeed));
-      if (id.type !== 'wallet') {
-        setDelegateWallet(ethers.Wallet.fromMnemonic(id.delegateSeed));
+      try {
+        setIdentityWallet(ethers.Wallet.fromMnemonic(id.identitySeed));
+        if (id.type !== 'wallet') {
+          setDelegateWallet(ethers.Wallet.fromMnemonic(id.delegateSeed));
+        }
+        setSecurityWallet(ethers.Wallet.fromMnemonic(id.securitySeed));
+      } catch (error) {
+        console.error(error);
       }
-      setSecurityWallet(ethers.Wallet.fromMnemonic(id.securitySeed));
     }
   }, [id]);
 
@@ -380,6 +386,15 @@ function SignataIdentity({
     e.preventDefault();
   };
 
+  const handleClickExport = (e) => {
+    e.preventDefault();
+    if (exportData) {
+      setExportData('');
+    } else {
+      setExportData(JSON.stringify(id, false, 2));
+    }
+  };
+
   return (
     <>
       <ChangeDialog
@@ -543,7 +558,7 @@ function SignataIdentity({
                     label={`Connect to ${
                       SUPPORTED_CHAINS.find((network) => network.chainId === id.chainId)?.chainName
                     } to manage this Identity`}
-                    color="warning"
+                    color="default"
                     variant="outlined"
                     size={isXs ? 'small' : 'medium'}
                     icon={<LinkOffIcon />}
@@ -613,9 +628,13 @@ function SignataIdentity({
                   </Button>
                 )}
                 {identityExists && <Button onClick={handleClickDestroy}>Destroy</Button>}
-                {!identityExists && <Button onClick={handleClickDelete}>Delete</Button>}
+                {(!identityExists || advancedModeEnabled) && <Button onClick={handleClickDelete}>Delete</Button>}
+                {identityExists && advancedModeEnabled && <Button onClick={handleClickExport}>Export</Button>}
               </ButtonGroup>
             </Paper>
+          )}
+          {exportData && (
+            <TextField multiline value={exportData} />
           )}
           {id.chainId === chainId && identityExists && !hasKycNft && (
             <Paper>

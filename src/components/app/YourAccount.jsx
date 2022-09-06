@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import CryptoJS from 'crypto-js';
+import useLocalStorageState from 'use-local-storage-state';
 import {
   Grid,
   CardContent,
@@ -13,6 +14,7 @@ import {
   useMediaQuery,
   Switch,
   FormControlLabel,
+  Chip,
 } from '@mui/material';
 import ItemHeader from './ItemHeader';
 import ItemBox from './ItemBox';
@@ -24,14 +26,13 @@ function YourAccount(props) {
     isPersistent,
     setEncryptionPassword,
     unlocked,
-    advancedModeEnabled,
-    setAdvancedModeEnabled,
   } = props;
   const [password, setPassword] = useState('');
   const [passwordRepeat, setPasswordRepeat] = useState('');
   const [firstErrorMessage, setFirstErrorMessage] = useState('');
   const [secondErrorMessage, setSecondErrorMessage] = useState('');
   const [showCapsWarning, setShowCapsWarning] = useState(false);
+  const [advancedModeEnabled, setAdvancedModeEnabled] = useLocalStorageState('advancedModeEnabled', { defaultValue: false });
   const theme = useTheme();
   const isSm = useMediaQuery(theme.breakpoints.up('sm'), {
     defaultMatches: true,
@@ -227,15 +228,14 @@ function YourAccount(props) {
                 use this if you understand what these extra features can be used
                 for.
               </Alert>
-              <FormControlLabel
-                control={(
-                  <Switch
-                    value={advancedModeEnabled}
-                    onChange={() => setAdvancedModeEnabled(!advancedModeEnabled)}
-                  />
+              <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
+                <Button color="secondary" onClick={() => setAdvancedModeEnabled(!advancedModeEnabled)}>
+                  {advancedModeEnabled ? 'Disable Advanced Mode' : 'Enable Advanced Mode'}
+                </Button>
+                {advancedModeEnabled && (
+                  <Chip label="Advanced Mode Enabled" color="success" />
                 )}
-                label="Advanced Mode"
-              />
+              </Stack>
 
               {/* <TextField
                 label="New Password"

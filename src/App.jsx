@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useEthers, useTokenBalance } from '@usedapp/core';
+import { useEthers } from '@usedapp/core';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import useLocalStorageState from 'use-local-storage-state';
 import {
@@ -37,7 +37,7 @@ function App() {
   const [config, setConfig, isPersistent] = useLocalStorageState('config', []);
   const [identities, setIdentities] = useState([]);
   const [encryptionPassword, setEncryptionPassword] = useState('');
-  const [advancedModeEnabled, setAdvancedModeEnabled] = useState(false);
+  const [advancedModeEnabled, setAdvancedModeEnabled] = useLocalStorageState('advancedModeEnabled', { defaultValue: false });
   const [supportedChain, setSupportedChain] = useState(false);
 
   useEffect(() => {
@@ -98,7 +98,7 @@ function App() {
         error: {
           main: red.A700,
         },
-        mode: prefersDarkMode ? 'dark' : 'light',
+        mode: prefersDarkMode ? 'light' : 'light',
       },
       typography: {
         fontFamily: 'Roboto Condensed',
@@ -116,7 +116,13 @@ function App() {
           styleOverrides: {
             root: {
               borderRadius: 0,
-              // boxShadow: 'none',
+            },
+          },
+        },
+        MuiChip: {
+          styleOverrides: {
+            root: {
+              borderRadius: 6,
             },
           },
         },

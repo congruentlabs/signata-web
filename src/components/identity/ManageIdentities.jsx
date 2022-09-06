@@ -8,6 +8,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Alert,
+  AlertTitle,
   Button,
   ButtonGroup,
   Grid,
@@ -50,6 +51,8 @@ function ManageIdentities(props) {
   const idContract = getIdContract(chainId);
   const [isLoading, setLoading] = useState(false);
   const [DOMAIN_SEPARATOR, setDomainSeparator] = useState('');
+  const [importData, setImportData] = useState('');
+  const [importError, setImportError] = useState('');
 
   const {
     state: createNanoState,
@@ -246,7 +249,8 @@ function ManageIdentities(props) {
     createNanoResetState();
   };
 
-  const onCreateNanoIdentity = () => {
+  const onCreateNanoIdentity = (e) => {
+    e.preventDefault();
     resetStates();
     createNanoSend();
   };
@@ -260,6 +264,40 @@ function ManageIdentities(props) {
 
   const handleChangeTab = (e, newTabValue) => {
     setTabValue(newTabValue);
+  };
+
+  const onChangeIdentitySeed = (e) => {
+    if (advancedModeEnabled) {
+      setIdentitySeed(e.target.value);
+    }
+  };
+
+  const onChangeDelegateSeed = (e) => {
+    if (advancedModeEnabled) {
+      setDelegateSeed(e.target.value);
+    }
+  };
+
+  const onChangeSecuritySeed = (e) => {
+    if (advancedModeEnabled) {
+      setSecuritySeed(e.target.value);
+    }
+  };
+
+  const onImportIdentity = (e) => {
+    e.preventDefault();
+    try {
+      setImportError('');
+      const newIds = Array.from(identities);
+      const i = JSON.parse(importData);
+      // TODO: validate the data
+      newIds.push(i);
+      setIdentities(newIds);
+      setImportData('');
+    } catch (error) {
+      console.error(error);
+      setImportError(error.message);
+    }
   };
 
   return (
@@ -279,6 +317,7 @@ function ManageIdentities(props) {
               TXTYPE_UNLOCK_DIGEST={TXTYPE_UNLOCK_DIGEST}
               TXTYPE_DESTROY_DIGEST={TXTYPE_DESTROY_DIGEST}
               TXTYPE_ROLLOVER_DIGEST={TXTYPE_ROLLOVER_DIGEST}
+              advancedModeEnabled={advancedModeEnabled}
             />
           </Grid>
         ))}
@@ -301,6 +340,7 @@ function ManageIdentities(props) {
               <Tab label="Wallet" />
               <Tab label="Nano" />
               {advancedModeEnabled && <Tab label="Independent" />}
+              {advancedModeEnabled && <Tab label="Import" />}
             </Tabs>
           </Box>
           <TabPanel value={tabValue} index={0}>
@@ -311,6 +351,7 @@ function ManageIdentities(props) {
                 color="info"
                 size="small"
                 value={identitySeed}
+                onChange={onChangeIdentitySeed}
               />
               <TextField
                 label="Delegate Address"
@@ -326,6 +367,7 @@ function ManageIdentities(props) {
                 color="info"
                 size="small"
                 value={securitySeed}
+                onChange={onChangeSecuritySeed}
               />
               <Paper>
                 <ButtonGroup
@@ -358,99 +400,145 @@ function ManageIdentities(props) {
             </Stack>
           </TabPanel>
           <TabPanel value={tabValue} index={2}>
-            <Stack spacing={2}>
-              <TextField
-                label="Identity Seed"
-                variant="outlined"
-                color="info"
-                size="small"
-                value={identitySeed}
-              />
-              <TextField
-                label="Delegate Seed"
-                variant="outlined"
-                color="info"
-                size="small"
-                value={delegateSeed}
-              />
-              <TextField
-                label="Security Seed"
-                variant="outlined"
-                color="info"
-                size="small"
-                value={securitySeed}
-              />
-              <Paper>
-                <ButtonGroup
-                  fullWidth
-                  variant="text"
-                  orientation={isSm ? 'horizontal' : 'vertical'}
-                >
-                  <Button
-                    color="primary"
-                    onClick={onCreateIdentity}
-                    disabled={!identitySeed || !delegateSeed || !securitySeed}
-                    startIcon={<AddIcon />}
+            <form onSubmit={onCreateIdentity}>
+              <Stack spacing={2}>
+                <TextField
+                  label="Identity Seed"
+                  variant="outlined"
+                  color="info"
+                  size="small"
+                  value={identitySeed}
+                  onChange={onChangeIdentitySeed}
+                />
+                <TextField
+                  label="Delegate Seed"
+                  variant="outlined"
+                  color="info"
+                  size="small"
+                  value={delegateSeed}
+                  onChange={onChangeDelegateSeed}
+                />
+                <TextField
+                  label="Security Seed"
+                  variant="outlined"
+                  color="info"
+                  size="small"
+                  value={securitySeed}
+                  onChange={onChangeSecuritySeed}
+                />
+                <Paper>
+                  <ButtonGroup
+                    fullWidth
+                    variant="text"
+                    orientation={isSm ? 'horizontal' : 'vertical'}
                   >
-                    Add Identity
-                  </Button>
-                  <Button
-                    color="secondary"
-                    startIcon={<RefreshIcon />}
-                    onClick={onClickGenerate}
-                  >
-                    Generate
-                  </Button>
-                </ButtonGroup>
-              </Paper>
-              <Alert severity="info">
-                Independent identities have all seeds randomly generated. These
-                identities are useful for more privacy, but can be more
-                difficult to use in some scenarios.
-              </Alert>
-            </Stack>
+                    <Button
+                      color="primary"
+                      type="submit"
+                      disabled={!identitySeed || !delegateSeed || !securitySeed}
+                      startIcon={<AddIcon />}
+                    >
+                      Add Identity
+                    </Button>
+                    <Button
+                      color="secondary"
+                      startIcon={<RefreshIcon />}
+                      onClick={onClickGenerate}
+                    >
+                      Generate
+                    </Button>
+                  </ButtonGroup>
+                </Paper>
+                <Alert severity="info">
+                  Independent identities have all seeds randomly generated. These
+                  identities are useful for more privacy, but can be more
+                  difficult to use in some scenarios.
+                </Alert>
+              </Stack>
+            </form>
           </TabPanel>
           <TabPanel value={tabValue} index={1}>
-            <Stack spacing={2}>
-              <TextField
-                label="Identity Address"
-                variant="outlined"
-                color="info"
-                size="small"
-                value={account}
-                disabled
-              />
-              <Paper>
-                <ButtonGroup
-                  fullWidth
-                  variant="text"
-                  orientation={isSm ? 'horizontal' : 'vertical'}
-                >
-                  <Button
-                    color="primary"
-                    onClick={onCreateNanoIdentity}
-                    disabled={isLoading || nanoExists}
-                    startIcon={<AddIcon />}
+            <form onSubmit={onCreateNanoIdentity}>
+              <Stack spacing={2}>
+                <TextField
+                  label="Identity Address"
+                  variant="outlined"
+                  color="info"
+                  size="small"
+                  value={account}
+                  disabled
+                />
+                <Paper>
+                  <ButtonGroup
+                    fullWidth
+                    variant="text"
+                    orientation={isSm ? 'horizontal' : 'vertical'}
                   >
-                    Create Nano Identity
-                  </Button>
-                </ButtonGroup>
-              </Paper>
-              <LoadingState state={createNanoState} />
-              {nanoExists ? (
-                <Alert severity="success">
-                  You already have a nano identity on this network.
-                </Alert>
-              ) : (
-                <Alert severity="info">
-                  A nano identity is a limited version of a Signata identity. If
-                  you want to try out Signata, you can register your connected
-                  wallet as a Nano Identity. If you hold 10 SATA it is free to
-                  create a Nano identity, otherwise you&apos;ll have to pay a
-                  small fee.
-                </Alert>
-              )}
-            </Stack>
+                    <Button
+                      color="primary"
+                      type="submit"
+                      disabled={isLoading || nanoExists}
+                      startIcon={<AddIcon />}
+                    >
+                      Create Nano Identity
+                    </Button>
+                  </ButtonGroup>
+                </Paper>
+                <LoadingState state={createNanoState} />
+                {nanoExists ? (
+                  <Alert severity="success">
+                    You already have a nano identity on this chain.
+                  </Alert>
+                ) : (
+                  <Alert severity="info">
+                    A nano identity is a limited version of a Signata identity. If
+                    you want to try out Signata, you can register your connected
+                    wallet as a Nano Identity. If you hold 10 SATA it is free to
+                    create a Nano identity, otherwise you&apos;ll have to pay a
+                    small fee.
+                  </Alert>
+                )}
+              </Stack>
+            </form>
+          </TabPanel>
+          <TabPanel value={tabValue} index={3}>
+            <form onSubmit={onImportIdentity}>
+              <Stack spacing={2}>
+                <TextField
+                  label="Import Data"
+                  variant="outlined"
+                  color="info"
+                  multiline
+                  value={importData}
+                  onChange={(e) => setImportData(e.target.value)}
+                />
+                <Paper>
+                  <ButtonGroup
+                    fullWidth
+                    variant="text"
+                    orientation={isSm ? 'horizontal' : 'vertical'}
+                  >
+                    <Button
+                      color="primary"
+                      type="submit"
+                      disabled={!importData}
+                      startIcon={<AddIcon />}
+                    >
+                      Import Identity
+                    </Button>
+                  </ButtonGroup>
+                </Paper>
+                {importError && (
+                  <Alert severity="error">
+                    <AlertTitle>Import Error</AlertTitle>
+                    {importError}
+                  </Alert>
+                )}
+                {/* <Alert severity="info">
+
+                </Alert> */}
+              </Stack>
+            </form>
           </TabPanel>
         </ItemBox>
       </Grid>
