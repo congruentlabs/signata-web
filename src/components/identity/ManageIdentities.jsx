@@ -440,9 +440,6 @@ function ManageIdentities(props) {
                   An imported identity needs to be correctly formatted as JSON data. Only import an identity if you know
                   what you are doing, as you may encounter unexpected system behaviour with an invalid format identity.
                 </Alert>
-                {/* <Alert severity="info">
-
-                </Alert> */}
               </Stack>
             </form>
           </TabPanel>
