@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
+import axios from 'axios';
 import { useTheme, styled } from '@mui/material/styles';
 import { shortenIfAddress } from '@usedapp/core';
 import LockIcon from '@mui/icons-material/Lock';
@@ -502,8 +503,21 @@ function SignataIdentity({
     blockpass.startKYCConnect();
   };
 
-  const handleClickClaimKycNft = (e) => {
+  const handleClickClaimKycNft = async (e) => {
     e.preventDefault();
+
+    try {
+      setLoading(true);
+      const response = await axios.get(`https://id-api.signata.net/api/v1/requestKyc/${id.identityAddress}`);
+      if (response && response.data && response.data.signature) {
+        // call chain
+        console.log(response.data.signature);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClickExport = (e) => {
