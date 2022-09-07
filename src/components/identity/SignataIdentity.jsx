@@ -12,7 +12,21 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 import LinkIcon from '@mui/icons-material/Link';
 import {
-  Button, ButtonGroup, Chip, Stack, useMediaQuery, TextField, Box, Typography, Paper, Alert, AlertTitle,
+  Button,
+  ButtonGroup,
+  Chip,
+  Stack,
+  useMediaQuery,
+  TextField,
+  Box,
+  Typography,
+  Paper,
+  Alert,
+  AlertTitle,
+  Card,
+  CardMedia,
+  CardContent,
+  CardActionArea,
 } from '@mui/material';
 import {
   useCreateIdentity,
@@ -67,6 +81,7 @@ function SignataIdentity({
   const [openUnlock, setOpenUnlock] = useState(false);
   const [openRollover, setOpenRollover] = useState(false);
   const [openDestroy, setOpenDestroy] = useState(false);
+  const [openKycId, setOpenKycId] = useState(false);
   const [newName, setNewName] = useState('');
   const [identityWallet, setIdentityWallet] = useState(null);
   const [delegateWallet, setDelegateWallet] = useState(null);
@@ -251,7 +266,8 @@ function SignataIdentity({
       );
       const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
 
-      if (!id.delegateSeed) { // it's a wallet identity without a delegateSeed
+      if (!id.delegateSeed) {
+        // it's a wallet identity without a delegateSeed
         // eslint-disable-next-line no-undef
         const ethResult = await ethereum.request({ method: 'eth_sign', params: [account, hashToSign] });
         const sig = ethResult.substr(2);
@@ -334,7 +350,8 @@ function SignataIdentity({
         v: securityV,
       } = new ethers.utils.SigningKey(securityWallet.privateKey).signDigest(hashToSign);
 
-      if (!id.delegateSeed) { // it's a wallet identity without a delegateSeed
+      if (!id.delegateSeed) {
+        // it's a wallet identity without a delegateSeed
         // eslint-disable-next-line no-undef
         const ethResult = await ethereum.request({ method: 'eth_sign', params: [account, hashToSign] });
         const sig = ethResult.substr(2);
@@ -405,7 +422,8 @@ function SignataIdentity({
         v: securityV,
       } = new ethers.utils.SigningKey(securityWallet.privateKey).signDigest(hashToSign);
 
-      if (!id.delegateSeed) { // it's a wallet identity without a delegateSeed
+      if (!id.delegateSeed) {
+        // it's a wallet identity without a delegateSeed
         // eslint-disable-next-line no-undef
         const ethResult = await ethereum.request({ method: 'eth_sign', params: [account, hashToSign] });
         const sig = ethResult.substr(2);
@@ -495,12 +513,7 @@ function SignataIdentity({
 
   const handleClickRequestKyc = (e) => {
     e.preventDefault();
-    // eslint-disable-next-line no-undef
-    const blockpass = new BlockpassKYCConnect('signata_f812a', {
-      refId: id.identityAddress,
-      elementId: `blockpass-kyc-connect-${id.identityAddress}`,
-    });
-    blockpass.startKYCConnect();
+    setOpenKycId(true);
   };
 
   const handleClickClaimKycNft = async (e) => {
@@ -527,6 +540,20 @@ function SignataIdentity({
     } else {
       setExportData(JSON.stringify(id, false, 2));
     }
+  };
+
+  const onClickBlockpassKyc = (e) => {
+    e.preventDefault();
+    // eslint-disable-next-line no-undef
+    const blockpass = new BlockpassKYCConnect('signata_f812a', {
+      refId: id.identityAddress,
+      elementId: `blockpass-kyc-connect-${id.identityAddress}`,
+    });
+    blockpass.startKYCConnect();
+  };
+
+  const onCloseKycId = () => {
+    setOpenKycId(false);
   };
 
   return (
@@ -623,6 +650,29 @@ function SignataIdentity({
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
           />,
+        ]}
+      />
+      <ChangeDialog
+        open={openKycId}
+        onClose={onCloseKycId}
+        title="Purchase KYC?"
+        alertSeverity="info"
+        alertText="You can purchase an NFT right proving you have undergone KYC with one of the providers below"
+        fields={[
+          <Card key="kyc-with-blockpass" sx={{ maxWidth: 345 }}>
+            <CardActionArea>
+              <CardMedia component="img" image="blockpass.png" alt="Blockpass Logo" />
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  KYC with Blockpass
+                </Typography>
+                <Typography>
+                  KYC with Congruent Labs verifying your identity using Blockpass. Excluding residents of
+                  Russia, Cuba, Iran, Democratic People&apos;s Republic of Korea, Syria.
+                </Typography>
+              </CardContent>
+            </CardActionArea>
+          </Card>,
         ]}
       />
       <ItemBox>
@@ -817,9 +867,7 @@ function SignataIdentity({
               </ButtonGroup>
             </Paper>
           )}
-          {exportData && (
-            <TextField multiline value={exportData} />
-          )}
+          {exportData && <TextField multiline value={exportData} />}
           {errorMessage && (
             <Alert severity="error">
               <AlertTitle>Error</AlertTitle>

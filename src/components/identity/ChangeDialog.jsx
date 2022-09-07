@@ -33,15 +33,17 @@ function ChangeDialog(props) {
                 >
                   Cancel
                 </Button>
-                <Button
-                    // fullWidth
-                  type="submit"
-                  variant="contained"
-                  color={submitColor}
-                  disabled={disableSubmit}
-                >
-                  {submitText}
-                </Button>
+                {submitText && (
+                  <Button
+                      // fullWidth
+                    type="submit"
+                    variant="contained"
+                    color={submitColor}
+                    disabled={disableSubmit}
+                  >
+                    {submitText}
+                  </Button>
+                )}
               </ButtonGroup>
             </Paper>
           </Stack>
