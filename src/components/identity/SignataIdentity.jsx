@@ -667,8 +667,9 @@ function SignataIdentity({
                   KYC with Blockpass
                 </Typography>
                 <Typography>
-                  KYC with Congruent Labs verifying your identity using Blockpass. Excluding residents of
-                  Russia, Cuba, Iran, Democratic People&apos;s Republic of Korea, Syria.
+                  KYC with Congruent Labs verifying your identity using Blockpass. Excluding residents of Central
+                  African Republic, Democratic Republic of the Congo, Eritrea, Lebanon, Libya, Myanmar, Russia, Somalia,
+                  Sudan, Yemen, Zimbabwe, Crimea and Sevastopol, Iran, Syria, and North Korea.
                 </Typography>
               </CardContent>
             </CardActionArea>
