@@ -32,7 +32,7 @@ import {
   getIdContract,
   getIdContractAddress,
 } from '../../hooks/chainHooks';
-import NanoIdentity from './NanoIdentity';
+// import NanoIdentity from './NanoIdentity';
 import SignataIdentity from './SignataIdentity';
 import { logLoading, shouldBeLoading } from '../../hooks/helpers';
 
@@ -47,21 +47,21 @@ function ManageIdentities(props) {
   const [delegateSeed, setDelegateSeed] = useState('');
   const [securitySeed, setSecuritySeed] = useState('');
   const [tabValue, setTabValue] = useState(0);
-  const nanoContract = getNanoContract(chainId);
+  // const nanoContract = getNanoContract(chainId);
   const idContract = getIdContract(chainId);
   const [isLoading, setLoading] = useState(false);
   const [DOMAIN_SEPARATOR, setDomainSeparator] = useState('');
   const [importData, setImportData] = useState('');
   const [importError, setImportError] = useState('');
 
-  const { state: createNanoState, send: createNanoSend, resetState: createNanoResetState } = useCreateNano(chainId);
+  // const { state: createNanoState, send: createNanoSend, resetState: createNanoResetState } = useCreateNano(chainId);
 
-  useEffect(() => {
-    if (createNanoState) {
-      logLoading(createNanoState, 'createNano');
-      setLoading(shouldBeLoading(createNanoState.status));
-    }
-  }, [createNanoState]);
+  // useEffect(() => {
+  //   if (createNanoState) {
+  //     logLoading(createNanoState, 'createNano');
+  //     setLoading(shouldBeLoading(createNanoState.status));
+  //   }
+  // }, [createNanoState]);
 
   const EIP712DOMAINTYPE_DIGEST = useGetSingleValue(
     'EIP712DOMAINTYPE_DIGEST',
@@ -96,7 +96,7 @@ function ManageIdentities(props) {
     idContract,
   );
 
-  const nanoExists = useGetSingleValue('_identityExists', [account], getNanoContractAddress(chainId), nanoContract);
+  // const nanoExists = useGetSingleValue('_identityExists', [account], getNanoContractAddress(chainId), nanoContract);
 
   // useEffect(() => {
   //   if (idContract && idContract.address) {
@@ -192,15 +192,15 @@ function ManageIdentities(props) {
     }
   }, [EIP712DOMAINTYPE_DIGEST, VERSION_DIGEST, NAME_DIGEST, chainId, SALT, idContract]);
 
-  const resetStates = () => {
-    createNanoResetState();
-  };
+  // const resetStates = () => {
+  //   createNanoResetState();
+  // };
 
-  const onCreateNanoIdentity = (e) => {
-    e.preventDefault();
-    resetStates();
-    createNanoSend();
-  };
+  // const onCreateNanoIdentity = (e) => {
+  //   e.preventDefault();
+  //   resetStates();
+  //   createNanoSend();
+  // };
 
   const onClickGenerate = (e) => {
     e.preventDefault();
@@ -269,18 +269,18 @@ function ManageIdentities(props) {
             />
           </Grid>
         ))}
-      {nanoExists && (
+      {/* {nanoExists && (
         <Grid item xs={12} md={8}>
           <NanoIdentity />
         </Grid>
-      )}
+      )} */}
       <Grid item xs={12} md={8}>
         <ItemBox>
           <ItemHeader text="Add Identity" />
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={tabValue} onChange={handleChangeTab} textColor="primary" indicatorColor="primary" centered>
               <Tab label="Wallet" />
-              {advancedModeEnabled && <Tab label="Nano" />}
+              {/* {advancedModeEnabled && <Tab label="Nano" />} */}
               {advancedModeEnabled && <Tab label="Independent" />}
               {advancedModeEnabled && <Tab label="Import" />}
             </Tabs>
@@ -332,7 +332,7 @@ function ManageIdentities(props) {
               </Alert>
             </Stack>
           </TabPanel>
-          <TabPanel value={tabValue} index={2}>
+          <TabPanel value={tabValue} index={1}>
             <form onSubmit={onCreateIdentity}>
               <Stack spacing={2}>
                 <TextField
@@ -381,7 +381,7 @@ function ManageIdentities(props) {
               </Stack>
             </form>
           </TabPanel>
-          <TabPanel value={tabValue} index={1}>
+          {/* <TabPanel value={tabValue} index={1}>
             <form onSubmit={onCreateNanoIdentity}>
               <Stack spacing={2}>
                 <TextField
@@ -411,8 +411,8 @@ function ManageIdentities(props) {
                 )}
               </Stack>
             </form>
-          </TabPanel>
-          <TabPanel value={tabValue} index={3}>
+          </TabPanel> */}
+          <TabPanel value={tabValue} index={2}>
             <form onSubmit={onImportIdentity}>
               <Stack spacing={2}>
                 <TextField

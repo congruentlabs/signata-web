@@ -11,7 +11,11 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 import LinkIcon from '@mui/icons-material/Link';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
   Button,
   ButtonGroup,
   Chip,
@@ -27,6 +31,8 @@ import {
   CardMedia,
   CardContent,
   CardActionArea,
+  ButtonBase,
+  LinearProgress,
 } from '@mui/material';
 import {
   useCreateIdentity,
@@ -542,14 +548,17 @@ function SignataIdentity({
     }
   };
 
-  const onClickBlockpassKyc = (e) => {
+  const onClickBlockpassKyc = async (e) => {
     e.preventDefault();
+    console.log('onClickBlockpassKyc');
+    setLoading(true);
     // eslint-disable-next-line no-undef
     const blockpass = new BlockpassKYCConnect('signata_f812a', {
       refId: id.identityAddress,
-      elementId: `blockpass-kyc-connect-${id.identityAddress}`,
+      // elementId: `blockpass-kyc-connect-${id.identityAddress}`,
     });
-    blockpass.startKYCConnect();
+    await blockpass.startKYCConnect();
+    setLoading(false);
   };
 
   const onCloseKycId = () => {
@@ -650,30 +659,6 @@ function SignataIdentity({
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
           />,
-        ]}
-      />
-      <ChangeDialog
-        open={openKycId}
-        onClose={onCloseKycId}
-        title="Purchase KYC?"
-        alertSeverity="info"
-        alertText="You can purchase an NFT right proving you have undergone KYC with one of the providers below"
-        fields={[
-          <Card key="kyc-with-blockpass" sx={{ maxWidth: 345 }}>
-            <CardActionArea>
-              <CardMedia component="img" image="blockpass.png" alt="Blockpass Logo" />
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  KYC with Blockpass
-                </Typography>
-                <Typography>
-                  KYC with Congruent Labs verifying your identity using Blockpass. Excluding residents of Central
-                  African Republic, Democratic Republic of the Congo, Eritrea, Lebanon, Libya, Myanmar, Russia, Somalia,
-                  Sudan, Yemen, Zimbabwe, Crimea and Sevastopol, Iran, Syria, and North Korea.
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-          </Card>,
         ]}
       />
       <ItemBox>
@@ -840,6 +825,11 @@ function SignataIdentity({
               </ButtonGroup>
             </Paper>
           )}
+          {isLoading && (
+            <Box sx={{ width: '100%' }}>
+              <LinearProgress />
+            </Box>
+          )}
           {id.chainId === chainId && id.delegateSeed && (
             <Paper>
               <ButtonGroup
@@ -876,20 +866,51 @@ function SignataIdentity({
             </Alert>
           )}
           {id.chainId === chainId && identityExists && !hasKycNft && (
-            <Paper>
-              <ButtonGroup
-                fullWidth
-                variant="text"
-                disabled={isLoading || id.chainId !== chainId}
-                color="secondary"
-                orientation={isSm ? 'horizontal' : 'vertical'}
-              >
-                <Button onClick={handleClickRequestKyc} id={`blockpass-kyc-connect-${id.identityAddress}`}>
-                  KYC Identity
-                </Button>
-                <Button onClick={handleClickClaimKycNft}>Claim KYC Right</Button>
-              </ButtonGroup>
-            </Paper>
+            <Accordion sx={{ textAlign: 'center' }}>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+                <Typography>NFT Rights</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Stack spacing={1}>
+                  <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
+                    You can purchase NFT rights with SATA tokens. These rights are provided by Signata, but rights can
+                    also be issued by other providers.
+                  </Alert>
+                  <Card sx={{ m: 2, textAlign: 'center' }}>
+                    <CardActionArea
+                      component={ButtonBase}
+                      onClick={onClickBlockpassKyc}
+                      disabled={isLoading}
+                      id={`blockpass-kyc-connect-${id.identityAddress}`}
+                    >
+                      <CardContent>
+                        <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
+                        <Typography gutterBottom variant="h5" component="div" textAlign="left">
+                          Blockpass KYC
+                        </Typography>
+                        <Typography variant="body2" textAlign="left">
+                          KYC with Congruent Labs (Australia) verifying your identity using Blockpass. Excluding
+                          residents of the following sanctioned countries: Central African Republic, Democratic Republic
+                          of the Congo, Eritrea, Lebanon, Libya, Myanmar, Russia, Somalia, Sudan, Yemen, Zimbabwe,
+                          Crimea and Sevastopol, Iran, Syria, and North Korea.
+                        </Typography>
+                        {isLoading && (
+                          <Box sx={{ width: '100%' }}>
+                            <LinearProgress />
+                          </Box>
+                        )}
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                  <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
+                    Once you have completed KYC with a provider, click the below button to claim your KYC NFT.
+                  </Alert>
+                  <Button fullWidth onClick={handleClickClaimKycNft}>
+                    Claim KYC NFT
+                  </Button>
+                </Stack>
+              </AccordionDetails>
+            </Accordion>
           )}
         </Stack>
         {/* </CardContent> */}

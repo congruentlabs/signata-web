@@ -8,7 +8,7 @@ import {
   experimental_sx as sx,
 } from '@mui/material/styles';
 import {
-  Box, Container, Grid, CssBaseline,
+  Box, Container, Grid, CssBaseline, LinearProgress,
 } from '@mui/material';
 import {
   lime, orange, red, blue,
@@ -38,6 +38,7 @@ function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [config, setConfig, isPersistent] = useLocalStorageState('config', []);
   const [identities, setIdentities] = useState([]);
+  const [isLoading, setLoading] = useState(false);
   const [encryptionPassword, setEncryptionPassword] = useState('');
   const [advancedModeEnabled, setAdvancedModeEnabled] = useLocalStorageState('advancedModeEnabled', { defaultValue: false });
   const [supportedChain, setSupportedChain] = useState(false);
@@ -56,6 +57,7 @@ function App() {
   useEffect(() => {
     if (encryptionPassword) {
       try {
+        setLoading(true);
         const dat = secureStorage(encryptionPassword).getItem('identities');
         console.log(dat);
         if (dat === null) {
@@ -68,6 +70,8 @@ function App() {
       } catch (e) {
         console.error(e);
         setIdentities([]);
+      } finally {
+        setLoading(false);
       }
     }
   }, [encryptionPassword, setIdentities]);
@@ -75,7 +79,9 @@ function App() {
   useEffect(() => {
     if (identities && encryptionPassword) {
       // update the localStorage with identities every time they're changed
+      setLoading(true);
       secureStorage(encryptionPassword).setItem('identities', identities);
+      setLoading(false);
       // update the lastSaved for any sync jobs
       // setConfig({ ...config, lastSaved: Date.now() });
     }
@@ -100,7 +106,7 @@ function App() {
         error: {
           main: red.A700,
         },
-        mode: prefersDarkMode ? 'dark' : 'light',
+        mode: prefersDarkMode ? 'light' : 'light',
       },
       typography: {
         fontFamily: 'Roboto Condensed',
@@ -174,6 +180,7 @@ function App() {
             {account && encryptionPassword && !supportedChain && (
               <UnsupportedChain SUPPORTED_CHAINS={SUPPORTED_CHAINS} />
             )}
+            {isLoading && <Box sx={{ width: '100%', py: 3 }}><LinearProgress /></Box>}
             {account && encryptionPassword && supportedChain && (
               <ManageIdentities
                 identities={identities}

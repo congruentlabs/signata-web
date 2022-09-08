@@ -4,8 +4,8 @@ import Grid from '@mui/material/Grid';
 
 export function DevModeWarning() {
   return (
-    <Grid item xs={12}>
-      <Alert severity="info">
+    <Grid item xs={8}>
+      <Alert severity="info" variant="filled">
         Development Mode
       </Alert>
     </Grid>
