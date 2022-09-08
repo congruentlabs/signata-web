@@ -4,7 +4,6 @@ import axios from 'axios';
 import { useTheme, styled } from '@mui/material/styles';
 import { shortenIfAddress } from '@usedapp/core';
 import LockIcon from '@mui/icons-material/Lock';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
@@ -95,6 +94,27 @@ function SignataIdentity({
   const [hasKycNft, setHasKycNft] = useState(false);
   const [exportData, setExportData] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showBlockpassButton, setShowBlockpassButton] = useState(false);
+  const [showClaimKycButton, setShowClaimKycButton] = useState(false);
+
+  useEffect(() => {
+    if (showBlockpassButton) {
+      const blockpass = new window.BlockpassKYCConnect(
+        'signata_f812a',
+        {
+          refId: id.identityAddress,
+          elementId: `blockpass-kyc-connect-${id.identityAddress}`,
+        },
+      );
+
+      blockpass.startKYCConnect();
+
+      blockpass.on('KYCConnectSuccess', () => {
+        setLoading(false);
+        setShowClaimKycButton(true);
+      });
+    }
+  }, [id, showBlockpassButton]);
 
   useEffect(() => {
     if (id) {
@@ -113,15 +133,31 @@ function SignataIdentity({
     }
   }, [id]);
 
-  const { state: createState, send: createSend, resetState: createResetState } = useCreateIdentity(chainId);
+  const {
+    state: createState,
+    send: createSend,
+    resetState: createResetState,
+  } = useCreateIdentity(chainId);
 
   const { state: lockState, send: lockSend, resetState: lockResetState } = useLockIdentity(chainId);
 
-  const { state: unlockState, send: unlockSend, resetState: unlockResetState } = useUnlockIdentity(chainId);
+  const {
+    state: unlockState,
+    send: unlockSend,
+    resetState: unlockResetState,
+  } = useUnlockIdentity(chainId);
 
-  const { state: destroyState, send: destroySend, resetState: destroyResetState } = useDestroyIdentity(chainId);
+  const {
+    state: destroyState,
+    send: destroySend,
+    resetState: destroyResetState,
+  } = useDestroyIdentity(chainId);
 
-  const { state: rolloverState, send: rolloverSend, resetState: rolloverResetState } = useRolloverIdentity(chainId);
+  const {
+    state: rolloverState,
+    send: rolloverSend,
+    resetState: rolloverResetState,
+  } = useRolloverIdentity(chainId);
 
   const identityExists = useGetSingleValue(
     '_identityExists',
@@ -209,12 +245,16 @@ function SignataIdentity({
       resetStates();
 
       const inputHash = ethers.utils.keccak256(
-        `${TXTYPE_CREATE_DIGEST}${delegateWallet.address.slice(2).padStart(64, '0')}${securityWallet.address
+        `${TXTYPE_CREATE_DIGEST}${delegateWallet.address
           .slice(2)
-          .padStart(64, '0')}`,
+          .padStart(64, '0')}${securityWallet.address.slice(2).padStart(64, '0')}`,
       );
-      const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
-      const { r, s, v } = new ethers.utils.SigningKey(identityWallet.privateKey).signDigest(hashToSign);
+      const hashToSign = ethers.utils.keccak256(
+        `0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`,
+      );
+      const { r, s, v } = new ethers.utils.SigningKey(identityWallet.privateKey).signDigest(
+        hashToSign,
+      );
 
       createSend(v, r, s, identityWallet.address, delegateWallet.address, securityWallet.address);
     } catch (error) {
@@ -233,12 +273,16 @@ function SignataIdentity({
       resetStates();
 
       const inputHash = ethers.utils.keccak256(
-        `${TXTYPE_CREATE_DIGEST}${id.delegateAddress.slice(2).padStart(64, '0')}${securityWallet.address
+        `${TXTYPE_CREATE_DIGEST}${id.delegateAddress
           .slice(2)
-          .padStart(64, '0')}`,
+          .padStart(64, '0')}${securityWallet.address.slice(2).padStart(64, '0')}`,
       );
-      const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
-      const { r, s, v } = new ethers.utils.SigningKey(identityWallet.privateKey).signDigest(hashToSign);
+      const hashToSign = ethers.utils.keccak256(
+        `0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`,
+      );
+      const { r, s, v } = new ethers.utils.SigningKey(identityWallet.privateKey).signDigest(
+        hashToSign,
+      );
 
       createSend(v, r, s, identityWallet.address, id.delegateAddress, securityWallet.address);
     } catch (error) {
@@ -270,19 +314,26 @@ function SignataIdentity({
       const inputHash = ethers.utils.keccak256(
         `${TXTYPE_LOCK_DIGEST}${identityLockCount.toHexString().slice(2).padStart(64, '0')}`,
       );
-      const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
+      const hashToSign = ethers.utils.keccak256(
+        `0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`,
+      );
 
       if (!id.delegateSeed) {
         // it's a wallet identity without a delegateSeed
         // eslint-disable-next-line no-undef
-        const ethResult = await ethereum.request({ method: 'eth_sign', params: [account, hashToSign] });
+        const ethResult = await ethereum.request({
+          method: 'eth_sign',
+          params: [account, hashToSign],
+        });
         const sig = ethResult.substr(2);
         const r = `0x${sig.slice(0, 64)}`;
         const s = `0x${sig.slice(64, 128)}`;
         const v = `0x${sig.slice(128, 130)}`;
         lockSend(identityWallet.address, v, r, s);
       } else {
-        const { r, s, v } = new ethers.utils.SigningKey(delegateWallet.privateKey).signDigest(hashToSign);
+        const { r, s, v } = new ethers.utils.SigningKey(delegateWallet.privateKey).signDigest(
+          hashToSign,
+        );
         lockSend(identityWallet.address, v, r, s);
       }
     } catch (error) {
@@ -314,8 +365,12 @@ function SignataIdentity({
       const inputHash = ethers.utils.keccak256(
         `${TXTYPE_UNLOCK_DIGEST}${identityLockCount.toHexString().slice(2).padStart(64, '0')}`,
       );
-      const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
-      const { r, s, v } = new ethers.utils.SigningKey(securityWallet.privateKey).signDigest(hashToSign);
+      const hashToSign = ethers.utils.keccak256(
+        `0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`,
+      );
+      const { r, s, v } = new ethers.utils.SigningKey(securityWallet.privateKey).signDigest(
+        hashToSign,
+      );
 
       unlockSend(identityWallet.address, v, r, s);
     } catch (error) {
@@ -345,11 +400,15 @@ function SignataIdentity({
       resetStates();
 
       const inputHash = ethers.utils.keccak256(
-        `${TXTYPE_ROLLOVER_DIGEST}${newDelegate.address.slice(2).padStart(64, '0')}${newSecurity.address
+        `${TXTYPE_ROLLOVER_DIGEST}${newDelegate.address
+          .slice(2)
+          .padStart(64, '0')}${newSecurity.address
           .slice(2)
           .padStart(64, '0')}${identityRolloverCount.toHexString().slice(2).padStart(64, '0')}`,
       );
-      const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
+      const hashToSign = ethers.utils.keccak256(
+        `0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`,
+      );
       const {
         r: securityR,
         s: securityS,
@@ -359,7 +418,10 @@ function SignataIdentity({
       if (!id.delegateSeed) {
         // it's a wallet identity without a delegateSeed
         // eslint-disable-next-line no-undef
-        const ethResult = await ethereum.request({ method: 'eth_sign', params: [account, hashToSign] });
+        const ethResult = await ethereum.request({
+          method: 'eth_sign',
+          params: [account, hashToSign],
+        });
         const sig = ethResult.substr(2);
         const delegateR = `0x${sig.slice(0, 64)}`;
         const delegateS = `0x${sig.slice(64, 128)}`;
@@ -420,7 +482,9 @@ function SignataIdentity({
       resetStates();
 
       const inputHash = ethers.utils.keccak256(`${TXTYPE_DESTROY_DIGEST}`);
-      const hashToSign = ethers.utils.keccak256(`0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`);
+      const hashToSign = ethers.utils.keccak256(
+        `0x1901${DOMAIN_SEPARATOR.slice(2)}${inputHash.slice(2)}`,
+      );
 
       const {
         r: securityR,
@@ -431,19 +495,38 @@ function SignataIdentity({
       if (!id.delegateSeed) {
         // it's a wallet identity without a delegateSeed
         // eslint-disable-next-line no-undef
-        const ethResult = await ethereum.request({ method: 'eth_sign', params: [account, hashToSign] });
+        const ethResult = await ethereum.request({
+          method: 'eth_sign',
+          params: [account, hashToSign],
+        });
         const sig = ethResult.substr(2);
         const delegateR = `0x${sig.slice(0, 64)}`;
         const delegateS = `0x${sig.slice(64, 128)}`;
         const delegateV = `0x${sig.slice(128, 130)}`;
-        destroySend(identityWallet.address, delegateV, delegateR, delegateS, securityV, securityR, securityS);
+        destroySend(
+          identityWallet.address,
+          delegateV,
+          delegateR,
+          delegateS,
+          securityV,
+          securityR,
+          securityS,
+        );
       } else {
         const {
           r: delegateR,
           s: delegateS,
           v: delegateV,
         } = new ethers.utils.SigningKey(delegateWallet.privateKey).signDigest(hashToSign);
-        destroySend(identityWallet.address, delegateV, delegateR, delegateS, securityV, securityR, securityS);
+        destroySend(
+          identityWallet.address,
+          delegateV,
+          delegateR,
+          delegateS,
+          securityV,
+          securityR,
+          securityS,
+        );
       }
     } catch (error) {
       console.error(error);
@@ -527,7 +610,9 @@ function SignataIdentity({
 
     try {
       setLoading(true);
-      const response = await axios.get(`https://id-api.signata.net/api/v1/requestKyc/${id.identityAddress}`);
+      const response = await axios.get(
+        `https://id-api.signata.net/api/v1/requestKyc/${id.identityAddress}`,
+      );
       if (response && response.data && response.data.signature) {
         // call chain
         console.log(response.data.signature);
@@ -548,21 +633,10 @@ function SignataIdentity({
     }
   };
 
-  const onClickBlockpassKyc = async (e) => {
+  const onClickBlockpassKyc = (e) => {
     e.preventDefault();
     console.log('onClickBlockpassKyc');
-    setLoading(true);
-    // eslint-disable-next-line no-undef
-    const blockpass = new BlockpassKYCConnect('signata_f812a', {
-      refId: id.identityAddress,
-      // elementId: `blockpass-kyc-connect-${id.identityAddress}`,
-    });
-    await blockpass.startKYCConnect();
-    setLoading(false);
-  };
-
-  const onCloseKycId = () => {
-    setOpenKycId(false);
+    setShowBlockpassButton(true);
   };
 
   return (
@@ -662,7 +736,11 @@ function SignataIdentity({
         ]}
       />
       <ItemBox>
-        <ItemHeader text={`Identity: ${id.name || 'Unnamed'}`} colored={id.chainId === chainId} logo="logo.png" />
+        <ItemHeader
+          text={`Identity: ${id.name || 'Unnamed'}`}
+          colored={id.chainId === chainId}
+          logo="logo.png"
+        />
         {/* <CardContent> */}
         <Stack spacing={2} sx={{ marginTop: 1 }}>
           <Box
@@ -717,7 +795,9 @@ function SignataIdentity({
               <ListItem>
                 {id.chainId === chainId ? (
                   <Chip
-                    label={`Chain: ${SUPPORTED_CHAINS.find((network) => network.chainId === id.chainId)?.chainName}`}
+                    label={`Chain: ${
+                      SUPPORTED_CHAINS.find((network) => network.chainId === id.chainId)?.chainName
+                    }`}
                     color="success"
                     variant="outlined"
                     icon={<LinkIcon />}
@@ -807,21 +887,32 @@ function SignataIdentity({
                 orientation={isSm ? 'horizontal' : 'vertical'}
               >
                 {!identityExists && (
-                  <Button onClick={id.type === 'wallet' ? onCreateWalletIdentity : onCreateIdentity} color="primary">
+                  <Button
+                    onClick={id.type === 'wallet' ? onCreateWalletIdentity : onCreateIdentity}
+                    color="primary"
+                  >
                     Register
                   </Button>
                 )}
                 <Button onClick={handleClickRename}>Rename</Button>
-                {identityExists && !identityLocked && <Button onClick={handleClickLock}>Lock</Button>}
-                {identityExists && identityLocked && <Button onClick={handleClickUnlock}>Unlock</Button>}
+                {identityExists && !identityLocked && (
+                  <Button onClick={handleClickLock}>Lock</Button>
+                )}
+                {identityExists && identityLocked && (
+                  <Button onClick={handleClickUnlock}>Unlock</Button>
+                )}
                 {identityExists && (
                   <Button onClick={handleClickRollover} disabled>
                     Rollover
                   </Button>
                 )}
                 {identityExists && <Button onClick={handleClickDestroy}>Destroy</Button>}
-                {(!identityExists || advancedModeEnabled) && <Button onClick={handleClickDelete}>Delete</Button>}
-                {identityExists && advancedModeEnabled && <Button onClick={handleClickExport}>Export</Button>}
+                {(!identityExists || advancedModeEnabled) && (
+                  <Button onClick={handleClickDelete}>Delete</Button>
+                )}
+                {identityExists && advancedModeEnabled && (
+                  <Button onClick={handleClickExport}>Export</Button>
+                )}
               </ButtonGroup>
             </Paper>
           )}
@@ -840,21 +931,32 @@ function SignataIdentity({
                 orientation={isSm ? 'horizontal' : 'vertical'}
               >
                 {!identityExists && (
-                  <Button onClick={id.type === 'wallet' ? onCreateWalletIdentity : onCreateIdentity} color="primary">
+                  <Button
+                    onClick={id.type === 'wallet' ? onCreateWalletIdentity : onCreateIdentity}
+                    color="primary"
+                  >
                     Register
                   </Button>
                 )}
                 <Button onClick={handleClickRename}>Rename</Button>
-                {identityExists && !identityLocked && <Button onClick={handleClickLock}>Lock</Button>}
-                {identityExists && identityLocked && <Button onClick={handleClickUnlock}>Unlock</Button>}
+                {identityExists && !identityLocked && (
+                  <Button onClick={handleClickLock}>Lock</Button>
+                )}
+                {identityExists && identityLocked && (
+                  <Button onClick={handleClickUnlock}>Unlock</Button>
+                )}
                 {identityExists && (
                   <Button onClick={handleClickRollover} disabled>
                     Rollover
                   </Button>
                 )}
                 {identityExists && <Button onClick={handleClickDestroy}>Destroy</Button>}
-                {(!identityExists || advancedModeEnabled) && <Button onClick={handleClickDelete}>Delete</Button>}
-                {identityExists && advancedModeEnabled && <Button onClick={handleClickExport}>Export</Button>}
+                {(!identityExists || advancedModeEnabled) && (
+                  <Button onClick={handleClickDelete}>Delete</Button>
+                )}
+                {identityExists && advancedModeEnabled && (
+                  <Button onClick={handleClickExport}>Export</Button>
+                )}
               </ButtonGroup>
             </Paper>
           )}
@@ -867,21 +969,24 @@ function SignataIdentity({
           )}
           {id.chainId === chainId && identityExists && !hasKycNft && (
             <Accordion sx={{ textAlign: 'center' }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
+                id="panel1a-header"
+              >
                 <Typography>NFT Rights</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Stack spacing={1}>
                   <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
-                    You can purchase NFT rights with SATA tokens. These rights are provided by Signata, but rights can
-                    also be issued by other providers.
+                    You can purchase NFT rights with SATA tokens. These rights are provided by
+                    Signata, but rights can also be issued by other providers.
                   </Alert>
                   <Card sx={{ m: 2, textAlign: 'center' }}>
                     <CardActionArea
                       component={ButtonBase}
                       onClick={onClickBlockpassKyc}
                       disabled={isLoading}
-                      id={`blockpass-kyc-connect-${id.identityAddress}`}
                     >
                       <CardContent>
                         <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
@@ -889,25 +994,29 @@ function SignataIdentity({
                           Blockpass KYC
                         </Typography>
                         <Typography variant="body2" textAlign="left">
-                          KYC with Congruent Labs (Australia) verifying your identity using Blockpass. Excluding
-                          residents of the following sanctioned countries: Central African Republic, Democratic Republic
-                          of the Congo, Eritrea, Lebanon, Libya, Myanmar, Russia, Somalia, Sudan, Yemen, Zimbabwe,
-                          Crimea and Sevastopol, Iran, Syria, and North Korea.
+                          KYC with Congruent Labs (Australia) verifying your identity using
+                          Blockpass. Excluding residents of the following sanctioned countries:
+                          Central African Republic, Democratic Republic of the Congo, Eritrea,
+                          Lebanon, Libya, Myanmar, Russia, Somalia, Sudan, Yemen, Zimbabwe, Crimea
+                          and Sevastopol, Iran, Syria, and North Korea.
                         </Typography>
-                        {isLoading && (
-                          <Box sx={{ width: '100%' }}>
-                            <LinearProgress />
-                          </Box>
-                        )}
                       </CardContent>
                     </CardActionArea>
                   </Card>
-                  <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
-                    Once you have completed KYC with a provider, click the below button to claim your KYC NFT.
-                  </Alert>
-                  <Button fullWidth onClick={handleClickClaimKycNft}>
-                    Claim KYC NFT
+                  <Button fullWidth id={`blockpass-kyc-connect-${id.identityAddress}`} sx={{ display: showBlockpassButton ? 'inline' : 'none' }}>
+                    Start KYC
                   </Button>
+                  {showClaimKycButton && (
+                    <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
+                      Once you have completed KYC with a provider, click the below button to claim
+                      your KYC NFT.
+                    </Alert>
+                  )}
+                  {showClaimKycButton && (
+                    <Button fullWidth onClick={handleClickClaimKycNft}>
+                      Claim KYC NFT
+                    </Button>
+                  )}
                 </Stack>
               </AccordionDetails>
             </Accordion>

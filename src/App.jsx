@@ -106,7 +106,7 @@ function App() {
         error: {
           main: red.A700,
         },
-        mode: prefersDarkMode ? 'light' : 'light',
+        mode: prefersDarkMode ? 'dark' : 'light',
       },
       typography: {
         fontFamily: 'Roboto Condensed',
