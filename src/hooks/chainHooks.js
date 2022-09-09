@@ -6,7 +6,6 @@ import { useContractFunction, useCall, useBlockNumber } from '@usedapp/core';
 import { Contract } from '@ethersproject/contracts';
 import * as consts from '../config';
 import TOKEN_ABI from './sataAbi.json';
-import NANO_ABI from './nanoAbi.json';
 import ID_ABI from './identityAbi.json';
 import RIGHTS_ABI from './rightsAbi.json';
 import KYC_CLAIM_ABI from './kycClaimAbi.json';
@@ -62,34 +61,6 @@ export const getRightsContractAddress = (chainId) => {
 };
 
 export const getRightsContract = (chainId) => new Contract(getRightsContractAddress(chainId), RIGHTS_ABI);
-
-export const getNanoContractAddress = (chainId) => {
-  if (chainId === 1) {
-    return consts.NANO_CONTRACT_MAINNET;
-  }
-  if (chainId === 4) {
-    return consts.NANO_CONTRACT_RINKEBY;
-  }
-  if (chainId === 56) {
-    // bsc
-    return consts.NANO_CONTRACT_BSC;
-  }
-  if (chainId === 250) {
-    // fantom
-    return consts.NANO_CONTRACT_FTM;
-  }
-  if (chainId === 1088) {
-    // metis
-    return consts.NANO_CONTRACT_METIS;
-  }
-  if (chainId === 43114) {
-    // avax
-    return consts.NANO_CONTRACT_AVAX;
-  }
-  return consts.NANO_CONTRACT_MAINNET;
-};
-
-export const getNanoContract = (chainId) => new Contract(getNanoContractAddress(chainId), NANO_ABI);
 
 export const getTokenContractAddress = (chainId) => {
   if (chainId === 1) {
@@ -229,13 +200,9 @@ export function useCreateIdentity(chainId) {
   const identityContract = getIdContract(chainId);
   const {
     state, send, events, resetState,
-  } = useContractFunction(
-    identityContract,
-    'create',
-    {
-      transactionName: 'Create Signata Identity',
-    },
-  );
+  } = useContractFunction(identityContract, 'create', {
+    transactionName: 'Create Signata Identity',
+  });
   return {
     state,
     send,
@@ -248,13 +215,9 @@ export function useDestroyIdentity(chainId) {
   const identityContract = getIdContract(chainId);
   const {
     state, send, events, resetState,
-  } = useContractFunction(
-    identityContract,
-    'destroy',
-    {
-      transactionName: 'Destroy Signata Identity',
-    },
-  );
+  } = useContractFunction(identityContract, 'destroy', {
+    transactionName: 'Destroy Signata Identity',
+  });
   return {
     state,
     send,
@@ -267,13 +230,9 @@ export function useLockIdentity(chainId) {
   const identityContract = getIdContract(chainId);
   const {
     state, send, events, resetState,
-  } = useContractFunction(
-    identityContract,
-    'lock',
-    {
-      transactionName: 'Lock Signata Identity',
-    },
-  );
+  } = useContractFunction(identityContract, 'lock', {
+    transactionName: 'Lock Signata Identity',
+  });
   return {
     state,
     send,
@@ -286,13 +245,9 @@ export function useUnlockIdentity(chainId) {
   const identityContract = getIdContract(chainId);
   const {
     state, send, events, resetState,
-  } = useContractFunction(
-    identityContract,
-    'unlock',
-    {
-      transactionName: 'Unlock Signata Identity',
-    },
-  );
+  } = useContractFunction(identityContract, 'unlock', {
+    transactionName: 'Unlock Signata Identity',
+  });
   return {
     state,
     send,
@@ -305,89 +260,9 @@ export function useRolloverIdentity(chainId) {
   const identityContract = getIdContract(chainId);
   const {
     state, send, events, resetState,
-  } = useContractFunction(
-    identityContract,
-    'rollover',
-    {
-      transactionName: 'Rollover Signata Identity',
-    },
-  );
-  return {
-    state,
-    send,
-    events,
-    resetState,
-  };
-}
-
-export function useCreateNano(chainId) {
-  const nanoContract = getNanoContract(chainId);
-  const {
-    state, send, events, resetState,
-  } = useContractFunction(
-    nanoContract,
-    'create',
-    {
-      transactionName: 'Create Nano Identity',
-    },
-  );
-  return {
-    state,
-    send,
-    events,
-    resetState,
-  };
-}
-
-export function useDelegateNano(chainId) {
-  const nanoContract = getNanoContract(chainId);
-  const {
-    state, send, events, resetState,
-  } = useContractFunction(
-    nanoContract,
-    'setDelegate',
-    {
-      transactionName: 'Delegate Nano Identity',
-    },
-  );
-  return {
-    state,
-    send,
-    events,
-    resetState,
-  };
-}
-
-export function useLockNano(chainId) {
-  const nanoContract = getNanoContract(chainId);
-  const {
-    state, send, events, resetState,
-  } = useContractFunction(
-    nanoContract,
-    'lock',
-    {
-      transactionName: 'Lock Nano Identity',
-    },
-  );
-  return {
-    state,
-    send,
-    events,
-    resetState,
-  };
-}
-
-export function useSelfLockNano(chainId) {
-  const nanoContract = getNanoContract(chainId);
-  const {
-    state, send, events, resetState,
-  } = useContractFunction(
-    nanoContract,
-    'selfLock',
-    {
-      transactionName: 'Self Lock Nano Identity',
-    },
-  );
+  } = useContractFunction(identityContract, 'rollover', {
+    transactionName: 'Rollover Signata Identity',
+  });
   return {
     state,
     send,
@@ -400,13 +275,24 @@ export function useBuyCloud(chainId) {
   const identityContract = getIdContract(chainId);
   const {
     state, send, events, resetState,
-  } = useContractFunction(
-    identityContract,
-    'buyCloud',
-    {
-      transactionName: 'Buy Cloud Subscription',
-    },
-  );
+  } = useContractFunction(identityContract, 'buyCloud', {
+    transactionName: 'Buy Cloud Subscription',
+  });
+  return {
+    state,
+    send,
+    events,
+    resetState,
+  };
+}
+
+export function useClaimKycNft(chainId) {
+  const kycClaimContract = getKycClaimContract(chainId);
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(kycClaimContract, 'claimRight', {
+    transactionName: 'Claim KYC Right',
+  });
   return {
     state,
     send,
@@ -419,11 +305,7 @@ export function useBuyCloud(chainId) {
 // an incompatible version of react with what's used in this app right now
 
 // get price from token contract
-export const getCoingeckoSimpleTokenPriceUri = (
-  contract,
-  quoteId,
-  platformId,
-) => `https://api.coingecko.com/api/v3/simple/token_price/${platformId}?contract_addresses=${contract}&vs_currencies=${quoteId}`;
+export const getCoingeckoSimpleTokenPriceUri = (contract, quoteId, platformId) => `https://api.coingecko.com/api/v3/simple/token_price/${platformId}?contract_addresses=${contract}&vs_currencies=${quoteId}`;
 
 export const fetchCoingeckoTokenPrice = (fetchFunction) => async (contract, quote, platform) => {
   try {
@@ -470,9 +352,7 @@ export const fetchCoingeckoPrice = (fetchFunction) => async (base, quote) => {
   }
 };
 
-export const getCoingeckoPrice = fetchCoingeckoPrice(
-  typeof window !== 'undefined' && window.fetch,
-);
+export const getCoingeckoPrice = fetchCoingeckoPrice(typeof window !== 'undefined' && window.fetch);
 
 export const useCoingeckoPrice = (base, quote = 'usd') => {
   const [price, setPrice] = useState(undefined);
@@ -490,21 +370,13 @@ export const useCoingeckoPrice = (base, quote = 'usd') => {
   return price;
 };
 
-export const useCoingeckoTokenPrice = (
-  contract,
-  quote = 'usd',
-  platform = 'ethereum',
-) => {
+export const useCoingeckoTokenPrice = (contract, quote = 'usd', platform = 'ethereum') => {
   const [price, setPrice] = useState(undefined);
   const blockNo = useBlockNumber();
 
   useEffect(() => {
     async function getPrice() {
-      const tokenPrice = await getCoingeckoTokenPrice(
-        contract,
-        quote,
-        platform,
-      );
+      const tokenPrice = await getCoingeckoTokenPrice(contract, quote, platform);
       setPrice(tokenPrice);
     }
 

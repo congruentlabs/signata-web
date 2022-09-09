@@ -23,18 +23,12 @@ import {
 import ItemHeader from '../app/ItemHeader';
 import ItemBox from '../app/ItemBox';
 import TabPanel from './TabPanel';
-import LoadingState from './LoadingState';
 import {
-  getNanoContract,
-  getNanoContractAddress,
   useGetSingleValue,
-  useCreateNano,
   getIdContract,
   getIdContractAddress,
 } from '../../hooks/chainHooks';
-// import NanoIdentity from './NanoIdentity';
 import SignataIdentity from './SignataIdentity';
-import { logLoading, shouldBeLoading } from '../../hooks/helpers';
 
 function ManageIdentities(props) {
   const { identities, setIdentities, advancedModeEnabled } = props;
@@ -47,21 +41,10 @@ function ManageIdentities(props) {
   const [delegateSeed, setDelegateSeed] = useState('');
   const [securitySeed, setSecuritySeed] = useState('');
   const [tabValue, setTabValue] = useState(0);
-  // const nanoContract = getNanoContract(chainId);
   const idContract = getIdContract(chainId);
-  const [isLoading, setLoading] = useState(false);
   const [DOMAIN_SEPARATOR, setDomainSeparator] = useState('');
   const [importData, setImportData] = useState('');
   const [importError, setImportError] = useState('');
-
-  // const { state: createNanoState, send: createNanoSend, resetState: createNanoResetState } = useCreateNano(chainId);
-
-  // useEffect(() => {
-  //   if (createNanoState) {
-  //     logLoading(createNanoState, 'createNano');
-  //     setLoading(shouldBeLoading(createNanoState.status));
-  //   }
-  // }, [createNanoState]);
 
   const EIP712DOMAINTYPE_DIGEST = useGetSingleValue(
     'EIP712DOMAINTYPE_DIGEST',
@@ -95,31 +78,6 @@ function ManageIdentities(props) {
     getIdContractAddress(chainId),
     idContract,
   );
-
-  // const nanoExists = useGetSingleValue('_identityExists', [account], getNanoContractAddress(chainId), nanoContract);
-
-  // useEffect(() => {
-  //   if (idContract && idContract.address) {
-  //     console.log({
-  //       TXTYPE_CREATE_DIGEST,
-  //       TXTYPE_DESTROY_DIGEST,
-  //       TXTYPE_LOCK_DIGEST,
-  //       TXTYPE_UNLOCK_DIGEST,
-  //       TXTYPE_ROLLOVER_DIGEST,
-  //       chainId,
-  //       idContract,
-  //       contractAddress: getIdContractAddress(chainId),
-  //     });
-  //   }
-  // }, [
-  //   TXTYPE_CREATE_DIGEST,
-  //   TXTYPE_DESTROY_DIGEST,
-  //   TXTYPE_LOCK_DIGEST,
-  //   TXTYPE_UNLOCK_DIGEST,
-  //   TXTYPE_ROLLOVER_DIGEST,
-  //   chainId,
-  //   idContract,
-  // ]);
 
   const onCreateIdentity = (e) => {
     e.preventDefault();
@@ -191,16 +149,6 @@ function ManageIdentities(props) {
       setDomainSeparator(domainSeparator);
     }
   }, [EIP712DOMAINTYPE_DIGEST, VERSION_DIGEST, NAME_DIGEST, chainId, SALT, idContract]);
-
-  // const resetStates = () => {
-  //   createNanoResetState();
-  // };
-
-  // const onCreateNanoIdentity = (e) => {
-  //   e.preventDefault();
-  //   resetStates();
-  //   createNanoSend();
-  // };
 
   const onClickGenerate = (e) => {
     e.preventDefault();
@@ -381,37 +329,6 @@ function ManageIdentities(props) {
               </Stack>
             </form>
           </TabPanel>
-          {/* <TabPanel value={tabValue} index={1}>
-            <form onSubmit={onCreateNanoIdentity}>
-              <Stack spacing={2}>
-                <TextField
-                  label="Identity Address"
-                  variant="outlined"
-                  color="info"
-                  size="small"
-                  value={account}
-                  disabled
-                />
-                <Paper>
-                  <ButtonGroup fullWidth variant="text" orientation={isSm ? 'horizontal' : 'vertical'}>
-                    <Button color="primary" type="submit" disabled={isLoading || nanoExists} startIcon={<AddIcon />}>
-                      Create Nano Identity
-                    </Button>
-                  </ButtonGroup>
-                </Paper>
-                <LoadingState state={createNanoState} />
-                {nanoExists ? (
-                  <Alert severity="success">You already have a nano identity on this chain.</Alert>
-                ) : (
-                  <Alert severity="info">
-                    A nano identity is a limited version of a Signata identity. If you want to try out Signata, you can
-                    register your connected wallet as a Nano Identity. If you hold 10 SATA it is free to create a Nano
-                    identity, otherwise you&apos;ll have to pay a small fee.
-                  </Alert>
-                )}
-              </Stack>
-            </form>
-          </TabPanel> */}
           <TabPanel value={tabValue} index={2}>
             <form onSubmit={onImportIdentity}>
               <Stack spacing={2}>

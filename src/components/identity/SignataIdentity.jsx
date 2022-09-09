@@ -27,7 +27,6 @@ import {
   Alert,
   AlertTitle,
   Card,
-  CardMedia,
   CardContent,
   CardActionArea,
   ButtonBase,
@@ -41,6 +40,7 @@ import {
   useRolloverIdentity,
   useGetSingleValue,
   getIdContractAddress,
+  useClaimKycNft,
 } from '../../hooks/chainHooks';
 import LoadingState from './LoadingState';
 import ItemHeader from '../app/ItemHeader';
@@ -79,14 +79,13 @@ function SignataIdentity({
   const [openLock, setOpenLock] = useState(false);
   const [newDelegate, setNewDelegate] = useState('');
   const [newSecurity, setNewSecurity] = useState('');
-  const [newDelegateValid, setNewDelegateValid] = useState(false);
-  const [newSecurityValid, setNewSecurityValid] = useState(false);
+  // const [newDelegateValid, setNewDelegateValid] = useState(false);
+  // const [newSecurityValid, setNewSecurityValid] = useState(false);
   const [openRename, setOpenRename] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [openUnlock, setOpenUnlock] = useState(false);
   const [openRollover, setOpenRollover] = useState(false);
   const [openDestroy, setOpenDestroy] = useState(false);
-  const [openKycId, setOpenKycId] = useState(false);
   const [newName, setNewName] = useState('');
   const [identityWallet, setIdentityWallet] = useState(null);
   const [delegateWallet, setDelegateWallet] = useState(null);
@@ -94,24 +93,20 @@ function SignataIdentity({
   const [hasKycNft, setHasKycNft] = useState(false);
   const [exportData, setExportData] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [kycErrorMessage, setKycErrorMessage] = useState('');
   const [showBlockpassButton, setShowBlockpassButton] = useState(false);
-  const [showClaimKycButton, setShowClaimKycButton] = useState(false);
 
   useEffect(() => {
     if (showBlockpassButton) {
-      const blockpass = new window.BlockpassKYCConnect(
-        'signata_f812a',
-        {
-          refId: id.identityAddress,
-          elementId: `blockpass-kyc-connect-${id.identityAddress}`,
-        },
-      );
+      const blockpass = new window.BlockpassKYCConnect('signata_f812a', {
+        refId: id.identityAddress,
+        elementId: `blockpass-kyc-connect-${id.identityAddress}`,
+      });
 
       blockpass.startKYCConnect();
 
       blockpass.on('KYCConnectSuccess', () => {
         setLoading(false);
-        setShowClaimKycButton(true);
       });
     }
   }, [id, showBlockpassButton]);
@@ -158,6 +153,12 @@ function SignataIdentity({
     send: rolloverSend,
     resetState: rolloverResetState,
   } = useRolloverIdentity(chainId);
+
+  const {
+    state: claimKycNftState,
+    send: claimKycNftSend,
+    resetState: claimKycNftResetState,
+  } = useClaimKycNft(chainId);
 
   const identityExists = useGetSingleValue(
     '_identityExists',
@@ -228,6 +229,13 @@ function SignataIdentity({
       setLoading(shouldBeLoading(rolloverState.status));
     }
   }, [rolloverState]);
+
+  useEffect(() => {
+    if (claimKycNftState) {
+      logLoading(claimKycNftState, 'claimKycNft');
+      setLoading(shouldBeLoading(claimKycNftState.status));
+    }
+  }, [claimKycNftState]);
 
   const resetStates = () => {
     createResetState();
@@ -595,27 +603,32 @@ function SignataIdentity({
     setLoading(false);
   };
 
-  const handleClickCopy = (e, dat) => {
-    e.preventDefault();
-    navigator.clipboard.writeText(dat);
-  };
-
-  const handleClickRequestKyc = (e) => {
-    e.preventDefault();
-    setOpenKycId(true);
-  };
+  // const handleClickCopy = (e, dat) => {
+  //   e.preventDefault();
+  //   navigator.clipboard.writeText(dat);
+  // };
 
   const handleClickClaimKycNft = async (e) => {
     e.preventDefault();
 
     try {
       setLoading(true);
+      setKycErrorMessage('');
       const response = await axios.get(
         `https://id-api.signata.net/api/v1/requestKyc/${id.identityAddress}`,
       );
       if (response && response.data && response.data.signature) {
         // call chain
-        console.log(response.data.signature);
+        console.log(response.data);
+        claimKycNftResetState();
+        const sig = response.data.signature.substr(2);
+        const sigR = `0x${sig.slice(0, 64)}`;
+        const sigS = `0x${sig.slice(64, 128)}`;
+        const sigV = `0x${sig.slice(128, 130)}`;
+        const salt = `0x${response.data.salt}`;
+        claimKycNftSend(id.identityAddress, sigV, sigR, sigS, salt);
+      } else {
+        setKycErrorMessage('No claim found. Have you completed KYC?');
       }
     } catch (error) {
       console.error(error);
@@ -741,7 +754,6 @@ function SignataIdentity({
           colored={id.chainId === chainId}
           logo="logo.png"
         />
-        {/* <CardContent> */}
         <Stack spacing={2} sx={{ marginTop: 1 }}>
           <Box
             sx={{
@@ -751,35 +763,14 @@ function SignataIdentity({
             <Typography sx={{ fontFamily: 'Roboto Mono' }} variant="body2" component="p">
               Identity:
               {isXs ? shortenIfAddress(id.identityAddress) : id.identityAddress}
-              {/* <IconButton
-                aria-label="copy identity"
-                size="small"
-                onClick={(e) => handleClickCopy(e, id.identityAddress)}
-              >
-                <ContentCopyIcon />
-              </IconButton> */}
             </Typography>
             <Typography sx={{ fontFamily: 'Roboto Mono' }} variant="body2" component="p">
               Delegate:
               {isXs ? shortenIfAddress(id.delegateAddress) : id.delegateAddress}
-              {/* <IconButton
-                aria-label="copy identity"
-                size="small"
-                onClick={(e) => handleClickCopy(e, id.delegateAddress)}
-              >
-                <ContentCopyIcon />
-              </IconButton> */}
             </Typography>
             <Typography sx={{ fontFamily: 'Roboto Mono' }} variant="body2" component="p">
               Security:
               {isXs ? shortenIfAddress(id.securityAddress) : id.securityAddress}
-              {/* <IconButton
-                aria-label="copy identity"
-                size="small"
-                onClick={(e) => handleClickCopy(e, id.securityAddress)}
-              >
-                <ContentCopyIcon />
-              </IconButton> */}
             </Typography>
             <Box
               sx={{
@@ -1003,26 +994,32 @@ function SignataIdentity({
                       </CardContent>
                     </CardActionArea>
                   </Card>
-                  <Button fullWidth id={`blockpass-kyc-connect-${id.identityAddress}`} sx={{ display: showBlockpassButton ? 'inline' : 'none' }}>
+                  <Button
+                    fullWidth
+                    id={`blockpass-kyc-connect-${id.identityAddress}`}
+                    sx={{ display: showBlockpassButton ? 'inline' : 'none' }}
+                    disabled={isLoading}
+                  >
                     Start KYC
                   </Button>
-                  {showClaimKycButton && (
-                    <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
-                      Once you have completed KYC with a provider, click the below button to claim
-                      your KYC NFT.
+                  <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
+                    Once you have completed KYC with a provider, click the below button to claim
+                    your KYC NFT.
+                  </Alert>
+                  <Button fullWidth onClick={handleClickClaimKycNft} disabled={isLoading}>
+                    Claim KYC NFT
+                  </Button>
+                  <LoadingState state={claimKycNftState} />
+                  {kycErrorMessage && (
+                    <Alert severity="error">
+                      {kycErrorMessage}
                     </Alert>
-                  )}
-                  {showClaimKycButton && (
-                    <Button fullWidth onClick={handleClickClaimKycNft}>
-                      Claim KYC NFT
-                    </Button>
                   )}
                 </Stack>
               </AccordionDetails>
             </Accordion>
           )}
         </Stack>
-        {/* </CardContent> */}
       </ItemBox>
     </>
   );
