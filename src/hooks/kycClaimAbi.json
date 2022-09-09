@@ -77,6 +77,11 @@
 				"type": "address"
 			},
 			{
+				"internalType": "address",
+				"name": "delegate",
+				"type": "address"
+			},
+			{
 				"internalType": "uint8",
 				"name": "sigV",
 				"type": "uint8"
@@ -209,12 +214,6 @@
 		"anonymous": false,
 		"inputs": [],
 		"name": "RightAssigned",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [],
-		"name": "RightClaimed",
 		"type": "event"
 	},
 	{

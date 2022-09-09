@@ -301,6 +301,21 @@ export function useClaimKycNft(chainId) {
   };
 }
 
+export function useTokenApprove(chainId) {
+  const tokenContract = getTokenContract(chainId);
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(tokenContract, 'approve', {
+    transactionName: 'Approve',
+  });
+  return {
+    state,
+    send,
+    events,
+    resetState,
+  };
+}
+
 // these cg price hooks have been copied across from usedapp, as they're using
 // an incompatible version of react with what's used in this app right now
 

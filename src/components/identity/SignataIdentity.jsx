@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
+import { ethers, BigNumber } from 'ethers';
 import axios from 'axios';
 import { useTheme, styled } from '@mui/material/styles';
-import { shortenIfAddress } from '@usedapp/core';
+import { shortenIfAddress, useTokenAllowance } from '@usedapp/core';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
@@ -41,6 +41,9 @@ import {
   useGetSingleValue,
   getIdContractAddress,
   useClaimKycNft,
+  getTokenContractAddress,
+  getKycClaimContractAddress,
+  useTokenApprove,
 } from '../../hooks/chainHooks';
 import LoadingState from './LoadingState';
 import ItemHeader from '../app/ItemHeader';
@@ -95,6 +98,7 @@ function SignataIdentity({
   const [errorMessage, setErrorMessage] = useState('');
   const [kycErrorMessage, setKycErrorMessage] = useState('');
   const [showBlockpassButton, setShowBlockpassButton] = useState(false);
+  const claimAllowance = useTokenAllowance(getTokenContractAddress(chainId), account, getKycClaimContractAddress(chainId));
 
   useEffect(() => {
     if (showBlockpassButton) {
@@ -159,6 +163,12 @@ function SignataIdentity({
     send: claimKycNftSend,
     resetState: claimKycNftResetState,
   } = useClaimKycNft(chainId);
+
+  const {
+    state: approveState,
+    send: approveSend,
+    resetState: approveResetState,
+  } = useTokenApprove(chainId);
 
   const identityExists = useGetSingleValue(
     '_identityExists',
@@ -236,6 +246,13 @@ function SignataIdentity({
       setLoading(shouldBeLoading(claimKycNftState.status));
     }
   }, [claimKycNftState]);
+
+  useEffect(() => {
+    if (approveState) {
+      logLoading(approveState, 'approve');
+      setLoading(shouldBeLoading(approveState.status));
+    }
+  }, [approveState]);
 
   const resetStates = () => {
     createResetState();
@@ -617,17 +634,20 @@ function SignataIdentity({
       const response = await axios.get(
         `https://id-api.signata.net/api/v1/requestKyc/${id.identityAddress}`,
       );
-      if (response && response.data && response.data.signature) {
+      if (response && response.data && response.data.sigS) {
         // call chain
         console.log(response.data);
         claimKycNftResetState();
-        const sig = response.data.signature.substr(2);
-        const sigR = `0x${sig.slice(0, 64)}`;
-        const sigS = `0x${sig.slice(64, 128)}`;
-        const sigV = `0x${sig.slice(128, 130)}`;
         const salt = `0x${response.data.salt}`;
-        claimKycNftSend(id.identityAddress, sigV, sigR, sigS, salt);
+        console.log({
+          sigV: response.data.sigV,
+          sigR: response.data.sigR,
+          sigS: response.data.sigS,
+          salt,
+        });
+        claimKycNftSend(id.delegateAddress, id.delegateAddress, response.data.sigV, response.data.sigR, response.data.sigS, salt);
       } else {
+        console.log(response);
         setKycErrorMessage('No claim found. Have you completed KYC?');
       }
     } catch (error) {
@@ -650,6 +670,13 @@ function SignataIdentity({
     e.preventDefault();
     console.log('onClickBlockpassKyc');
     setShowBlockpassButton(true);
+  };
+
+  const handleClickApproveKycNft = (e) => {
+    e.preventDefault();
+    console.log('handleClickApproveKycNft');
+    approveResetState();
+    approveSend(getKycClaimContractAddress(chainId), BigNumber.from('1000000000000000000000'));
   };
 
   return (
@@ -1006,10 +1033,14 @@ function SignataIdentity({
                     Once you have completed KYC with a provider, click the below button to claim
                     your KYC NFT.
                   </Alert>
-                  <Button fullWidth onClick={handleClickClaimKycNft} disabled={isLoading}>
+                  <Button fullWidth onClick={handleClickApproveKycNft} disabled={isLoading || claimAllowance >= 1000000000000000000000}>
+                    Approve
+                  </Button>
+                  <Button fullWidth onClick={handleClickClaimKycNft} disabled={isLoading || claimAllowance < 1000000000000000000000}>
                     Claim KYC NFT
                   </Button>
                   <LoadingState state={claimKycNftState} />
+                  <LoadingState state={approveState} />
                   {kycErrorMessage && (
                     <Alert severity="error">
                       {kycErrorMessage}
