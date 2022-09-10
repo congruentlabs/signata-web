@@ -105,7 +105,11 @@ function SignataIdentity({
   const [errorMessage, setErrorMessage] = useState('');
   const [kycErrorMessage, setKycErrorMessage] = useState('');
   const [showBlockpassButton, setShowBlockpassButton] = useState(false);
-  const claimAllowance = useTokenAllowance(getTokenContractAddress(chainId), account, kycClaimContractAddress);
+  const claimAllowance = useTokenAllowance(
+    getTokenContractAddress(chainId),
+    account,
+    kycClaimContractAddress,
+  );
 
   useEffect(() => {
     if (showBlockpassButton) {
@@ -212,12 +216,7 @@ function SignataIdentity({
     idContract,
   );
 
-  const schemaId = useGetSingleValue(
-    'schemaId',
-    [],
-    kycClaimContractAddress,
-    kycClaimContract,
-  );
+  const schemaId = useGetSingleValue('schemaId', [], kycClaimContractAddress, kycClaimContract);
 
   const hasBlockpassKycToken = useGetSingleValue(
     'holdsTokenOfSchema',
@@ -683,7 +682,9 @@ function SignataIdentity({
         );
       } else {
         console.log(response);
-        setKycErrorMessage('No claim found. Have you completed KYC?');
+        setKycErrorMessage(
+          'No completed KYC information found for this identity. Complete KYC with a Signata-integrated provider first.',
+        );
       }
     } catch (error) {
       console.error(error);
@@ -1032,9 +1033,7 @@ function SignataIdentity({
               <AccordionDetails>
                 {hasBlockpassKycToken ? (
                   <Stack spacing={1}>
-                    <Alert severity="success">
-                      This identity holds a Blockpass KYC NFT
-                    </Alert>
+                    <Alert severity="success">This identity holds a Blockpass KYC NFT</Alert>
                   </Stack>
                 ) : (
                   <Stack spacing={1}>
@@ -1079,19 +1078,23 @@ function SignataIdentity({
                       Once you have completed KYC with a provider, click the below button to claim
                       your KYC NFT.
                     </Alert>
-                    <Button fullWidth onClick={handleClickApproveKycNft} disabled={isLoading || claimAllowance >= 1000000000000000000000}>
+                    <Button
+                      fullWidth
+                      onClick={handleClickApproveKycNft}
+                      disabled={isLoading || claimAllowance >= (1000 * 1e18)}
+                    >
                       Approve
                     </Button>
-                    <Button fullWidth onClick={handleClickClaimKycNft} disabled={isLoading || claimAllowance < 1000000000000000000000}>
+                    <Button
+                      fullWidth
+                      onClick={handleClickClaimKycNft}
+                      disabled={isLoading || claimAllowance < (1000 * 1e18)}
+                    >
                       Claim KYC NFT
                     </Button>
                     <LoadingState state={claimKycNftState} />
                     <LoadingState state={approveState} />
-                    {kycErrorMessage && (
-                    <Alert severity="error">
-                      {kycErrorMessage}
-                    </Alert>
-                    )}
+                    {kycErrorMessage && <Alert severity="error">{kycErrorMessage}</Alert>}
                   </Stack>
                 )}
               </AccordionDetails>
