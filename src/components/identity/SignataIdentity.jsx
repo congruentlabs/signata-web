@@ -3,6 +3,7 @@ import { ethers, BigNumber } from 'ethers';
 import axios from 'axios';
 import { useTheme, styled } from '@mui/material/styles';
 import { shortenIfAddress, useTokenAllowance } from '@usedapp/core';
+import { formatUnits } from '@ethersproject/units';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
@@ -44,6 +45,7 @@ import {
   getTokenContractAddress,
   getKycClaimContractAddress,
   useTokenApprove,
+  getKycClaimContract,
 } from '../../hooks/chainHooks';
 import LoadingState from './LoadingState';
 import ItemHeader from '../app/ItemHeader';
@@ -104,7 +106,7 @@ function SignataIdentity({
     if (showBlockpassButton) {
       const blockpass = new window.BlockpassKYCConnect('signata_f812a', {
         refId: id.identityAddress,
-        elementId: `blockpass-kyc-connect-${id.identityAddress}`,
+        elementId: `blockpass-kyc-connect-${id.delegateAddress}`,
       });
 
       blockpass.startKYCConnect();
@@ -203,6 +205,13 @@ function SignataIdentity({
     [id.identityAddress || ''],
     getIdContractAddress(chainId),
     idContract,
+  );
+
+  const kycClaimPrice = useGetSingleValue(
+    'feeAmount',
+    [],
+    getKycClaimContractAddress(chainId),
+    getKycClaimContract(chainId),
   );
 
   useEffect(() => {
@@ -632,7 +641,7 @@ function SignataIdentity({
       setLoading(true);
       setKycErrorMessage('');
       const response = await axios.get(
-        `https://id-api.signata.net/api/v1/requestKyc/${id.identityAddress}`,
+        `https://id-api.signata.net/api/v1/requestKyc/${id.delegateAddress}`,
       );
       if (response && response.data && response.data.sigS) {
         // call chain
@@ -640,12 +649,19 @@ function SignataIdentity({
         claimKycNftResetState();
         const salt = `0x${response.data.salt}`;
         console.log({
+          delegateAddress: id.delegateAddress,
           sigV: response.data.sigV,
           sigR: response.data.sigR,
           sigS: response.data.sigS,
           salt,
         });
-        claimKycNftSend(id.delegateAddress, id.delegateAddress, response.data.sigV, response.data.sigR, response.data.sigS, salt);
+        claimKycNftSend(
+          id.delegateAddress,
+          response.data.sigV,
+          response.data.sigR,
+          response.data.sigS,
+          salt,
+        );
       } else {
         console.log(response);
         setKycErrorMessage('No claim found. Have you completed KYC?');
@@ -1010,6 +1026,10 @@ function SignataIdentity({
                         <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
                         <Typography gutterBottom variant="h5" component="div" textAlign="left">
                           Blockpass KYC
+                          {' ('}
+                          {formatUnits(kycClaimPrice || 0, 18)}
+                          {' '}
+                          SATA)
                         </Typography>
                         <Typography variant="body2" textAlign="left">
                           KYC with Congruent Labs (Australia) verifying your identity using
@@ -1023,7 +1043,7 @@ function SignataIdentity({
                   </Card>
                   <Button
                     fullWidth
-                    id={`blockpass-kyc-connect-${id.identityAddress}`}
+                    id={`blockpass-kyc-connect-${id.delegateAddress}`}
                     sx={{ display: showBlockpassButton ? 'inline' : 'none' }}
                     disabled={isLoading}
                   >
