@@ -46,6 +46,8 @@ import {
   getKycClaimContractAddress,
   useTokenApprove,
   getKycClaimContract,
+  getRightsContractAddress,
+  getRightsContract,
 } from '../../hooks/chainHooks';
 import LoadingState from './LoadingState';
 import ItemHeader from '../app/ItemHeader';
@@ -80,6 +82,9 @@ function SignataIdentity({
     defaultMatches: true,
   });
 
+  const kycClaimContractAddress = getKycClaimContractAddress(chainId);
+  const kycClaimContract = getKycClaimContract(chainId);
+
   const [isLoading, setLoading] = useState(false);
   const [openLock, setOpenLock] = useState(false);
   const [newDelegate, setNewDelegate] = useState('');
@@ -100,7 +105,7 @@ function SignataIdentity({
   const [errorMessage, setErrorMessage] = useState('');
   const [kycErrorMessage, setKycErrorMessage] = useState('');
   const [showBlockpassButton, setShowBlockpassButton] = useState(false);
-  const claimAllowance = useTokenAllowance(getTokenContractAddress(chainId), account, getKycClaimContractAddress(chainId));
+  const claimAllowance = useTokenAllowance(getTokenContractAddress(chainId), account, kycClaimContractAddress);
 
   useEffect(() => {
     if (showBlockpassButton) {
@@ -207,11 +212,25 @@ function SignataIdentity({
     idContract,
   );
 
+  const schemaId = useGetSingleValue(
+    'schemaId',
+    [],
+    kycClaimContractAddress,
+    kycClaimContract,
+  );
+
+  const hasBlockpassKycToken = useGetSingleValue(
+    'holdsTokenOfSchema',
+    [id.delegateAddress || '', schemaId],
+    getRightsContractAddress(chainId),
+    getRightsContract(chainId),
+  );
+
   const kycClaimPrice = useGetSingleValue(
     'feeAmount',
     [],
-    getKycClaimContractAddress(chainId),
-    getKycClaimContract(chainId),
+    kycClaimContractAddress,
+    kycClaimContract,
   );
 
   useEffect(() => {
@@ -1011,62 +1030,70 @@ function SignataIdentity({
                 <Typography>NFT Rights</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Stack spacing={1}>
-                  <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
-                    You can purchase NFT rights with SATA tokens. These rights are provided by
-                    Signata, but rights can also be issued by other providers.
-                  </Alert>
-                  <Card sx={{ m: 2, textAlign: 'center' }}>
-                    <CardActionArea
-                      component={ButtonBase}
-                      onClick={onClickBlockpassKyc}
+                {hasBlockpassKycToken ? (
+                  <Stack spacing={1}>
+                    <Alert severity="success">
+                      This identity holds a Blockpass KYC NFT
+                    </Alert>
+                  </Stack>
+                ) : (
+                  <Stack spacing={1}>
+                    <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
+                      You can purchase NFT rights with SATA tokens. These rights are provided by
+                      Signata, but rights can also be issued by other providers.
+                    </Alert>
+                    <Card sx={{ m: 2, textAlign: 'center' }}>
+                      <CardActionArea
+                        component={ButtonBase}
+                        onClick={onClickBlockpassKyc}
+                        disabled={isLoading}
+                      >
+                        <CardContent>
+                          <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
+                          <Typography gutterBottom variant="h5" component="div" textAlign="left">
+                            Blockpass KYC
+                            {' ('}
+                            {formatUnits(kycClaimPrice || 0, 18)}
+                            {' '}
+                            SATA)
+                          </Typography>
+                          <Typography variant="body2" textAlign="left">
+                            KYC with Congruent Labs (Australia) verifying your identity using
+                            Blockpass. Excluding residents of the following sanctioned countries:
+                            Central African Republic, Democratic Republic of the Congo, Eritrea,
+                            Lebanon, Libya, Myanmar, Russia, Somalia, Sudan, Yemen, Zimbabwe, Crimea
+                            and Sevastopol, Iran, Syria, and North Korea.
+                          </Typography>
+                        </CardContent>
+                      </CardActionArea>
+                    </Card>
+                    <Button
+                      fullWidth
+                      id={`blockpass-kyc-connect-${id.delegateAddress}`}
+                      sx={{ display: showBlockpassButton ? 'inline' : 'none' }}
                       disabled={isLoading}
                     >
-                      <CardContent>
-                        <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
-                        <Typography gutterBottom variant="h5" component="div" textAlign="left">
-                          Blockpass KYC
-                          {' ('}
-                          {formatUnits(kycClaimPrice || 0, 18)}
-                          {' '}
-                          SATA)
-                        </Typography>
-                        <Typography variant="body2" textAlign="left">
-                          KYC with Congruent Labs (Australia) verifying your identity using
-                          Blockpass. Excluding residents of the following sanctioned countries:
-                          Central African Republic, Democratic Republic of the Congo, Eritrea,
-                          Lebanon, Libya, Myanmar, Russia, Somalia, Sudan, Yemen, Zimbabwe, Crimea
-                          and Sevastopol, Iran, Syria, and North Korea.
-                        </Typography>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                  <Button
-                    fullWidth
-                    id={`blockpass-kyc-connect-${id.delegateAddress}`}
-                    sx={{ display: showBlockpassButton ? 'inline' : 'none' }}
-                    disabled={isLoading}
-                  >
-                    Start KYC
-                  </Button>
-                  <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
-                    Once you have completed KYC with a provider, click the below button to claim
-                    your KYC NFT.
-                  </Alert>
-                  <Button fullWidth onClick={handleClickApproveKycNft} disabled={isLoading || claimAllowance >= 1000000000000000000000}>
-                    Approve
-                  </Button>
-                  <Button fullWidth onClick={handleClickClaimKycNft} disabled={isLoading || claimAllowance < 1000000000000000000000}>
-                    Claim KYC NFT
-                  </Button>
-                  <LoadingState state={claimKycNftState} />
-                  <LoadingState state={approveState} />
-                  {kycErrorMessage && (
+                      Start KYC
+                    </Button>
+                    <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
+                      Once you have completed KYC with a provider, click the below button to claim
+                      your KYC NFT.
+                    </Alert>
+                    <Button fullWidth onClick={handleClickApproveKycNft} disabled={isLoading || claimAllowance >= 1000000000000000000000}>
+                      Approve
+                    </Button>
+                    <Button fullWidth onClick={handleClickClaimKycNft} disabled={isLoading || claimAllowance < 1000000000000000000000}>
+                      Claim KYC NFT
+                    </Button>
+                    <LoadingState state={claimKycNftState} />
+                    <LoadingState state={approveState} />
+                    {kycErrorMessage && (
                     <Alert severity="error">
                       {kycErrorMessage}
                     </Alert>
-                  )}
-                </Stack>
+                    )}
+                  </Stack>
+                )}
               </AccordionDetails>
             </Accordion>
           )}
