@@ -1,18 +1,23 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { ethers } from 'ethers';
+import CryptoJS from 'crypto-js';
 import { useEthers } from '@usedapp/core';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import useLocalStorageState from 'use-local-storage-state';
+import { createTheme, ThemeProvider, experimental_sx as sx } from '@mui/material/styles';
 import {
-  createTheme,
-  ThemeProvider,
-  experimental_sx as sx,
-} from '@mui/material/styles';
-import {
-  Box, Container, Grid, CssBaseline, LinearProgress,
+  Box,
+  Container,
+  Grid,
+  CssBaseline,
+  CircularProgress,
+  Alert,
+  Backdrop,
 } from '@mui/material';
 import {
   lime, orange, red, blue,
 } from '@mui/material/colors';
+import axios from 'axios';
 import {
   AppFooter,
   AppHeader,
@@ -25,7 +30,6 @@ import {
   DevModeWarning,
   // Subscription,
 } from './components';
-import secureStorage from './utils/secureStorage';
 import UnsupportedChain from './components/app/UnsupportedChain';
 import { SUPPORTED_CHAINS } from './hooks/helpers';
 
@@ -40,13 +44,17 @@ function App() {
   const [identities, setIdentities] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [encryptionPassword, setEncryptionPassword] = useState('');
-  const [advancedModeEnabled, setAdvancedModeEnabled] = useLocalStorageState('advancedModeEnabled', { defaultValue: false });
+  const [advancedModeEnabled, setAdvancedModeEnabled] = useLocalStorageState(
+    'advancedModeEnabled',
+    { defaultValue: false },
+  );
   const [supportedChain, setSupportedChain] = useState(false);
+  const [ipfsAccount, setIpfsAccount] = useLocalStorageState('ipfsAccount', { defaultValue: '' });
+  const [ipfsData, setIpfsData] = useLocalStorageState('ipfsData', { defaultValue: {} });
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    const chainName = SUPPORTED_CHAINS.find(
-      (network) => network.chainId === chainId,
-    )?.chainName;
+    const chainName = SUPPORTED_CHAINS.find((network) => network.chainId === chainId)?.chainName;
     if (chainName) {
       setSupportedChain(true);
     } else {
@@ -54,38 +62,93 @@ function App() {
     }
   }, [chainId]);
 
+  // useEffect(() => {
+  //   if (ipfsData) {
+
+  //   }
+  // }, [ipfsData]);
+
   useEffect(() => {
-    if (encryptionPassword) {
+    const getData = async () => {
       try {
         setLoading(true);
-        const dat = secureStorage(encryptionPassword).getItem('identities');
-        console.log(dat);
-        if (dat === null) {
-          console.log('no identities found');
+        setErrorMessage('');
+        console.log(`fetching identities for ${ipfsAccount || account}`);
+
+        const response = await axios.get(`https://id-api.signata.net/api/v1/getIdentities${ipfsAccount || account}`);
+
+        console.log(response);
+        if (response.status === 200) {
+          setIpfsAccount(account);
+          setIpfsData(response.data[0]);
+
+          const ipfsResponse = await axios.get(`https://${response.data[0].cid}.ipfs.w3s.link/data.json`);
+
+          console.log(ipfsResponse.data);
+
+          const decryptedData = CryptoJS.AES.decrypt(ipfsResponse.data, encryptionPassword).toString(
+            CryptoJS.enc.Utf8,
+          );
+          console.log(decryptedData);
+          const decryptedIdentities = JSON.parse(decryptedData);
+          console.log(decryptedIdentities);
+          setIdentities(decryptedIdentities);
+        } else if (response.status === 204) {
           setIdentities([]);
         } else {
-          console.log('found identities');
-          setIdentities(dat);
+          setErrorMessage(response.data);
         }
-      } catch (e) {
-        console.error(e);
-        setIdentities([]);
+      } catch (error) {
+        console.error(error);
       } finally {
         setLoading(false);
       }
-    }
-  }, [encryptionPassword, setIdentities]);
+    };
 
-  useEffect(() => {
-    if (identities && encryptionPassword) {
-      // update the localStorage with identities every time they're changed
-      setLoading(true);
-      secureStorage(encryptionPassword).setItem('identities', identities);
-      setLoading(false);
-      // update the lastSaved for any sync jobs
-      // setConfig({ ...config, lastSaved: Date.now() });
+    if (encryptionPassword && account) {
+      getData();
     }
-  }, [identities, encryptionPassword]);
+  }, [encryptionPassword, setIdentities, account, setIpfsAccount, ipfsAccount, setIpfsData]);
+
+  const updateIdentities = async (ids) => {
+    try {
+      setLoading(true);
+      setErrorMessage('');
+      // encrypt the data
+      const encryptedIdentities = CryptoJS.AES.encrypt(JSON.stringify(ids), encryptionPassword).toString();
+      console.log(encryptedIdentities);
+      // generate a hash of the encrypted content
+      const hashToSign = ethers.utils.keccak256(Buffer.from(encryptedIdentities, 'utf8'));
+      console.log(hashToSign);
+      // sign the hash
+      // eslint-disable-next-line no-undef
+      const ethResult = await ethereum.request({
+        method: 'eth_sign',
+        params: [ipfsAccount || account, hashToSign],
+      });
+      console.log(ethResult);
+
+      console.log({
+        encryptedData: encryptedIdentities,
+        signature: ethResult,
+        address: ipfsAccount || account,
+      });
+
+      const response = await axios.post('https://id-api.signata.net/api/v1/saveIdentities', {
+        encryptedData: encryptedIdentities,
+        signature: ethResult,
+        address: ipfsAccount || account,
+      });
+
+      console.log(response);
+
+      setIpfsData(response.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     activateBrowserWallet(); // just try to auto activate on load for metamask users
@@ -162,30 +225,30 @@ function App() {
             paddingBottom: { xs: 1, sm: 2 },
           }}
         >
-          <Grid
-            container
-            spacing={4}
-            direction="row"
-            justifyContent="center"
-            alignItems="stretch"
-          >
-            {window.location.hostname !== 'localhost' && (
-              <UnderConstructionWarning />
-            )}
-            {window.location.hostname === 'localhost' && (
-              <DevModeWarning />
-            )}
+          <Grid container spacing={4} direction="row" justifyContent="center" alignItems="stretch">
+            {window.location.hostname !== 'localhost' && <UnderConstructionWarning />}
+            {window.location.hostname === 'localhost' && <DevModeWarning />}
             {!account && <ProductOverview />}
             {!account && <NoConnectionWarning />}
             {account && encryptionPassword && !supportedChain && (
               <UnsupportedChain SUPPORTED_CHAINS={SUPPORTED_CHAINS} />
             )}
-            {isLoading && <Box sx={{ width: '100%', py: 3 }}><LinearProgress /></Box>}
+            {errorMessage && (
+              <Grid item xs={12} textAlign="center">
+                <Alert severity="error">{errorMessage}</Alert>
+              </Grid>
+            )}
+            {isLoading && (
+              <Backdrop open sx={{ color: '#fff', zIndex: () => theme.zIndex.drawer + 1 }}>
+                <CircularProgress />
+              </Backdrop>
+            )}
             {account && encryptionPassword && supportedChain && (
               <ManageIdentities
                 identities={identities}
                 setIdentities={setIdentities}
                 advancedModeEnabled={advancedModeEnabled}
+                updateIdentities={updateIdentities}
               />
             )}
             {account && (

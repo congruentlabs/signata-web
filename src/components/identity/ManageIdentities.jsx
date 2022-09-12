@@ -23,15 +23,13 @@ import {
 import ItemHeader from '../app/ItemHeader';
 import ItemBox from '../app/ItemBox';
 import TabPanel from './TabPanel';
-import {
-  useGetSingleValue,
-  getIdContract,
-  getIdContractAddress,
-} from '../../hooks/chainHooks';
+import { useGetSingleValue, getIdContract, getIdContractAddress } from '../../hooks/chainHooks';
 import SignataIdentity from './SignataIdentity';
 
 function ManageIdentities(props) {
-  const { identities, setIdentities, advancedModeEnabled } = props;
+  const {
+    identities, advancedModeEnabled, updateIdentities,
+  } = props;
   const { chainId, account } = useEthers();
   const theme = useTheme();
   const isSm = useMediaQuery(theme.breakpoints.up('sm'), {
@@ -53,13 +51,28 @@ function ManageIdentities(props) {
     idContract,
   );
 
-  const VERSION_DIGEST = useGetSingleValue('VERSION_DIGEST', [], getIdContractAddress(chainId), idContract);
+  const VERSION_DIGEST = useGetSingleValue(
+    'VERSION_DIGEST',
+    [],
+    getIdContractAddress(chainId),
+    idContract,
+  );
 
-  const NAME_DIGEST = useGetSingleValue('NAME_DIGEST', [], getIdContractAddress(chainId), idContract);
+  const NAME_DIGEST = useGetSingleValue(
+    'NAME_DIGEST',
+    [],
+    getIdContractAddress(chainId),
+    idContract,
+  );
 
   const SALT = useGetSingleValue('SALT', [], getIdContractAddress(chainId), idContract);
 
-  const TXTYPE_CREATE_DIGEST = useGetSingleValue('TXTYPE_CREATE_DIGEST', [], getIdContractAddress(chainId), idContract);
+  const TXTYPE_CREATE_DIGEST = useGetSingleValue(
+    'TXTYPE_CREATE_DIGEST',
+    [],
+    getIdContractAddress(chainId),
+    idContract,
+  );
 
   const TXTYPE_DESTROY_DIGEST = useGetSingleValue(
     'TXTYPE_DESTROY_DIGEST',
@@ -68,9 +81,19 @@ function ManageIdentities(props) {
     idContract,
   );
 
-  const TXTYPE_LOCK_DIGEST = useGetSingleValue('TXTYPE_LOCK_DIGEST', [], getIdContractAddress(chainId), idContract);
+  const TXTYPE_LOCK_DIGEST = useGetSingleValue(
+    'TXTYPE_LOCK_DIGEST',
+    [],
+    getIdContractAddress(chainId),
+    idContract,
+  );
 
-  const TXTYPE_UNLOCK_DIGEST = useGetSingleValue('TXTYPE_UNLOCK_DIGEST', [], getIdContractAddress(chainId), idContract);
+  const TXTYPE_UNLOCK_DIGEST = useGetSingleValue(
+    'TXTYPE_UNLOCK_DIGEST',
+    [],
+    getIdContractAddress(chainId),
+    idContract,
+  );
 
   const TXTYPE_ROLLOVER_DIGEST = useGetSingleValue(
     'TXTYPE_ROLLOVER_DIGEST',
@@ -102,7 +125,8 @@ function ManageIdentities(props) {
       type: 'independent',
       creator: account,
     });
-    setIdentities(newIds);
+    updateIdentities(newIds);
+    // setIdentities(newIds);
     setIdentitySeed('');
     setDelegateSeed('');
     setSecuritySeed('');
@@ -128,7 +152,8 @@ function ManageIdentities(props) {
       type: 'wallet',
       creator: account,
     });
-    setIdentities(newIds);
+    updateIdentities(newIds);
+    // setIdentities(newIds);
     setIdentitySeed('');
     setDelegateSeed('');
     setSecuritySeed('');
@@ -187,7 +212,8 @@ function ManageIdentities(props) {
       const i = JSON.parse(importData);
       // TODO: validate the data
       newIds.push(i);
-      setIdentities(newIds);
+      updateIdentities(newIds);
+      // setIdentities(newIds);
       setImportData('');
     } catch (error) {
       console.error(error);
@@ -202,7 +228,7 @@ function ManageIdentities(props) {
           <Grid item xs={12} md={8} key={id.identitySeed}>
             <SignataIdentity
               identities={identities}
-              setIdentities={setIdentities}
+              updateIdentities={updateIdentities}
               account={account}
               chainId={chainId}
               id={id}
@@ -217,6 +243,15 @@ function ManageIdentities(props) {
             />
           </Grid>
         ))}
+      {identities && identities.length === 0 && (
+        <Grid item xs={12} md={8}>
+          <Alert severity="info">
+            If you&apos;re expecting to see identities here that you&apos;ve already created, but
+            nothing is showing up, please make sure you&apos;re using the same wallet that you
+            originally starting using Signata with.
+          </Alert>
+        </Grid>
+      )}
       {/* {nanoExists && (
         <Grid item xs={12} md={8}>
           <NanoIdentity />
@@ -226,7 +261,13 @@ function ManageIdentities(props) {
         <ItemBox>
           <ItemHeader text="Add Identity" />
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={tabValue} onChange={handleChangeTab} textColor="primary" indicatorColor="primary" centered>
+            <Tabs
+              value={tabValue}
+              onChange={handleChangeTab}
+              textColor="primary"
+              indicatorColor="primary"
+              centered
+            >
               <Tab label="Wallet" />
               {/* {advancedModeEnabled && <Tab label="Nano" />} */}
               {advancedModeEnabled && <Tab label="Independent" />}
@@ -260,7 +301,11 @@ function ManageIdentities(props) {
                 onChange={onChangeSecuritySeed}
               />
               <Paper>
-                <ButtonGroup fullWidth variant="text" orientation={isSm ? 'horizontal' : 'vertical'}>
+                <ButtonGroup
+                  fullWidth
+                  variant="text"
+                  orientation={isSm ? 'horizontal' : 'vertical'}
+                >
                   <Button
                     color="primary"
                     onClick={onCreateWalletIdentity}
@@ -275,8 +320,9 @@ function ManageIdentities(props) {
                 </ButtonGroup>
               </Paper>
               <Alert severity="info">
-                Wallet identities are linked to your connected wallet. These are easy to use for authentication, but
-                will link any on-chain identity information with the wallet you have connected with.
+                Wallet identities are linked to your connected wallet. These are easy to use for
+                authentication, but will link any on-chain identity information with the wallet you
+                have connected with.
               </Alert>
             </Stack>
           </TabPanel>
@@ -308,7 +354,11 @@ function ManageIdentities(props) {
                   onChange={onChangeSecuritySeed}
                 />
                 <Paper>
-                  <ButtonGroup fullWidth variant="text" orientation={isSm ? 'horizontal' : 'vertical'}>
+                  <ButtonGroup
+                    fullWidth
+                    variant="text"
+                    orientation={isSm ? 'horizontal' : 'vertical'}
+                  >
                     <Button
                       color="primary"
                       type="submit"
@@ -323,8 +373,8 @@ function ManageIdentities(props) {
                   </ButtonGroup>
                 </Paper>
                 <Alert severity="info">
-                  Independent identities have all seeds randomly generated. These identities are useful for more
-                  privacy, but can be more difficult to use in some scenarios.
+                  Independent identities have all seeds randomly generated. These identities are
+                  useful for more privacy, but can be more difficult to use in some scenarios.
                 </Alert>
               </Stack>
             </form>
@@ -341,8 +391,17 @@ function ManageIdentities(props) {
                   onChange={(e) => setImportData(e.target.value)}
                 />
                 <Paper>
-                  <ButtonGroup fullWidth variant="text" orientation={isSm ? 'horizontal' : 'vertical'}>
-                    <Button color="primary" type="submit" disabled={!importData} startIcon={<AddIcon />}>
+                  <ButtonGroup
+                    fullWidth
+                    variant="text"
+                    orientation={isSm ? 'horizontal' : 'vertical'}
+                  >
+                    <Button
+                      color="primary"
+                      type="submit"
+                      disabled={!importData}
+                      startIcon={<AddIcon />}
+                    >
                       Import Identity
                     </Button>
                   </ButtonGroup>
@@ -354,8 +413,9 @@ function ManageIdentities(props) {
                   </Alert>
                 )}
                 <Alert severity="info">
-                  An imported identity needs to be correctly formatted as JSON data. Only import an identity if you know
-                  what you are doing, as you may encounter unexpected system behaviour with an invalid format identity.
+                  An imported identity needs to be correctly formatted as JSON data. Only import an
+                  identity if you know what you are doing, as you may encounter unexpected system
+                  behaviour with an invalid format identity.
                 </Alert>
               </Stack>
             </form>

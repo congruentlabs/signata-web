@@ -61,7 +61,7 @@ const ListItem = styled('li')(({ theme }) => ({
 
 function SignataIdentity({
   identities,
-  setIdentities,
+  updateIdentities,
   account,
   chainId,
   id,
@@ -613,7 +613,8 @@ function SignataIdentity({
           newIds[idx] = newId;
         }
       });
-      setIdentities(newIds);
+      updateIdentities(newIds);
+      // setIdentities(newIds);
       onCloseRename(e);
     } catch (error) {
       console.error(error);
@@ -642,7 +643,8 @@ function SignataIdentity({
         newSeeds.push(s);
       }
     });
-    setIdentities(newSeeds);
+    updateIdentities(newSeeds);
+    // setIdentities(newSeeds);
     setOpenDelete(false);
     setLoading(false);
   };

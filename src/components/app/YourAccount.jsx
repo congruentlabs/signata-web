@@ -12,8 +12,6 @@ import {
   AlertTitle,
   TextField,
   useMediaQuery,
-  Switch,
-  FormControlLabel,
   Chip,
 } from '@mui/material';
 import ItemHeader from './ItemHeader';
@@ -40,7 +38,10 @@ function YourAccount(props) {
   const [openRestoreBackup, setOpenRestoreBackup] = useState(false);
   const [backupFileName, setBackupFileName] = useState('');
   const [backupDataPassword, setBackupDataPassword] = useState('');
-  const [advancedModeEnabled, setAdvancedModeEnabled] = useLocalStorageState('advancedModeEnabled', { defaultValue: false });
+  const [advancedModeEnabled, setAdvancedModeEnabled] = useLocalStorageState(
+    'advancedModeEnabled',
+    { defaultValue: false },
+  );
   const theme = useTheme();
   const isSm = useMediaQuery(theme.breakpoints.up('sm'), {
     defaultMatches: true,
@@ -109,7 +110,10 @@ function YourAccount(props) {
 
   const onSubmitDownloadBackup = (e) => {
     e.preventDefault();
-    const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(identities), backupDataPassword).toString();
+    const encryptedData = CryptoJS.AES.encrypt(
+      JSON.stringify(identities),
+      backupDataPassword,
+    ).toString();
     const element = document.createElement('a');
     const file = new Blob([encryptedData], { type: 'text/plain' });
     element.href = URL.createObjectURL(file);
@@ -139,7 +143,9 @@ function YourAccount(props) {
 
         const onLoad = (evt) => {
           const fileContents = evt.target.result;
-          const decryptedData = CryptoJS.AES.decrypt(fileContents, backupDataPassword).toString(CryptoJS.enc.Utf8);
+          const decryptedData = CryptoJS.AES.decrypt(fileContents, backupDataPassword).toString(
+            CryptoJS.enc.Utf8,
+          );
           const parsedData = JSON.parse(decryptedData);
           // TODO: validate that it is an identity array before saving it
           setIdentities(parsedData);
@@ -215,7 +221,13 @@ function YourAccount(props) {
           />,
           <Button key="upload-button" variant="contained" component="label" color="secondary">
             Upload Backup
-            <input hidden accept="text/plain" multiple={false} type="file" onChange={onChangeBackupFile} />
+            <input
+              hidden
+              accept="text/plain"
+              multiple={false}
+              type="file"
+              onChange={onChangeBackupFile}
+            />
           </Button>,
           <TextField
             key="file-name"
@@ -232,20 +244,11 @@ function YourAccount(props) {
           {(!config || !config.hasAccount) && (
             <form onSubmit={onCreatePassword}>
               <Stack spacing={2}>
-                {!isPersistent && (
-                  <Alert severity="error">
-                    <AlertTitle>Not Persistent</AlertTitle>
-                    This device won&apos;t save your data once you leave this
-                    app. It is not safe to use Signata on this device as you may
-                    lose your identity data.
-                  </Alert>
-                )}
                 <Alert severity="info">
                   <AlertTitle>Account Password</AlertTitle>
-                  Your password encrypts all of your identities. Your identities
-                  are only saved on this device. If you clear your browser
-                  cache, or use this app in a private window, you might lose
-                  your data once you leave this app.
+                  Your password encrypts all of your identities. Your encrypted identities are
+                  stored on the Interplanetary File System (IPFS). Anyone can access your encrypted files
+                  on IPFS, so make sure you use a strong unique password and store it somewhere safe.
                 </Alert>
                 <TextField
                   label="Password"
@@ -271,22 +274,13 @@ function YourAccount(props) {
                   onChange={onChangePasswordRepeat}
                   helperText={secondErrorMessage}
                 />
-                {showCapsWarning && (
-                  <Alert severity="warning">Caps Lock is On</Alert>
-                )}
-                <ButtonGroup
-                  fullWidth
-                  orientation={isSm ? 'horizontal' : 'vertical'}
-                >
+                {showCapsWarning && <Alert severity="warning">Caps Lock is On</Alert>}
+                <ButtonGroup fullWidth orientation={isSm ? 'horizontal' : 'vertical'}>
                   {(!config || !config.hasAccount) && (
                     <Button
                       color="primary"
                       variant="contained"
-                      disabled={
-                        !password
-                        || password.length < 1
-                        || password !== passwordRepeat
-                      }
+                      disabled={!password || password.length < 1 || password !== passwordRepeat}
                       onClick={onCreatePassword}
                     >
                       Set Password
@@ -303,14 +297,11 @@ function YourAccount(props) {
                 {!isPersistent && (
                   <Alert severity="error">
                     <AlertTitle>Not Persistent</AlertTitle>
-                    This device won&apos;t save your data once you leave this
-                    app. It is not safe to use Signata on this device as you may
-                    lose your identity data.
+                    This device won&apos;t save your data once you leave this app. It is not safe to
+                    use Signata on this device as you may lose your identity data.
                   </Alert>
                 )}
-                <Alert severity="info">
-                  Unlock your account to access your identities.
-                </Alert>
+                <Alert severity="info">Unlock your account to access your identities.</Alert>
                 <TextField
                   label="Password"
                   variant="outlined"
@@ -323,9 +314,7 @@ function YourAccount(props) {
                   onChange={onChangePassword}
                   helperText={firstErrorMessage}
                 />
-                {showCapsWarning && (
-                  <Alert severity="warning">Caps Lock is On</Alert>
-                )}
+                {showCapsWarning && <Alert severity="warning">Caps Lock is On</Alert>}
                 <Button
                   color="primary"
                   variant="contained"
@@ -341,10 +330,7 @@ function YourAccount(props) {
           {config && config.hasAccount && unlocked && (
             <Stack spacing={2}>
               <Alert severity="success">Account Unlocked</Alert>
-              <ButtonGroup
-                fullWidth
-                orientation={isSm ? 'horizontal' : 'vertical'}
-              >
+              <ButtonGroup fullWidth orientation={isSm ? 'horizontal' : 'vertical'}>
                 <Button color="secondary" variant="contained" onClick={onClickDownloadBackup}>
                   Download Backup
                 </Button>
@@ -353,17 +339,17 @@ function YourAccount(props) {
                 </Button>
               </ButtonGroup>
               <Alert severity="info">
-                Advanced mode unlocks some additional features of Signata. Only
-                use this if you understand what these extra features can be used
-                for.
+                Advanced mode unlocks some additional features of Signata. Only use this if you
+                understand what these extra features can be used for.
               </Alert>
               <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
-                <Button color="secondary" onClick={() => setAdvancedModeEnabled(!advancedModeEnabled)}>
+                <Button
+                  color="secondary"
+                  onClick={() => setAdvancedModeEnabled(!advancedModeEnabled)}
+                >
                   {advancedModeEnabled ? 'Disable Advanced Mode' : 'Enable Advanced Mode'}
                 </Button>
-                {advancedModeEnabled && (
-                  <Chip label="Advanced Mode Enabled" color="success" />
-                )}
+                {advancedModeEnabled && <Chip label="Advanced Mode Enabled" color="success" />}
               </Stack>
 
               {/* <TextField
