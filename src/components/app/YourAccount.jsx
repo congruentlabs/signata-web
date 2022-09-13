@@ -203,7 +203,7 @@ function YourAccount(props) {
         onClose={onCloseRestoreBackup}
         title="Restore Backup?"
         alertSeverity="warning"
-        alertText="Restoring will overwrite any identities you have saved on this device. If you've added identities since you created this backup, export them now or you will lose them."
+        alertText="Restoring will overwrite any identities you have saved. If you've added identities since you created this backup, export them now or you will lose them."
         submitText="Restore Backup"
         disableSubmit={!backupFileName}
         errorMessage={restoreErrorMessage}
@@ -247,8 +247,14 @@ function YourAccount(props) {
                 <Alert severity="info">
                   <AlertTitle>Account Password</AlertTitle>
                   Your password encrypts all of your identities. Your encrypted identities are
-                  stored on the Interplanetary File System (IPFS). Anyone can access your encrypted files
-                  on IPFS, so make sure you use a strong unique password and store it somewhere safe.
+                  stored on the Interplanetary File System (IPFS). Anyone can access your encrypted
+                  files on IPFS, so make sure you use a strong unique password and store it
+                  somewhere safe.
+                </Alert>
+                <Alert severity="warning">
+                  If you&apos;ve already set up Signata on another device, use the exact same
+                  password that you used on the other device, and the exact same connected wallet,
+                  otherwise your identities will not be accessible.
                 </Alert>
                 <TextField
                   label="Password"
@@ -339,7 +345,7 @@ function YourAccount(props) {
                 </Button>
               </ButtonGroup>
               <Alert severity="info">
-                Advanced mode unlocks some additional features of Signata. Only use this if you
+                Expert mode unlocks some additional features of Signata. Only use this if you
                 understand what these extra features can be used for.
               </Alert>
               <Stack direction="row" spacing={2} alignItems="center" justifyContent="center">
@@ -347,9 +353,9 @@ function YourAccount(props) {
                   color="secondary"
                   onClick={() => setAdvancedModeEnabled(!advancedModeEnabled)}
                 >
-                  {advancedModeEnabled ? 'Disable Advanced Mode' : 'Enable Advanced Mode'}
+                  {advancedModeEnabled ? 'Disable Expert Mode' : 'Enable Expert Mode'}
                 </Button>
-                {advancedModeEnabled && <Chip label="Advanced Mode Enabled" color="success" />}
+                {advancedModeEnabled && <Chip label="Expert Mode Enabled" color="success" />}
               </Stack>
 
               {/* <TextField

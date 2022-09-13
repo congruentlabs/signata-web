@@ -50,7 +50,6 @@ function App() {
   );
   const [supportedChain, setSupportedChain] = useState(false);
   const [ipfsAccount, setIpfsAccount] = useLocalStorageState('ipfsAccount', { defaultValue: '' });
-  const [ipfsData, setIpfsData] = useLocalStorageState('ipfsData', { defaultValue: {} });
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -61,12 +60,6 @@ function App() {
       setSupportedChain(false);
     }
   }, [chainId]);
-
-  // useEffect(() => {
-  //   if (ipfsData) {
-
-  //   }
-  // }, [ipfsData]);
 
   useEffect(() => {
     const getData = async () => {
@@ -80,7 +73,6 @@ function App() {
         console.log(response);
         if (response.status === 200) {
           setIpfsAccount(account);
-          setIpfsData(response.data[0]);
 
           const ipfsResponse = await axios.get(`https://${response.data[0].cid}.ipfs.w3s.link/data.json`);
 
@@ -108,7 +100,7 @@ function App() {
     if (encryptionPassword && account) {
       getData();
     }
-  }, [encryptionPassword, setIdentities, account, setIpfsAccount, ipfsAccount, setIpfsData]);
+  }, [encryptionPassword, setIdentities, account, setIpfsAccount, ipfsAccount]);
 
   const updateIdentities = async (ids) => {
     try {
@@ -142,7 +134,6 @@ function App() {
 
       console.log(response);
 
-      setIpfsData(response.data);
       setIdentities(ids);
     } catch (error) {
       console.error(error);
@@ -151,9 +142,9 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    activateBrowserWallet(); // just try to auto activate on load for metamask users
-  }, [activateBrowserWallet]);
+  // useEffect(() => {
+  //   activateBrowserWallet(); // just try to auto activate on load for metamask users
+  // }, [activateBrowserWallet]);
 
   const theme = useMemo(
     () => createTheme({
@@ -205,6 +196,7 @@ function App() {
 
   const handleClickDisconnect = () => {
     deactivate();
+    setIdentities([]);
   };
 
   return (
@@ -265,8 +257,6 @@ function App() {
                 setIdentities={setIdentities}
               />
             )}
-            {/* {account && encryptionPassword && <Subscription />} */}
-            {/* {account && encryptionPassword && <NetworkServices />} */}
           </Grid>
         </Box>
       </Container>

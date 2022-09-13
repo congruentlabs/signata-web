@@ -45,6 +45,10 @@ export const getRightsContractAddress = (chainId) => {
     // bsc
     return consts.RIGHTS_CONTRACT_BSC;
   }
+  if (chainId === 137) {
+    // matic
+    return consts.RIGHTS_CONTRACT_MATIC;
+  }
   if (chainId === 250) {
     // fantom
     return consts.RIGHTS_CONTRACT_FTM;
