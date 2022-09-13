@@ -143,6 +143,7 @@ function App() {
       console.log(response);
 
       setIpfsData(response.data);
+      setIdentities(ids);
     } catch (error) {
       console.error(error);
     } finally {
