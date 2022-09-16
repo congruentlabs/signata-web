@@ -1,0 +1,25 @@
+{
+  "description": "Proof of Completed KYC issued by Congruent Labs Pty Ltd",
+  "image": "https://congruentlabs.co/logo.png",
+  "external_url": "https://my.signata.net",
+  "name": "Proof of Completed KYC",
+  "issuer": "Congruent Labs Pty Ltd",
+  "issuer_jurisdiction": "Australia",
+  "excluded_countries": [
+    "CF",
+    "CD",
+    "ER",
+    "LB",
+    "LY",
+    "MM",
+    "RU",
+    "SO",
+    "SD",
+    "YE",
+    "ZW",
+    "IR",
+    "SY",
+    "KP"
+  ],
+  "kyc_providers": ["blockpass"]
+}
