@@ -2,7 +2,7 @@ import React from 'react';
 import { Container } from '@mui/material';
 import Typography from '@mui/material/Typography';
 
-export function AppFooter() {
+function AppFooter() {
   return (
     <Container maxWidth="md" sx={{ paddingBottom: 5, paddingTop: 5 }}>
       <Typography textAlign="center" variant="body2">

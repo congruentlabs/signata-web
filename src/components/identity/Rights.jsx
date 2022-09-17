@@ -185,7 +185,7 @@ function Rights({ chainId, id, account }) {
             </CardContent>
           </Card>
         )}
-        {!hasBlockpassKycToken && account !== id && (
+        {!hasBlockpassKycToken && account !== id && account && (
           <Card sx={{ textAlign: 'center' }}>
             <CardContent>
               <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
@@ -205,7 +205,7 @@ function Rights({ chainId, id, account }) {
             </CardContent>
           </Card>
         )}
-        <Card sx={{ display: !hasBlockpassKycToken && account === id ? '' : 'none' }}>
+        <Card sx={{ display: !hasBlockpassKycToken && account === id && account ? '' : 'none' }}>
           <CardContent>
             <Stack spacing={1}>
               <Box sx={{ textAlign: 'center' }}>

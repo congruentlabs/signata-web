@@ -3,7 +3,7 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Grid from '@mui/material/Grid';
 
-export function UnderConstructionWarning() {
+function UnderConstructionWarning() {
   return (
     <Grid item xs={12}>
       <Alert severity="warning">

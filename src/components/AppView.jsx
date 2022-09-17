@@ -1,33 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import CryptoJS from 'crypto-js';
-import { useEthers } from '@usedapp/core';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import useLocalStorageState from 'use-local-storage-state';
 import {
   Box, Grid, CircularProgress, Alert, Backdrop,
 } from '@mui/material';
 import axios from 'axios';
-import {
-  NoConnectionWarning,
-  // NetworkServices,
-  ProductOverview,
-  ManageIdentities,
-  YourAccount,
-  UnderConstructionWarning,
-  DevModeWarning,
-  // Subscription,
-} from '.';
+import NoConnectionWarning from './connection/NoConnectionWarning';
+import ProductOverview from './app/ProductOverview';
+import ManageIdentities from './identity/ManageIdentities';
+import YourAccount from './app/YourAccount';
+import UnderConstructionWarning from './app/UnderConstructionWarning';
+import DevModeWarning from './app/DevModeWarning';
 import UnsupportedChain from './app/UnsupportedChain';
-import { SUPPORTED_CHAINS } from '../hooks/helpers';
-
-// const dSataContractAddress = '0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b';
 
 function AppView({
-  theme, account, identities, setIdentities,
+  theme, account, identities, setIdentities, supportedChain, SUPPORTED_CHAINS,
 }) {
-  const { activateBrowserWallet, deactivate, chainId } = useEthers();
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [config, setConfig, isPersistent] = useLocalStorageState('config', []);
   const [isLoading, setLoading] = useState(false);
   const [encryptionPassword, setEncryptionPassword] = useState('');
@@ -35,18 +24,8 @@ function AppView({
     'advancedModeEnabled',
     { defaultValue: false },
   );
-  const [supportedChain, setSupportedChain] = useState(false);
   const [ipfsAccount, setIpfsAccount] = useLocalStorageState('ipfsAccount', { defaultValue: '' });
   const [errorMessage, setErrorMessage] = useState('');
-
-  useEffect(() => {
-    const chainName = SUPPORTED_CHAINS.find((network) => network.chainId === chainId)?.chainName;
-    if (chainName) {
-      setSupportedChain(true);
-    } else {
-      setSupportedChain(false);
-    }
-  }, [chainId]);
 
   useEffect(() => {
     const getData = async () => {

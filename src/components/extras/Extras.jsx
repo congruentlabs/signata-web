@@ -18,7 +18,7 @@ import CloudOffIcon from '@mui/icons-material/CloudOff';
 
 import { fNumber, fCurrency } from '../../utils/formats';
 
-export function Extras({
+function Extras({
   sataBalance,
   dSataBalance,
   chainId,

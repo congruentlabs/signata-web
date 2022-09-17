@@ -1,53 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { ethers, BigNumber } from 'ethers';
-import axios from 'axios';
+import { ethers } from 'ethers';
 import { useTheme, styled } from '@mui/material/styles';
-import { shortenIfAddress, useTokenAllowance } from '@usedapp/core';
-import { formatUnits } from '@ethersproject/units';
+import { shortenIfAddress } from '@usedapp/core';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import FingerprintIcon from '@mui/icons-material/Fingerprint';
+import LinkIcon from '@mui/icons-material/Link';
+import LinkOffIcon from '@mui/icons-material/LinkOff';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
-import FingerprintIcon from '@mui/icons-material/Fingerprint';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import LinkOffIcon from '@mui/icons-material/LinkOff';
-import LinkIcon from '@mui/icons-material/Link';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
+  Alert,
+  AlertTitle,
+  Box,
   Button,
   ButtonGroup,
   Chip,
-  Stack,
-  useMediaQuery,
-  TextField,
-  Box,
-  Typography,
-  Paper,
-  Alert,
-  AlertTitle,
-  Card,
-  CardContent,
-  CardActionArea,
-  ButtonBase,
   LinearProgress,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+  useMediaQuery,
 } from '@mui/material';
 import {
-  useCreateIdentity,
-  useLockIdentity,
-  useUnlockIdentity,
-  useDestroyIdentity,
-  useRolloverIdentity,
-  useGetSingleValue,
   getIdContractAddress,
-  useClaimKycNft,
-  getTokenContractAddress,
-  getKycClaimContractAddress,
-  useTokenApprove,
   getKycClaimContract,
-  getRightsContractAddress,
+  getKycClaimContractAddress,
   getRightsContract,
+  getRightsContractAddress,
+  useCreateIdentity,
+  useDestroyIdentity,
+  useGetSingleValue,
+  useLockIdentity,
+  useRolloverIdentity,
+  useUnlockIdentity,
 } from '../../hooks/chainHooks';
 import LoadingState from './LoadingState';
 import ItemHeader from '../app/ItemHeader';
@@ -100,31 +87,8 @@ function SignataIdentity({
   const [identityWallet, setIdentityWallet] = useState(null);
   const [delegateWallet, setDelegateWallet] = useState(null);
   const [securityWallet, setSecurityWallet] = useState(null);
-  const [hasKycNft, setHasKycNft] = useState(false);
   const [exportData, setExportData] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [kycErrorMessage, setKycErrorMessage] = useState('');
-  const [showBlockpassButton, setShowBlockpassButton] = useState(false);
-  const claimAllowance = useTokenAllowance(
-    getTokenContractAddress(chainId),
-    account,
-    kycClaimContractAddress,
-  );
-
-  useEffect(() => {
-    if (showBlockpassButton) {
-      const blockpass = new window.BlockpassKYCConnect('signata_f812a', {
-        refId: id.identityAddress,
-        elementId: `blockpass-kyc-connect-${id.delegateAddress}`,
-      });
-
-      blockpass.startKYCConnect();
-
-      blockpass.on('KYCConnectSuccess', () => {
-        setLoading(false);
-      });
-    }
-  }, [id, showBlockpassButton]);
 
   useEffect(() => {
     if (id) {
@@ -168,18 +132,6 @@ function SignataIdentity({
     send: rolloverSend,
     resetState: rolloverResetState,
   } = useRolloverIdentity(chainId);
-
-  const {
-    state: claimKycNftState,
-    send: claimKycNftSend,
-    resetState: claimKycNftResetState,
-  } = useClaimKycNft(chainId);
-
-  const {
-    state: approveState,
-    send: approveSend,
-    resetState: approveResetState,
-  } = useTokenApprove(chainId);
 
   const identityExists = useGetSingleValue(
     '_identityExists',
@@ -266,20 +218,6 @@ function SignataIdentity({
       setLoading(shouldBeLoading(rolloverState.status));
     }
   }, [rolloverState]);
-
-  useEffect(() => {
-    if (claimKycNftState) {
-      logLoading(claimKycNftState, 'claimKycNft');
-      setLoading(shouldBeLoading(claimKycNftState.status));
-    }
-  }, [claimKycNftState]);
-
-  useEffect(() => {
-    if (approveState) {
-      logLoading(approveState, 'approve');
-      setLoading(shouldBeLoading(approveState.status));
-    }
-  }, [approveState]);
 
   const resetStates = () => {
     createResetState();
@@ -654,47 +592,6 @@ function SignataIdentity({
   //   navigator.clipboard.writeText(dat);
   // };
 
-  const handleClickClaimKycNft = async (e) => {
-    e.preventDefault();
-
-    try {
-      setLoading(true);
-      setKycErrorMessage('');
-      const response = await axios.get(
-        `https://id-api.signata.net/api/v1/requestKyc/${id.delegateAddress}`,
-      );
-      if (response && response.data && response.data.sigS) {
-        // call chain
-        console.log(response.data);
-        claimKycNftResetState();
-        const salt = `0x${response.data.salt}`;
-        console.log({
-          delegateAddress: id.delegateAddress,
-          sigV: response.data.sigV,
-          sigR: response.data.sigR,
-          sigS: response.data.sigS,
-          salt,
-        });
-        claimKycNftSend(
-          id.delegateAddress,
-          response.data.sigV,
-          response.data.sigR,
-          response.data.sigS,
-          salt,
-        );
-      } else {
-        console.log(response);
-        setKycErrorMessage(
-          'No completed KYC information found for this identity. Complete KYC with a Signata-integrated provider first.',
-        );
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleClickExport = (e) => {
     e.preventDefault();
     if (exportData) {
@@ -702,19 +599,6 @@ function SignataIdentity({
     } else {
       setExportData(JSON.stringify(id, false, 2));
     }
-  };
-
-  const onClickBlockpassKyc = (e) => {
-    e.preventDefault();
-    console.log('onClickBlockpassKyc');
-    setShowBlockpassButton(true);
-  };
-
-  const handleClickApproveKycNft = (e) => {
-    e.preventDefault();
-    console.log('handleClickApproveKycNft');
-    approveResetState();
-    approveSend(getKycClaimContractAddress(chainId), BigNumber.from('1000000000000000000000'));
   };
 
   return (
@@ -1016,91 +900,17 @@ function SignataIdentity({
               </ButtonGroup>
             </Paper>
           )}
+          <Paper>
+            <Button href={`#identity/${id.delegateAddress}`} fullWidth>
+              View
+            </Button>
+          </Paper>
           {exportData && <TextField multiline value={exportData} />}
           {errorMessage && (
             <Alert severity="error">
               <AlertTitle>Error</AlertTitle>
               {errorMessage}
             </Alert>
-          )}
-          {id.chainId === chainId && identityExists && !hasKycNft && (
-            <Accordion sx={{ textAlign: 'center' }}>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-                <Typography>NFT Rights</Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                {hasBlockpassKycToken ? (
-                  <Stack spacing={1}>
-                    <Alert severity="success">This identity holds a Blockpass KYC NFT</Alert>
-                  </Stack>
-                ) : (
-                  <Stack spacing={1}>
-                    <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
-                      You can purchase NFT rights with SATA tokens. These rights are provided by
-                      Signata, but rights can also be issued by other providers.
-                    </Alert>
-                    <Card sx={{ m: 2, textAlign: 'center' }}>
-                      <CardActionArea
-                        component={ButtonBase}
-                        onClick={onClickBlockpassKyc}
-                        disabled={isLoading}
-                      >
-                        <CardContent>
-                          <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
-                          <Typography gutterBottom variant="h5" component="div" textAlign="left">
-                            Blockpass KYC
-                            {' ('}
-                            {formatUnits(kycClaimPrice || 0, 18)}
-                            {' '}
-                            SATA)
-                          </Typography>
-                          <Typography variant="body2" textAlign="left">
-                            KYC with Congruent Labs (Australia) verifying your identity using
-                            Blockpass. Excluding residents of the following sanctioned countries:
-                            Central African Republic, Democratic Republic of the Congo, Eritrea,
-                            Lebanon, Libya, Myanmar, Russia, Somalia, Sudan, Yemen, Zimbabwe, Crimea
-                            and Sevastopol, Iran, Syria, and North Korea.
-                          </Typography>
-                        </CardContent>
-                      </CardActionArea>
-                    </Card>
-                    <Button
-                      fullWidth
-                      id={`blockpass-kyc-connect-${id.delegateAddress}`}
-                      sx={{ display: showBlockpassButton ? 'inline' : 'none' }}
-                      disabled={isLoading}
-                    >
-                      Start KYC
-                    </Button>
-                    <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
-                      Once you have completed KYC with a provider, click the below button to claim
-                      your KYC NFT.
-                    </Alert>
-                    <Button
-                      fullWidth
-                      onClick={handleClickApproveKycNft}
-                      disabled={isLoading || claimAllowance >= (1000 * 1e18)}
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      fullWidth
-                      onClick={handleClickClaimKycNft}
-                      disabled={isLoading || claimAllowance < (1000 * 1e18)}
-                    >
-                      Claim KYC NFT
-                    </Button>
-                    <LoadingState state={claimKycNftState} />
-                    <LoadingState state={approveState} />
-                    {kycErrorMessage && <Alert severity="error">{kycErrorMessage}</Alert>}
-                  </Stack>
-                )}
-              </AccordionDetails>
-            </Accordion>
           )}
         </Stack>
       </ItemBox>

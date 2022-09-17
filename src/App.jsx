@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useEthers } from '@usedapp/core';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider, experimental_sx as sx } from '@mui/material/styles';
@@ -7,16 +7,14 @@ import {
   lime, orange, red, blue,
 } from '@mui/material/colors';
 import { HashRouter, Route, Routes } from 'react-router-dom';
-import {
-  AppFooter, AppHeader, AppView, IdentityView,
-} from './components';
-
-// const dSataContractAddress = '0x49428f057dd9d20a8e4c6873e98afd8cd7146e3b';
+import AppHeader from './components/app/AppHeader';
+import AppFooter from './components/app/AppFooter';
+import AppView from './components/AppView';
+import IdentityView from './components/IdentityView';
+import { SUPPORTED_CHAINS } from './hooks/helpers';
 
 function App() {
-  const {
-    activateBrowserWallet, account, deactivate, chainId,
-  } = useEthers();
+  const { account, deactivate, chainId } = useEthers();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [identities, setIdentities] = useState([]);
   const [supportedChain, setSupportedChain] = useState(false);
@@ -69,6 +67,15 @@ function App() {
     [prefersDarkMode],
   );
 
+  useEffect(() => {
+    const chainName = SUPPORTED_CHAINS.find((network) => network.chainId === chainId)?.chainName;
+    if (chainName) {
+      setSupportedChain(true);
+    } else {
+      setSupportedChain(false);
+    }
+  }, [chainId]);
+
   const handleClickDisconnect = () => {
     deactivate();
     setIdentities([]);
@@ -96,10 +103,24 @@ function App() {
                   account={account}
                   identities={identities}
                   setIdentities={setIdentities}
+                  supportedChain={supportedChain}
+                  SUPPORTED_CHAINS={SUPPORTED_CHAINS}
+                  chainId={chainId}
                 />
               )}
             />
-            <Route path="identity/:id" element={<IdentityView theme={theme} account={account} />} />
+            <Route
+              path="identity/:id"
+              element={(
+                <IdentityView
+                  theme={theme}
+                  account={account}
+                  supportedChain={supportedChain}
+                  SUPPORTED_CHAINS={SUPPORTED_CHAINS}
+                  chainId={chainId}
+                />
+              )}
+            />
           </Routes>
         </HashRouter>
       </Container>
