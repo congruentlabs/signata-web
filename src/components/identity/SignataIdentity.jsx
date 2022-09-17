@@ -901,7 +901,7 @@ function SignataIdentity({
             </Paper>
           )}
           <Paper>
-            <Button href={`#identity/${id.delegateAddress}`} fullWidth>
+            <Button href={`#/identity/${id.delegateAddress}`} fullWidth>
               View
             </Button>
           </Paper>
