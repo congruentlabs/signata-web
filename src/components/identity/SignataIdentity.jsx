@@ -27,8 +27,6 @@ import {
   getIdContractAddress,
   getKycClaimContract,
   getKycClaimContractAddress,
-  getRightsContract,
-  getRightsContractAddress,
   useCreateIdentity,
   useDestroyIdentity,
   useGetSingleValue,
@@ -68,9 +66,6 @@ function SignataIdentity({
   const isXs = useMediaQuery(theme.breakpoints.down('sm'), {
     defaultMatches: true,
   });
-
-  const kycClaimContractAddress = getKycClaimContractAddress(chainId);
-  const kycClaimContract = getKycClaimContract(chainId);
 
   const [isLoading, setLoading] = useState(false);
   const [openLock, setOpenLock] = useState(false);
@@ -166,22 +161,6 @@ function SignataIdentity({
     [id.identityAddress || ''],
     getIdContractAddress(chainId),
     idContract,
-  );
-
-  const schemaId = useGetSingleValue('schemaId', [], kycClaimContractAddress, kycClaimContract);
-
-  const hasBlockpassKycToken = useGetSingleValue(
-    'holdsTokenOfSchema',
-    [id.delegateAddress || '', schemaId],
-    getRightsContractAddress(chainId),
-    getRightsContract(chainId),
-  );
-
-  const kycClaimPrice = useGetSingleValue(
-    'feeAmount',
-    [],
-    kycClaimContractAddress,
-    kycClaimContract,
   );
 
   useEffect(() => {
