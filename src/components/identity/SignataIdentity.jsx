@@ -25,8 +25,6 @@ import {
 } from '@mui/material';
 import {
   getIdContractAddress,
-  getKycClaimContract,
-  getKycClaimContractAddress,
   useCreateIdentity,
   useDestroyIdentity,
   useGetSingleValue,

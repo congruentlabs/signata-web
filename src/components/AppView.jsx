@@ -161,6 +161,7 @@ function AppView({
             setAdvancedModeEnabled={setAdvancedModeEnabled}
             identities={identities}
             setIdentities={setIdentities}
+            updateIdentities={updateIdentities}
           />
         )}
       </Grid>

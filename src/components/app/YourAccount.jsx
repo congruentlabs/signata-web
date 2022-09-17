@@ -27,6 +27,7 @@ function YourAccount(props) {
     unlocked,
     identities,
     setIdentities,
+    updateIdentities,
   } = props;
   const [password, setPassword] = useState('');
   const [passwordRepeat, setPasswordRepeat] = useState('');
@@ -149,6 +150,7 @@ function YourAccount(props) {
           const parsedData = JSON.parse(decryptedData);
           // TODO: validate that it is an identity array before saving it
           setIdentities(parsedData);
+          updateIdentities(parsedData);
           setBackupFileName('');
         };
 
