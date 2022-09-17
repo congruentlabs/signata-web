@@ -50,7 +50,7 @@ const web3Modal = new Web3Modal({
   providerOptions,
 });
 
-export function NoConnectionWarning() {
+function NoConnectionWarning() {
   const { activate } = useEthers();
 
   const handleClickConnect = async () => {

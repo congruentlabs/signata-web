@@ -13,3 +13,5 @@ export { default as TokenInfo } from './contracts/TokenInfo';
 export { default as UnderConstructionWarning } from './app/UnderConstructionWarning';
 export { default as WrongNetworkWarning } from './connection/WrongNetworkWarning';
 export { default as YourAccount } from './app/YourAccount';
+export { default as AppView } from './AppView';
+export { default as IdentityView } from './IdentityView';
