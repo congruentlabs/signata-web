@@ -11,6 +11,8 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { shortenAddress, useLookupAddress } from '@usedapp/core';
 import { Typography, ButtonGroup } from '@mui/material';
 import { SUPPORTED_CHAINS } from '../../hooks/helpers';
@@ -21,7 +23,7 @@ const pages = [
 ];
 
 function AppHeader({
-  account, handleClickDisconnect, chainId, supportedChain,
+  account, handleClickDisconnect, chainId, supportedChain, theme, colorMode,
 }) {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
@@ -164,6 +166,10 @@ function AppHeader({
           >
             <i>Signata Identity Manager</i>
           </Typography>
+
+          <IconButton sx={{ mx: 1 }} onClick={colorMode.toggleColorMode} color="inherit">
+            {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+          </IconButton>
 
           {chainId && supportedChain && (
             <Box sx={{ px: 1, textAlign: 'right' }}>

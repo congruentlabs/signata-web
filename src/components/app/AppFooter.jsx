@@ -1,10 +1,18 @@
 import React from 'react';
-import { Container } from '@mui/material';
-import Typography from '@mui/material/Typography';
+import {
+  Container, Typography, Box, IconButton,
+} from '@mui/material';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
-function AppFooter() {
+function AppFooter({ colorMode, theme }) {
   return (
     <Container maxWidth="md" sx={{ paddingBottom: 5, paddingTop: 5 }}>
+      <Box textAlign="center" sx={{ mt: 5, mb: 2 }}>
+        <IconButton sx={{ mx: 1 }} onClick={colorMode.toggleColorMode} color="inherit">
+          {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+        </IconButton>
+      </Box>
       <Typography textAlign="center" variant="body2">
         &copy;
         {' '}

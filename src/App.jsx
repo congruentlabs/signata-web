@@ -1,6 +1,7 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, {
+  useState, useMemo, useEffect, createContext,
+} from 'react';
 import { useEthers } from '@usedapp/core';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { createTheme, ThemeProvider, experimental_sx as sx } from '@mui/material/styles';
 import { Container, CssBaseline } from '@mui/material';
 import {
@@ -13,11 +14,21 @@ import AppView from './components/AppView';
 import IdentityView from './components/IdentityView';
 import { SUPPORTED_CHAINS } from './hooks/helpers';
 
+const ColorModeContext = createContext({ toggleColorMode: () => {} });
+
 function App() {
   const { account, deactivate, chainId } = useEthers();
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [identities, setIdentities] = useState([]);
   const [supportedChain, setSupportedChain] = useState(false);
+  const [mode, setMode] = useState('dark');
+  const colorMode = useMemo(
+    () => ({
+      toggleColorMode: () => {
+        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+      },
+    }),
+    [],
+  );
 
   const theme = useMemo(
     () => createTheme({
@@ -34,7 +45,7 @@ function App() {
         error: {
           main: red.A700,
         },
-        mode: prefersDarkMode ? 'dark' : 'light',
+        mode,
       },
       typography: {
         fontFamily: 'Roboto Condensed',
@@ -64,7 +75,7 @@ function App() {
         },
       },
     }),
-    [prefersDarkMode],
+    [mode],
   );
 
   useEffect(() => {
@@ -82,50 +93,54 @@ function App() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      {account && (
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {account && (
         <AppHeader
           account={account}
           handleClickDisconnect={handleClickDisconnect}
           chainId={chainId}
           supportedChain={supportedChain}
+          colorMode={colorMode}
+          theme={theme}
         />
-      )}
-      <Container maxWidth="md" sx={{ marginTop: 1 }}>
-        <HashRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={(
-                <AppView
-                  theme={theme}
-                  account={account}
-                  identities={identities}
-                  setIdentities={setIdentities}
-                  supportedChain={supportedChain}
-                  SUPPORTED_CHAINS={SUPPORTED_CHAINS}
-                  chainId={chainId}
-                />
+        )}
+        <Container maxWidth="md" sx={{ marginTop: 1 }}>
+          <HashRouter>
+            <Routes>
+              <Route
+                path="/"
+                element={(
+                  <AppView
+                    theme={theme}
+                    account={account}
+                    identities={identities}
+                    setIdentities={setIdentities}
+                    supportedChain={supportedChain}
+                    SUPPORTED_CHAINS={SUPPORTED_CHAINS}
+                    chainId={chainId}
+                  />
               )}
-            />
-            <Route
-              path="identity/:id"
-              element={(
-                <IdentityView
-                  theme={theme}
-                  account={account}
-                  supportedChain={supportedChain}
-                  SUPPORTED_CHAINS={SUPPORTED_CHAINS}
-                  chainId={chainId}
-                />
+              />
+              <Route
+                path="identity/:id"
+                element={(
+                  <IdentityView
+                    theme={theme}
+                    account={account}
+                    supportedChain={supportedChain}
+                    SUPPORTED_CHAINS={SUPPORTED_CHAINS}
+                    chainId={chainId}
+                  />
               )}
-            />
-          </Routes>
-        </HashRouter>
-      </Container>
-      <AppFooter />
-    </ThemeProvider>
+              />
+            </Routes>
+          </HashRouter>
+        </Container>
+        <AppFooter colorMode={colorMode} theme={theme} />
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 }
 
