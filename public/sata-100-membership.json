@@ -1,0 +1,9 @@
+{
+  "description": "SATA 100 Membership NFT issued by Congruent Labs Pty Ltd. This right does not do anything, it is only used for showcasing.",
+  "image": "https://my.signata.net/sata-100.png",
+  "external_url": "https://my.signata.net",
+  "name": "SATA 100 Membership",
+  "issuer": "Congruent Labs Pty Ltd",
+  "issuer_jurisdiction": "Australia",
+  "excluded_countries": []
+}
