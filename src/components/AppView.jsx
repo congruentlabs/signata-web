@@ -38,7 +38,7 @@ function AppView({
           `https://id-api.signata.net/api/v1/getIdentities${ipfsAccount || account}`,
         );
 
-        console.log(response);
+        // console.log({ response });
         if (response.status === 200) {
           setIpfsAccount(account);
 
@@ -46,15 +46,15 @@ function AppView({
             `https://${response.data[0].cid}.ipfs.w3s.link/data.json`,
           );
 
-          console.log(ipfsResponse.data);
+          // console.log({ data: ipfsResponse.data });
 
           const decryptedData = CryptoJS.AES.decrypt(
             ipfsResponse.data,
             encryptionPassword,
           ).toString(CryptoJS.enc.Utf8);
-          console.log(decryptedData);
+          // console.log({ decryptedData });
           const decryptedIdentities = JSON.parse(decryptedData);
-          console.log(decryptedIdentities);
+          // console.log({ decryptedIdentities });
           setIdentities(decryptedIdentities);
         } else if (response.status === 204) {
           setIdentities([]);
@@ -82,31 +82,32 @@ function AppView({
         JSON.stringify(ids),
         encryptionPassword,
       ).toString();
-      console.log(encryptedIdentities);
+      // console.log({ encryptedIdentities });
       // generate a hash of the encrypted content
-      const hashToSign = ethers.utils.keccak256(Buffer.from(encryptedIdentities, 'utf8'));
-      console.log(hashToSign);
+      const idsBuf = Buffer.from(encryptedIdentities, 'utf8');
+      const hashToSign = ethers.utils.keccak256(idsBuf);
+      console.log({ hashToSign });
       // sign the hash
       // eslint-disable-next-line no-undef
-      const ethResult = await ethereum.request({
-        method: 'eth_sign',
+      const signature = await ethereum.request({
+        method: 'personal_sign',
         params: [ipfsAccount || account, hashToSign],
       });
-      console.log(ethResult);
+      console.log({ signature });
 
       console.log({
         encryptedData: encryptedIdentities,
-        signature: ethResult,
+        signature,
         address: ipfsAccount || account,
       });
 
       const response = await axios.post('https://id-api.signata.net/api/v1/saveIdentities', {
         encryptedData: encryptedIdentities,
-        signature: ethResult,
+        signature,
         address: ipfsAccount || account,
       });
 
-      console.log(response);
+      console.log({ response });
 
       setIdentities(ids);
     } catch (error) {
