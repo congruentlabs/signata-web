@@ -879,7 +879,7 @@ function SignataIdentity({
           )}
           <Paper>
             <Button href={`#/identity/${id.delegateAddress}`} fullWidth>
-              View
+              Manage Rights
             </Button>
           </Paper>
           {exportData && <TextField multiline value={exportData} />}

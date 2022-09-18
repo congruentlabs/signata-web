@@ -62,8 +62,18 @@ function Rights({ chainId, id, account }) {
     idContract,
   );
 
-  const kycRightsSchemaId = useGetSingleValue('schemaId', [], kycClaimContractAddress, kycClaimContract);
-  const sata100SchemaId = useGetSingleValue('schemaId', [], sata100ContractAddress, sata100Contract);
+  const kycRightsSchemaId = useGetSingleValue(
+    'schemaId',
+    [],
+    kycClaimContractAddress,
+    kycClaimContract,
+  );
+  const sata100SchemaId = useGetSingleValue(
+    'schemaId',
+    [],
+    sata100ContractAddress,
+    sata100Contract,
+  );
 
   const hasBlockpassKycToken = useGetSingleValue(
     'holdsTokenOfSchema',
@@ -79,6 +89,13 @@ function Rights({ chainId, id, account }) {
     getRightsContract(chainId),
   );
 
+  const identityExists = useGetSingleValue(
+    '_identityExists',
+    [identityKey || ''],
+    getIdContractAddress(chainId),
+    idContract,
+  );
+
   const kycClaimPrice = useGetSingleValue(
     'feeAmount',
     [],
@@ -86,12 +103,7 @@ function Rights({ chainId, id, account }) {
     kycClaimContract,
   );
 
-  const sata100Price = useGetSingleValue(
-    'feeAmount',
-    [],
-    sata100ContractAddress,
-    sata100Contract,
-  );
+  const sata100Price = useGetSingleValue('feeAmount', [], sata100ContractAddress, sata100Contract);
 
   const {
     state: claimKycNftState,
@@ -151,7 +163,10 @@ function Rights({ chainId, id, account }) {
     e.preventDefault();
     console.log('handleClickApproveKycNft');
     approveKycClaimResetState();
-    approveKycClaimSend(getKycClaimContractAddress(chainId), BigNumber.from('100000000000000000000'));
+    approveKycClaimSend(
+      getKycClaimContractAddress(chainId),
+      BigNumber.from('100000000000000000000'),
+    );
   };
 
   const handleClickApproveSata100 = (e) => {
@@ -167,9 +182,7 @@ function Rights({ chainId, id, account }) {
     try {
       setLoading(true);
       setKycErrorMessage('');
-      const response = await axios.get(
-        `https://id-api.signata.net/api/v1/requestKyc/${id}`,
-      );
+      const response = await axios.get(`https://id-api.signata.net/api/v1/requestKyc/${id}`);
       if (response && response.data && response.data.sigS) {
         // call chain
         console.log(response.data);
@@ -183,13 +196,7 @@ function Rights({ chainId, id, account }) {
           sigS: response.data.sigS,
           salt,
         });
-        claimKycNftSend(
-          id,
-          response.data.sigV,
-          response.data.sigR,
-          response.data.sigS,
-          salt,
-        );
+        claimKycNftSend(id, response.data.sigV, response.data.sigR, response.data.sigS, salt);
       } else {
         console.log(response);
         setKycErrorMessage(
@@ -210,9 +217,7 @@ function Rights({ chainId, id, account }) {
       setLoading(true);
       sata100ResetState();
       approveSata100ResetState();
-      sata100Send(
-        id,
-      );
+      sata100Send(id);
     } catch (error) {
       console.error(error);
     } finally {
@@ -271,7 +276,12 @@ function Rights({ chainId, id, account }) {
             </CardContent>
           </Card>
         )}
-        <Card sx={{ display: !hasBlockpassKycToken && account === id && account ? '' : 'none' }}>
+        <Card
+          sx={{
+            display:
+              identityExists && !hasBlockpassKycToken && account === id && account ? '' : 'none',
+          }}
+        >
           <CardContent>
             <Stack spacing={1}>
               <Box sx={{ textAlign: 'center' }}>
@@ -286,10 +296,9 @@ function Rights({ chainId, id, account }) {
               </Typography>
               <Typography variant="body2" textAlign="center">
                 KYC with Congruent Labs (Australia) verifying your identity using Blockpass.
-                Excluding residents of the following sanctioned countries: Central African
-                Republic, Democratic Republic of the Congo, Eritrea, Lebanon, Libya, Myanmar,
-                Russia, Somalia, Sudan, Yemen, Zimbabwe, Crimea and Sevastopol, Iran, Syria, and
-                North Korea.
+                Excluding residents of the following sanctioned countries: Central African Republic,
+                Democratic Republic of the Congo, Eritrea, Lebanon, Libya, Myanmar, Russia, Somalia,
+                Sudan, Yemen, Zimbabwe, Crimea and Sevastopol, Iran, Syria, and North Korea.
               </Typography>
               <Button
                 fullWidth
@@ -302,19 +311,19 @@ function Rights({ chainId, id, account }) {
                 Start KYC
               </Button>
               <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
-                Once you have completed KYC with blockpass, click the below button to claim
-                your KYC NFT.
+                Once you have completed KYC with blockpass, click the below button to claim your KYC
+                NFT.
               </Alert>
               <ButtonGroup orientation="horizontal" color="secondary" fullWidth size="large">
                 <Button
                   onClick={handleClickApproveKycNft}
-                  disabled={isLoading || kycClaimAllowance >= (100 * 1e18)}
+                  disabled={isLoading || kycClaimAllowance >= 100 * 1e18}
                 >
                   Approve
                 </Button>
                 <Button
                   onClick={handleClickClaimKycNft}
-                  disabled={isLoading || kycClaimAllowance < (100 * 1e18)}
+                  disabled={isLoading || kycClaimAllowance < 100 * 1e18}
                 >
                   Claim KYC NFT
                 </Button>
@@ -333,8 +342,9 @@ function Rights({ chainId, id, account }) {
                   <img src="sata-100.png" alt="SATA 100 Logo" style={{ maxWidth: 200 }} />
                 </Box>
                 <Typography variant="body2" textAlign="center">
-                  This NFT Right represents the SATA 100 Membership. This right does not do anything, it just shows
-                  how you can make your own rights and sell them to Signata Identities.
+                  This NFT Right represents the SATA 100 Membership. This right does not do
+                  anything, it just shows how you can make your own rights and sell them to Signata
+                  Identities.
                 </Typography>
                 <div>
                   <Chip
@@ -358,8 +368,9 @@ function Rights({ chainId, id, account }) {
                   <img src="sata-100.png" alt="SATA 100 Logo" style={{ maxWidth: 200 }} />
                 </Box>
                 <Typography variant="body2" textAlign="center">
-                  This NFT Right represents the SATA 100 Membership. This right does not do anything, it just shows
-                  how you can make your own rights and sell them to Signata Identities.
+                  This NFT Right represents the SATA 100 Membership. This right does not do
+                  anything, it just shows how you can make your own rights and sell them to Signata
+                  Identities.
                 </Typography>
                 <div>
                   <Chip
@@ -375,7 +386,11 @@ function Rights({ chainId, id, account }) {
             </CardContent>
           </Card>
         )}
-        <Card sx={{ display: !hasSata100Token && account === id && account ? '' : 'none' }}>
+        <Card
+          sx={{
+            display: identityExists && !hasSata100Token && account === id && account ? '' : 'none',
+          }}
+        >
           <CardContent>
             <Stack spacing={1}>
               <Box sx={{ textAlign: 'center' }}>
@@ -389,8 +404,8 @@ function Rights({ chainId, id, account }) {
                 SATA)
               </Typography>
               <Typography variant="body2" textAlign="center">
-                This NFT Right represents the SATA 100 Membership. This right does not do anything, it just shows
-                how you can make your own rights and sell them to Signata Identities.
+                This NFT Right represents the SATA 100 Membership. This right does not do anything,
+                it just shows how you can make your own rights and sell them to Signata Identities.
               </Typography>
               <ButtonGroup orientation="horizontal" color="secondary" fullWidth size="large">
                 <Button
