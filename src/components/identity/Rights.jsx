@@ -325,15 +325,16 @@ function Rights({ chainId, id, account }) {
             </Stack>
           </CardContent>
         </Card>
-        {hasBlockpassKycToken && (
+        {hasSata100Token && (
           <Card sx={{ textAlign: 'center' }}>
             <CardContent>
               <Stack spacing={1}>
                 <Box sx={{ textAlign: 'center' }}>
                   <img src="sata-100.png" alt="SATA 100 Logo" style={{ maxWidth: 200 }} />
                 </Box>
-                <Typography variant="body1" component="p" gutterBottom>
-                  SATA 100 Membership
+                <Typography variant="body2" textAlign="center">
+                  This NFT Right represents the SATA 100 Membership. This right does not do anything, it just shows
+                  how you can make your own rights and sell them to Signata Identities.
                 </Typography>
                 <div>
                   <Chip
@@ -342,6 +343,31 @@ function Rights({ chainId, id, account }) {
                     variant="outlined"
                     icon={<CheckIcon />}
                     label="Identity owns this NFT Right"
+                    sx={{ p: 1 }}
+                  />
+                </div>
+              </Stack>
+            </CardContent>
+          </Card>
+        )}
+        {!hasSata100Token && account !== id && account && (
+          <Card sx={{ textAlign: 'center' }}>
+            <CardContent>
+              <Stack spacing={1}>
+                <Box sx={{ textAlign: 'center' }}>
+                  <img src="sata-100.png" alt="SATA 100 Logo" style={{ maxWidth: 200 }} />
+                </Box>
+                <Typography variant="body2" textAlign="center">
+                  This NFT Right represents the SATA 100 Membership. This right does not do anything, it just shows
+                  how you can make your own rights and sell them to Signata Identities.
+                </Typography>
+                <div>
+                  <Chip
+                    size="large"
+                    color="default"
+                    variant="outlined"
+                    icon={<CloseIcon />}
+                    label="Identity does not own this NFT Right"
                     sx={{ p: 1 }}
                   />
                 </div>
