@@ -89,7 +89,7 @@ function AppView({
       // sign the hash
       // eslint-disable-next-line no-undef
       const ethResult = await ethereum.request({
-        method: 'personal_sign',
+        method: 'eth_sign',
         params: [ipfsAccount || account, hashToSign],
       });
       console.log(ethResult);
