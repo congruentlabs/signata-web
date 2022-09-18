@@ -29,6 +29,9 @@ import {
   getTokenContractAddress,
   useClaimKycNft,
   useTokenApprove,
+  getSata100ContractAddress,
+  getSata100Contract,
+  usePurchaseSata100Nft,
 } from '../../hooks/chainHooks';
 import LoadingState from './LoadingState';
 import { shouldBeLoading, logLoading } from '../../hooks/helpers';
@@ -38,11 +41,18 @@ function Rights({ chainId, id, account }) {
   const [isLoading, setLoading] = useState(false);
   const [kycErrorMessage, setKycErrorMessage] = useState('');
   const kycClaimContractAddress = getKycClaimContractAddress(chainId);
+  const sata100ContractAddress = getSata100ContractAddress(chainId);
   const kycClaimContract = getKycClaimContract(chainId);
-  const claimAllowance = useTokenAllowance(
+  const sata100Contract = getSata100Contract(chainId);
+  const kycClaimAllowance = useTokenAllowance(
     getTokenContractAddress(chainId),
     account,
     kycClaimContractAddress,
+  );
+  const sata100ClaimAllowance = useTokenAllowance(
+    getTokenContractAddress(chainId),
+    account,
+    sata100ContractAddress,
   );
 
   const identityKey = useGetSingleValue(
@@ -52,11 +62,19 @@ function Rights({ chainId, id, account }) {
     idContract,
   );
 
-  const schemaId = useGetSingleValue('schemaId', [], kycClaimContractAddress, kycClaimContract);
+  const kycRightsSchemaId = useGetSingleValue('schemaId', [], kycClaimContractAddress, kycClaimContract);
+  const sata100SchemaId = useGetSingleValue('schemaId', [], sata100ContractAddress, sata100Contract);
 
   const hasBlockpassKycToken = useGetSingleValue(
     'holdsTokenOfSchema',
-    [id || '', schemaId],
+    [id || '', kycRightsSchemaId],
+    getRightsContractAddress(chainId),
+    getRightsContract(chainId),
+  );
+
+  const hasSata100Token = useGetSingleValue(
+    'holdsTokenOfSchema',
+    [id || '', sata100SchemaId],
     getRightsContractAddress(chainId),
     getRightsContract(chainId),
   );
@@ -68,6 +86,13 @@ function Rights({ chainId, id, account }) {
     kycClaimContract,
   );
 
+  const sata100Price = useGetSingleValue(
+    'feeAmount',
+    [],
+    sata100ContractAddress,
+    sata100Contract,
+  );
+
   const {
     state: claimKycNftState,
     send: claimKycNftSend,
@@ -75,9 +100,21 @@ function Rights({ chainId, id, account }) {
   } = useClaimKycNft(chainId);
 
   const {
-    state: approveState,
-    send: approveSend,
-    resetState: approveResetState,
+    state: sata100State,
+    send: sata100Send,
+    resetState: sata100ResetState,
+  } = usePurchaseSata100Nft(chainId);
+
+  const {
+    state: approveKycClaimState,
+    send: approveKycClaimSend,
+    resetState: approveKycClaimResetState,
+  } = useTokenApprove(chainId);
+
+  const {
+    state: approveSata100State,
+    send: approveSata100Send,
+    resetState: approveSata100ResetState,
   } = useTokenApprove(chainId);
 
   useEffect(() => {
@@ -99,11 +136,11 @@ function Rights({ chainId, id, account }) {
   }, [claimKycNftState]);
 
   useEffect(() => {
-    if (approveState) {
-      logLoading(approveState, 'approve');
-      setLoading(shouldBeLoading(approveState.status));
+    if (approveKycClaimState) {
+      logLoading(approveKycClaimState, 'approve');
+      setLoading(shouldBeLoading(approveKycClaimState.status));
     }
-  }, [approveState]);
+  }, [approveKycClaimState]);
 
   const onClickBlockpassKyc = (e) => {
     e.preventDefault();
@@ -113,8 +150,15 @@ function Rights({ chainId, id, account }) {
   const handleClickApproveKycNft = (e) => {
     e.preventDefault();
     console.log('handleClickApproveKycNft');
-    approveResetState();
-    approveSend(getKycClaimContractAddress(chainId), BigNumber.from('100000000000000000000'));
+    approveKycClaimResetState();
+    approveKycClaimSend(getKycClaimContractAddress(chainId), BigNumber.from('100000000000000000000'));
+  };
+
+  const handleClickApproveSata100 = (e) => {
+    e.preventDefault();
+    console.log('handleClickApproveSata100');
+    approveSata100ResetState();
+    approveSata100Send(getSata100ContractAddress(chainId), BigNumber.from('100000000000000000000'));
   };
 
   const handleClickClaimKycNft = async (e) => {
@@ -130,6 +174,7 @@ function Rights({ chainId, id, account }) {
         // call chain
         console.log(response.data);
         claimKycNftResetState();
+        approveSata100ResetState();
         const salt = `0x${response.data.salt}`;
         console.log({
           delegateAddress: id,
@@ -151,6 +196,23 @@ function Rights({ chainId, id, account }) {
           'No completed KYC information found for this identity. Complete KYC with a Signata-integrated provider first.',
         );
       }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClickPurchaseSata100 = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      sata100ResetState();
+      approveSata100ResetState();
+      sata100Send(
+        id,
+      );
     } catch (error) {
       console.error(error);
     } finally {
@@ -188,20 +250,24 @@ function Rights({ chainId, id, account }) {
         {!hasBlockpassKycToken && account !== id && account && (
           <Card sx={{ textAlign: 'center' }}>
             <CardContent>
-              <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
-              <Typography variant="body1" component="p" gutterBottom>
-                Congruent Labs Australia Blockpass KYC NFT
-              </Typography>
-              <div>
-                <Chip
-                  size="large"
-                  color="default"
-                  variant="outlined"
-                  icon={<CloseIcon />}
-                  label="Identity does not own this NFT Right"
-                  sx={{ p: 1 }}
-                />
-              </div>
+              <Stack spacing={1}>
+                <Box sx={{ textAlign: 'center' }}>
+                  <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
+                </Box>
+                <Typography variant="body1" component="p" gutterBottom>
+                  Congruent Labs Australia Blockpass KYC NFT
+                </Typography>
+                <div>
+                  <Chip
+                    size="large"
+                    color="default"
+                    variant="outlined"
+                    icon={<CloseIcon />}
+                    label="Identity does not own this NFT Right"
+                    sx={{ p: 1 }}
+                  />
+                </div>
+              </Stack>
             </CardContent>
           </Card>
         )}
@@ -242,20 +308,80 @@ function Rights({ chainId, id, account }) {
               <ButtonGroup orientation="horizontal" color="secondary" fullWidth size="large">
                 <Button
                   onClick={handleClickApproveKycNft}
-                  disabled={isLoading || claimAllowance >= (100 * 1e18)}
+                  disabled={isLoading || kycClaimAllowance >= (100 * 1e18)}
                 >
                   Approve
                 </Button>
                 <Button
                   onClick={handleClickClaimKycNft}
-                  disabled={isLoading || claimAllowance < (100 * 1e18)}
+                  disabled={isLoading || kycClaimAllowance < (100 * 1e18)}
                 >
                   Claim KYC NFT
                 </Button>
               </ButtonGroup>
+              <LoadingState state={approveKycClaimState} />
               <LoadingState state={claimKycNftState} />
-              <LoadingState state={approveState} />
               {kycErrorMessage && <Alert severity="error">{kycErrorMessage}</Alert>}
+            </Stack>
+          </CardContent>
+        </Card>
+        {hasBlockpassKycToken && (
+          <Card sx={{ textAlign: 'center' }}>
+            <CardContent>
+              <Stack spacing={1}>
+                <Box sx={{ textAlign: 'center' }}>
+                  <img src="sata-100.png" alt="SATA 100 Logo" style={{ maxWidth: 200 }} />
+                </Box>
+                <Typography variant="body1" component="p" gutterBottom>
+                  SATA 100 Membership
+                </Typography>
+                <div>
+                  <Chip
+                    size="large"
+                    color="primary"
+                    variant="outlined"
+                    icon={<CheckIcon />}
+                    label="Identity owns this NFT Right"
+                    sx={{ p: 1 }}
+                  />
+                </div>
+              </Stack>
+            </CardContent>
+          </Card>
+        )}
+        <Card sx={{ display: !hasSata100Token && account === id && account ? '' : 'none' }}>
+          <CardContent>
+            <Stack spacing={1}>
+              <Box sx={{ textAlign: 'center' }}>
+                <img src="sata-100.png" alt="SATA 100 Logo" style={{ maxWidth: 200 }} />
+              </Box>
+              <Typography gutterBottom variant="h5" component="div" textAlign="center">
+                SATA 100 Membership
+                {' ('}
+                {formatUnits(sata100Price || 0, 18)}
+                {' '}
+                SATA)
+              </Typography>
+              <Typography variant="body2" textAlign="center">
+                This NFT Right represents the SATA 100 Membership. This right does not do anything, it just shows
+                how you can make your own rights and sell them to Signata Identities.
+              </Typography>
+              <ButtonGroup orientation="horizontal" color="secondary" fullWidth size="large">
+                <Button
+                  onClick={handleClickApproveSata100}
+                  disabled={isLoading || sata100ClaimAllowance >= sata100Price}
+                >
+                  Approve
+                </Button>
+                <Button
+                  onClick={handleClickPurchaseSata100}
+                  disabled={isLoading || sata100ClaimAllowance < sata100Price}
+                >
+                  Purchase SATA 100 NFT
+                </Button>
+              </ButtonGroup>
+              <LoadingState state={approveSata100State} />
+              <LoadingState state={sata100State} />
             </Stack>
           </CardContent>
         </Card>

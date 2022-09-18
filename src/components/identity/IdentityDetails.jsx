@@ -63,7 +63,7 @@ function IdentityDetails({ chainId, id }) {
           <Chip
             size="large"
             color="warning"
-            label="Identity Does Not Exist"
+            label="Identity does not exist on this chain"
             icon={<FingerprintIcon />}
             sx={{ p: 2 }}
           />

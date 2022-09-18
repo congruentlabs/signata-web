@@ -9,6 +9,7 @@ import TOKEN_ABI from './sataAbi.json';
 import ID_ABI from './identityAbi.json';
 import RIGHTS_ABI from './rightsAbi.json';
 import KYC_CLAIM_ABI from './kycClaimAbi.json';
+import SATA_100_ABI from './sata100Abi.json';
 
 const sataPriceQuery = gql`
   {
@@ -158,6 +159,38 @@ export const getKycClaimContractAddress = (chainId) => {
 
 export const getKycClaimContract = (chainId) => new Contract(getKycClaimContractAddress(chainId), KYC_CLAIM_ABI);
 
+export const getSata100ContractAddress = (chainId) => {
+  if (chainId === 1) {
+    return consts.SATA_100_MAINNET;
+  }
+  if (chainId === 4) {
+    return consts.SATA_100_RINKEBY;
+  }
+  if (chainId === 56) {
+    // bsc
+    return consts.SATA_100_BSC;
+  }
+  if (chainId === 137) {
+    // matic
+    return consts.SATA_100_MATIC;
+  }
+  if (chainId === 250) {
+    // fantom
+    return consts.SATA_100_FTM;
+  }
+  if (chainId === 1088) {
+    // metis
+    return consts.SATA_100_METIS;
+  }
+  if (chainId === 43114) {
+    // avax
+    return consts.SATA_100_AVAX;
+  }
+  return consts.SATA_100_MAINNET;
+};
+
+export const getSata100Contract = (chainId) => new Contract(getSata100ContractAddress(chainId), SATA_100_ABI);
+
 export const useGetValue = (method, args, contractAddress, contract) => {
   const { value, error } = useCall(
     contractAddress && {
@@ -275,12 +308,12 @@ export function useRolloverIdentity(chainId) {
   };
 }
 
-export function useBuyCloud(chainId) {
-  const identityContract = getIdContract(chainId);
+export function useClaimKycNft(chainId) {
+  const kycClaimContract = getKycClaimContract(chainId);
   const {
     state, send, events, resetState,
-  } = useContractFunction(identityContract, 'buyCloud', {
-    transactionName: 'Buy Cloud Subscription',
+  } = useContractFunction(kycClaimContract, 'claimRight', {
+    transactionName: 'Claim KYC Right',
   });
   return {
     state,
@@ -290,12 +323,12 @@ export function useBuyCloud(chainId) {
   };
 }
 
-export function useClaimKycNft(chainId) {
-  const kycClaimContract = getKycClaimContract(chainId);
+export function usePurchaseSata100Nft(chainId) {
+  const sata100Contract = getSata100Contract(chainId);
   const {
     state, send, events, resetState,
-  } = useContractFunction(kycClaimContract, 'claimRight', {
-    transactionName: 'Claim KYC Right',
+  } = useContractFunction(sata100Contract, 'purchaseRight', {
+    transactionName: 'Puchase SATA 100 Right',
   });
   return {
     state,
