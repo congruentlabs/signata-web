@@ -97,42 +97,35 @@ function IdentityDetails({ chainId, id, theme }) {
             />
           )}
           {identityExists && id && (
-          <Chip
-            color="default"
-            label={`Delegate: ${id}`}
-            sx={{ fontFamily: 'Roboto Mono', borderRadius: 0 }}
-          />
-          )}
-          {identityExists && securityKey && (
-          <Chip
-            color="default"
-            label={`Security: ${securityKey}`}
-            sx={{ fontFamily: 'Roboto Mono', borderRadius: 0 }}
-          />
+            <Chip
+              color="default"
+              label={`Delegate: ${id}`}
+              sx={{ fontFamily: 'Roboto Mono', borderRadius: 0 }}
+            />
           )}
           {identityExists && !identityLocked && (
-          <Chip
-            color="primary"
-            label="Identity Unlocked"
-            icon={<LockOpenIcon />}
-            sx={{ borderRadius: 0 }}
-          />
+            <Chip
+              color="primary"
+              label="Identity Unlocked"
+              icon={<LockOpenIcon />}
+              sx={{ borderRadius: 0 }}
+            />
           )}
           {identityExists && identityLocked && (
-          <Chip
-            color="warning"
-            label="Identity Locked"
-            icon={<LockIcon />}
-            sx={{ borderRadius: 0 }}
-          />
+            <Chip
+              color="warning"
+              label="Identity Locked"
+              icon={<LockIcon />}
+              sx={{ borderRadius: 0 }}
+            />
           )}
           {identityExists && identityDestroyed && (
-          <Chip
-            color="error"
-            label="Identity Destroyed"
-            icon={<ErrorOutlineIcon />}
-            sx={{ borderRadius: 0 }}
-          />
+            <Chip
+              color="error"
+              label="Identity Destroyed"
+              icon={<ErrorOutlineIcon />}
+              sx={{ borderRadius: 0 }}
+            />
           )}
         </Stack>
       </Box>

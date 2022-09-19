@@ -248,16 +248,14 @@ function Rights({
               <Typography variant="body1" component="p" gutterBottom>
                 Congruent Labs Australia Blockpass KYC NFT
               </Typography>
-              <div>
-                <Chip
-                  size="large"
-                  color="primary"
-                  variant="contained"
-                  icon={<CheckIcon />}
-                  label="Identity owns this NFT Right"
-                  sx={{ p: 1 }}
-                />
-              </div>
+              <Chip
+                size="large"
+                color="primary"
+                variant="contained"
+                icon={<CheckIcon />}
+                label="Identity owns this NFT Right"
+                sx={{ borderRadius: 0 }}
+              />
             </Stack>
           </Box>
         )}
@@ -279,16 +277,14 @@ function Rights({
               <Typography variant="body1" component="p" gutterBottom>
                 Congruent Labs Australia Blockpass KYC NFT
               </Typography>
-              <div>
-                <Chip
-                  size="large"
-                  color="default"
-                  variant="outlined"
-                  icon={<CloseIcon />}
-                  label="Identity does not own this NFT Right"
-                  sx={{ p: 1 }}
-                />
-              </div>
+              <Chip
+                size="large"
+                color="default"
+                variant="outlined"
+                icon={<CloseIcon />}
+                label="Identity does not own this NFT Right"
+                sx={{ borderRadius: 0 }}
+              />
             </Stack>
           </Box>
         )}
@@ -373,16 +369,14 @@ function Rights({
                 This NFT Right represents the SATA 100 Membership. This right does not do anything,
                 it just shows how you can make your own rights and sell them to Signata Identities.
               </Typography>
-              <div>
-                <Chip
-                  size="large"
-                  color="primary"
-                  variant="contained"
-                  icon={<CheckIcon />}
-                  label="Identity owns this NFT Right"
-                  sx={{ p: 1 }}
-                />
-              </div>
+              <Chip
+                size="large"
+                color="primary"
+                variant="contained"
+                icon={<CheckIcon />}
+                label="Identity owns this NFT Right"
+                sx={{ borderRadius: 0 }}
+              />
             </Stack>
           </Box>
         )}
@@ -405,16 +399,14 @@ function Rights({
                 This NFT Right represents the SATA 100 Membership. This right does not do anything,
                 it just shows how you can make your own rights and sell them to Signata Identities.
               </Typography>
-              <div>
-                <Chip
-                  size="large"
-                  color="default"
-                  variant="outlined"
-                  icon={<CloseIcon />}
-                  label="Identity does not own this NFT Right"
-                  sx={{ p: 1 }}
-                />
-              </div>
+              <Chip
+                size="large"
+                color="default"
+                variant="outlined"
+                icon={<CloseIcon />}
+                label="Identity does not own this NFT Right"
+                sx={{ borderRadius: 0 }}
+              />
             </Stack>
           </Box>
         )}

@@ -2,7 +2,6 @@ import React from 'react';
 import { useEthers } from '@usedapp/core';
 import {
   Typography,
-  Grid,
   Stack,
   ButtonGroup,
   Button,
