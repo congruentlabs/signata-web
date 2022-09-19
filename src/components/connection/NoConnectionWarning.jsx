@@ -7,6 +7,7 @@ import {
   ButtonGroup,
   Button,
   Box,
+  Container,
 } from '@mui/material';
 import PolicyIcon from '@mui/icons-material/Policy';
 import GavelIcon from '@mui/icons-material/Gavel';
@@ -50,7 +51,7 @@ const web3Modal = new Web3Modal({
   providerOptions,
 });
 
-function NoConnectionWarning() {
+function NoConnectionWarning({ theme }) {
   const { activate } = useEthers();
 
   const handleClickConnect = async () => {
@@ -64,12 +65,14 @@ function NoConnectionWarning() {
     }
   };
   return (
-    <Grid item xs={12} sm={10} md={8}>
+    <Container maxWidth="xs">
       <Box
         sx={{
           borderRadius: 0,
           border: 1,
           p: 2,
+          mt: 5,
+          backgroundColor: theme.palette.mode === 'light' ? 'grey.100' : 'grey.800',
         }}
       >
         <Stack spacing={1}>
@@ -107,7 +110,7 @@ function NoConnectionWarning() {
           </ButtonGroup>
         </Stack>
       </Box>
-    </Grid>
+    </Container>
   );
 }
 

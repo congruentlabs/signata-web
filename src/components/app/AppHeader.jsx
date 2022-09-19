@@ -18,8 +18,9 @@ import { Typography, ButtonGroup } from '@mui/material';
 import { SUPPORTED_CHAINS } from '../../hooks/helpers';
 
 const pages = [
-  { name: 'Docs', href: 'https://docs.signata.net' },
-  { name: 'News', href: 'https://blog.congruentlabs.co' },
+  { name: 'Home', href: '/', target: '' },
+  { name: 'Docs', href: 'https://docs.signata.net', target: '_blank' },
+  { name: 'News', href: 'https://blog.congruentlabs.co', target: '_blank' },
 ];
 
 function AppHeader({
@@ -92,6 +93,14 @@ function AppHeader({
       <Container maxWidth="lg">
         <Toolbar disableGutters>
           <Avatar alt="Logo" src="logo.png" />
+          <Typography
+            variant="body1"
+            color="inherit"
+            component="div"
+            sx={{ display: { xs: 'none', md: 'flex' }, px: 1 }}
+          >
+            <i>Signata Identity Manager</i>
+          </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
@@ -127,8 +136,7 @@ function AppHeader({
                   <Button
                     component="a"
                     href={page.href}
-                    target="_blank"
-                    startIcon={page.startIcon}
+                    target={page.target}
                     color="inherit"
                   >
                     {page.name}
@@ -145,10 +153,8 @@ function AppHeader({
                   key={page.name}
                   component="a"
                   href={page.href}
-                  target="_blank"
+                  target={page.target}
                   color="inherit"
-                  startIcon={page.startIcon}
-                  // onClick={handleCloseNavMenu}
                   sx={{ px: 2 }}
                   variant="text"
                 >
@@ -158,28 +164,26 @@ function AppHeader({
             </ButtonGroup>
           </Box>
 
-          <Typography
-            variant="h6"
+          <IconButton
+            size="small"
+            sx={{ mx: 1, display: { xs: 'none', sm: 'fkex' } }}
+            onClick={colorMode.toggleColorMode}
             color="inherit"
-            component="div"
-            sx={{ display: { xs: 'none', md: 'flex' }, flexGrow: 1 }}
           >
-            <i>Signata Identity Manager</i>
-          </Typography>
-
-          <IconButton sx={{ mx: 1 }} onClick={colorMode.toggleColorMode} color="inherit">
             {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
 
           {chainId && supportedChain && (
             <Box sx={{ px: 1, textAlign: 'right' }}>
-              <Typography variant="caption" sx={{ paddingBottom: -1, marginBottom: -1 }} color="text.secondary">
-                Connected Chain
+              <Typography
+                variant="caption"
+                sx={{ paddingBottom: -1, marginBottom: -1 }}
+                color="text.secondary"
+              >
+                Chain
               </Typography>
               <Typography variant="body1" sx={{ paddingTop: -1, marginTop: -1 }}>
-                {SUPPORTED_CHAINS.find(
-                  (network) => network.chainId === chainId,
-                )?.chainName}
+                {SUPPORTED_CHAINS.find((network) => network.chainId === chainId)?.chainName}
               </Typography>
             </Box>
           )}
@@ -187,12 +191,7 @@ function AppHeader({
           <Box sx={{ flexGrow: 0 }}>
             {account && (
               <Tooltip title="Settings">
-                <Button
-                  onClick={handleOpenUserMenu}
-                  variant="contained"
-                  color="secondary"
-                  size="large"
-                >
+                <Button onClick={handleOpenUserMenu} variant="contained" color="secondary">
                   {ens || shortenAddress(account)}
                 </Button>
               </Tooltip>

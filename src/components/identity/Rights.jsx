@@ -6,37 +6,36 @@ import { useTokenAllowance } from '@usedapp/core';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import {
-  Container,
-  Chip,
-  Stack,
-  CardContent,
-  Card,
-  Typography,
-  Divider,
+  Alert,
   Box,
   Button,
-  Alert,
   ButtonGroup,
+  Chip,
+  Container,
+  Stack,
+  Typography,
 } from '@mui/material';
 import {
-  useGetSingleValue,
-  getIdContractAddress,
   getIdContract,
-  getKycClaimContractAddress,
+  getIdContractAddress,
   getKycClaimContract,
-  getRightsContractAddress,
+  getKycClaimContractAddress,
   getRightsContract,
+  getRightsContractAddress,
+  getSata100Contract,
+  getSata100ContractAddress,
   getTokenContractAddress,
   useClaimKycNft,
-  useTokenApprove,
-  getSata100ContractAddress,
-  getSata100Contract,
+  useGetSingleValue,
   usePurchaseSata100Nft,
+  useTokenApprove,
 } from '../../hooks/chainHooks';
 import LoadingState from './LoadingState';
 import { shouldBeLoading, logLoading } from '../../hooks/helpers';
 
-function Rights({ chainId, id, account }) {
+function Rights({
+  chainId, id, account, theme,
+}) {
   const idContract = getIdContract(chainId);
   const [isLoading, setLoading] = useState(false);
   const [kycErrorMessage, setKycErrorMessage] = useState('');
@@ -226,16 +225,26 @@ function Rights({ chainId, id, account }) {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Stack spacing={1}>
-        <Divider />
-        <Typography variant="h5" component="h2" gutterBottom>
-          NFT Rights
+    <Container maxWidth="xs">
+      <Stack spacing={2} sx={{ pt: 2 }}>
+        <Typography variant="h6" component="h2">
+          Decentralized Rights Exchange
         </Typography>
         {hasBlockpassKycToken && (
-          <Card sx={{ textAlign: 'center' }}>
-            <CardContent>
-              <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
+          <Box
+            sx={{
+              textAlign: 'center',
+              border: 1,
+              p: 2,
+              borderRadius: 2,
+              borderColor: 'secondary.light',
+              backgroundColor: theme.palette.mode === 'light' ? 'grey.50' : 'grey.900',
+            }}
+          >
+            <Stack>
+              <Box sx={{ textAlign: 'center' }}>
+                <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
+              </Box>
               <Typography variant="body1" component="p" gutterBottom>
                 Congruent Labs Australia Blockpass KYC NFT
               </Typography>
@@ -243,189 +252,216 @@ function Rights({ chainId, id, account }) {
                 <Chip
                   size="large"
                   color="primary"
-                  variant="outlined"
+                  variant="contained"
                   icon={<CheckIcon />}
                   label="Identity owns this NFT Right"
                   sx={{ p: 1 }}
                 />
               </div>
-            </CardContent>
-          </Card>
+            </Stack>
+          </Box>
         )}
         {!hasBlockpassKycToken && account !== id && account && (
-          <Card sx={{ textAlign: 'center' }}>
-            <CardContent>
-              <Stack spacing={1}>
-                <Box sx={{ textAlign: 'center' }}>
-                  <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
-                </Box>
-                <Typography variant="body1" component="p" gutterBottom>
-                  Congruent Labs Australia Blockpass KYC NFT
-                </Typography>
-                <div>
-                  <Chip
-                    size="large"
-                    color="default"
-                    variant="outlined"
-                    icon={<CloseIcon />}
-                    label="Identity does not own this NFT Right"
-                    sx={{ p: 1 }}
-                  />
-                </div>
-              </Stack>
-            </CardContent>
-          </Card>
-        )}
-        <Card
-          sx={{
-            display:
-              identityExists && !hasBlockpassKycToken && account === id && account ? '' : 'none',
-          }}
-        >
-          <CardContent>
+          <Box
+            sx={{
+              textAlign: 'center',
+              border: 1,
+              p: 2,
+              borderRadius: 2,
+              borderColor: 'secondary.light',
+              backgroundColor: theme.palette.mode === 'light' ? 'grey.50' : 'grey.900',
+            }}
+          >
             <Stack spacing={1}>
               <Box sx={{ textAlign: 'center' }}>
                 <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
               </Box>
-              <Typography gutterBottom variant="h5" component="div" textAlign="center">
-                Blockpass KYC
-                {' ('}
-                {formatUnits(kycClaimPrice || 0, 18)}
-                {' '}
-                SATA)
+              <Typography variant="body1" component="p" gutterBottom>
+                Congruent Labs Australia Blockpass KYC NFT
               </Typography>
-              <Typography variant="body2" textAlign="center">
-                KYC with Congruent Labs (Australia) verifying your identity using Blockpass.
-                Excluding residents of the following sanctioned countries: Central African Republic,
-                Democratic Republic of the Congo, Eritrea, Lebanon, Libya, Myanmar, Russia, Somalia,
-                Sudan, Yemen, Zimbabwe, Crimea and Sevastopol, Iran, Syria, and North Korea.
-              </Typography>
-              <Button
-                fullWidth
-                id="blockpass-kyc-connect"
-                disabled={isLoading}
-                size="large"
-                variant="outlined"
-                onClick={onClickBlockpassKyc}
-              >
-                Start KYC
-              </Button>
-              <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
-                Once you have completed KYC with blockpass, click the below button to claim your KYC
-                NFT.
-              </Alert>
-              <ButtonGroup orientation="horizontal" color="secondary" fullWidth size="large">
-                <Button
-                  onClick={handleClickApproveKycNft}
-                  disabled={isLoading || kycClaimAllowance >= 100 * 1e18}
-                >
-                  Approve
-                </Button>
-                <Button
-                  onClick={handleClickClaimKycNft}
-                  disabled={isLoading || kycClaimAllowance < 100 * 1e18}
-                >
-                  Claim KYC NFT
-                </Button>
-              </ButtonGroup>
-              <LoadingState state={approveKycClaimState} />
-              <LoadingState state={claimKycNftState} />
-              {kycErrorMessage && <Alert severity="error">{kycErrorMessage}</Alert>}
+              <div>
+                <Chip
+                  size="large"
+                  color="default"
+                  variant="outlined"
+                  icon={<CloseIcon />}
+                  label="Identity does not own this NFT Right"
+                  sx={{ p: 1 }}
+                />
+              </div>
             </Stack>
-          </CardContent>
-        </Card>
-        {hasSata100Token && (
-          <Card sx={{ textAlign: 'center' }}>
-            <CardContent>
-              <Stack spacing={1}>
-                <Box sx={{ textAlign: 'center' }}>
-                  <img src="sata-100.png" alt="SATA 100 Logo" style={{ maxWidth: 200 }} />
-                </Box>
-                <Typography variant="body2" textAlign="center">
-                  This NFT Right represents the SATA 100 Membership. This right does not do
-                  anything, it just shows how you can make your own rights and sell them to Signata
-                  Identities.
-                </Typography>
-                <div>
-                  <Chip
-                    size="large"
-                    color="primary"
-                    variant="outlined"
-                    icon={<CheckIcon />}
-                    label="Identity owns this NFT Right"
-                    sx={{ p: 1 }}
-                  />
-                </div>
-              </Stack>
-            </CardContent>
-          </Card>
+          </Box>
         )}
-        {!hasSata100Token && account !== id && account && (
-          <Card sx={{ textAlign: 'center' }}>
-            <CardContent>
-              <Stack spacing={1}>
-                <Box sx={{ textAlign: 'center' }}>
-                  <img src="sata-100.png" alt="SATA 100 Logo" style={{ maxWidth: 200 }} />
-                </Box>
-                <Typography variant="body2" textAlign="center">
-                  This NFT Right represents the SATA 100 Membership. This right does not do
-                  anything, it just shows how you can make your own rights and sell them to Signata
-                  Identities.
-                </Typography>
-                <div>
-                  <Chip
-                    size="large"
-                    color="default"
-                    variant="outlined"
-                    icon={<CloseIcon />}
-                    label="Identity does not own this NFT Right"
-                    sx={{ p: 1 }}
-                  />
-                </div>
-              </Stack>
-            </CardContent>
-          </Card>
-        )}
-        <Card
+        <Box
           sx={{
-            display: identityExists && !hasSata100Token && account === id && account ? '' : 'none',
+            textAlign: 'center',
+            border: 1,
+            py: 2,
+            borderRadius: 2,
+            borderColor: 'secondary.light',
+            backgroundColor: theme.palette.mode === 'light' ? 'grey.50' : 'grey.900',
+            display:
+              identityExists && !hasBlockpassKycToken && account === id && account ? '' : 'none',
           }}
         >
-          <CardContent>
+          <Stack spacing={1}>
+            <Box sx={{ textAlign: 'center' }}>
+              <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
+            </Box>
+            <Typography gutterBottom variant="h5" component="div" textAlign="center">
+              Blockpass KYC
+              {' ('}
+              {formatUnits(kycClaimPrice || 0, 18)}
+              {' '}
+              SATA)
+            </Typography>
+            <Typography variant="body2" textAlign="center">
+              KYC with Congruent Labs (Australia) verifying your identity using Blockpass. Excluding
+              residents of the following sanctioned countries: Central African Republic, Democratic
+              Republic of the Congo, Eritrea, Lebanon, Libya, Myanmar, Russia, Somalia, Sudan,
+              Yemen, Zimbabwe, Crimea and Sevastopol, Iran, Syria, and North Korea.
+            </Typography>
+            <Button
+              fullWidth
+              id="blockpass-kyc-connect"
+              disabled={isLoading}
+              size="large"
+              variant="outlined"
+              onClick={onClickBlockpassKyc}
+            >
+              Start KYC
+            </Button>
+            <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
+              Once you have completed KYC with blockpass, click the below button to claim your KYC
+              NFT.
+            </Alert>
+            <ButtonGroup orientation="horizontal" color="secondary" fullWidth size="large">
+              <Button
+                onClick={handleClickApproveKycNft}
+                disabled={isLoading || kycClaimAllowance >= 100 * 1e18}
+              >
+                Approve
+              </Button>
+              <Button
+                onClick={handleClickClaimKycNft}
+                disabled={isLoading || kycClaimAllowance < 100 * 1e18}
+              >
+                Claim KYC NFT
+              </Button>
+            </ButtonGroup>
+            <LoadingState state={approveKycClaimState} />
+            <LoadingState state={claimKycNftState} />
+            {kycErrorMessage && <Alert severity="error">{kycErrorMessage}</Alert>}
+          </Stack>
+        </Box>
+        {hasSata100Token && (
+          <Box
+            sx={{
+              textAlign: 'center',
+              border: 1,
+              p: 2,
+              borderRadius: 2,
+              borderColor: 'secondary.light',
+              backgroundColor: theme.palette.mode === 'light' ? 'grey.50' : 'grey.900',
+            }}
+          >
             <Stack spacing={1}>
               <Box sx={{ textAlign: 'center' }}>
                 <img src="sata-100.png" alt="SATA 100 Logo" style={{ maxWidth: 200 }} />
               </Box>
-              <Typography gutterBottom variant="h5" component="div" textAlign="center">
-                SATA 100 Membership
-                {' ('}
-                {formatUnits(sata100Price || 0, 18)}
-                {' '}
-                SATA)
-              </Typography>
               <Typography variant="body2" textAlign="center">
                 This NFT Right represents the SATA 100 Membership. This right does not do anything,
                 it just shows how you can make your own rights and sell them to Signata Identities.
               </Typography>
-              <ButtonGroup orientation="horizontal" color="secondary" fullWidth size="large">
-                <Button
-                  onClick={handleClickApproveSata100}
-                  disabled={isLoading || sata100ClaimAllowance >= sata100Price}
-                >
-                  Approve
-                </Button>
-                <Button
-                  onClick={handleClickPurchaseSata100}
-                  disabled={isLoading || sata100ClaimAllowance < sata100Price}
-                >
-                  Purchase SATA 100 NFT
-                </Button>
-              </ButtonGroup>
-              <LoadingState state={approveSata100State} />
-              <LoadingState state={sata100State} />
+              <div>
+                <Chip
+                  size="large"
+                  color="primary"
+                  variant="contained"
+                  icon={<CheckIcon />}
+                  label="Identity owns this NFT Right"
+                  sx={{ p: 1 }}
+                />
+              </div>
             </Stack>
-          </CardContent>
-        </Card>
+          </Box>
+        )}
+        {!hasSata100Token && account !== id && account && (
+          <Box
+            sx={{
+              textAlign: 'center',
+              border: 1,
+              p: 2,
+              borderRadius: 2,
+              borderColor: 'secondary.light',
+              backgroundColor: theme.palette.mode === 'light' ? 'grey.50' : 'grey.900',
+            }}
+          >
+            <Stack spacing={1}>
+              <Box sx={{ textAlign: 'center' }}>
+                <img src="sata-100.png" alt="SATA 100 Logo" style={{ maxWidth: 200 }} />
+              </Box>
+              <Typography variant="body2" textAlign="center">
+                This NFT Right represents the SATA 100 Membership. This right does not do anything,
+                it just shows how you can make your own rights and sell them to Signata Identities.
+              </Typography>
+              <div>
+                <Chip
+                  size="large"
+                  color="default"
+                  variant="outlined"
+                  icon={<CloseIcon />}
+                  label="Identity does not own this NFT Right"
+                  sx={{ p: 1 }}
+                />
+              </div>
+            </Stack>
+          </Box>
+        )}
+        <Box
+          sx={{
+            textAlign: 'center',
+            border: 1,
+            py: 2,
+            borderRadius: 2,
+            borderColor: 'secondary.light',
+            backgroundColor: theme.palette.mode === 'light' ? 'grey.50' : 'grey.900',
+            display: identityExists && !hasSata100Token && account === id && account ? '' : 'none',
+          }}
+        >
+          <Stack spacing={1}>
+            <Box sx={{ textAlign: 'center' }}>
+              <img src="sata-100.png" alt="SATA 100 Logo" style={{ maxWidth: 200 }} />
+            </Box>
+            <Typography gutterBottom variant="h5" component="div" textAlign="center">
+              SATA 100 Membership
+              {' ('}
+              {formatUnits(sata100Price || 0, 18)}
+              {' '}
+              SATA)
+            </Typography>
+            <Typography variant="body2" textAlign="center">
+              This NFT Right represents the SATA 100 Membership. This right does not do anything, it
+              just shows how you can make your own rights and sell them to Signata Identities.
+            </Typography>
+            <ButtonGroup orientation="horizontal" color="secondary" fullWidth size="large">
+              <Button
+                onClick={handleClickApproveSata100}
+                disabled={isLoading || sata100ClaimAllowance >= sata100Price}
+              >
+                Approve
+              </Button>
+              <Button
+                onClick={handleClickPurchaseSata100}
+                disabled={isLoading || sata100ClaimAllowance < sata100Price}
+              >
+                Purchase SATA 100 NFT
+              </Button>
+            </ButtonGroup>
+            <LoadingState state={approveSata100State} />
+            <LoadingState state={sata100State} />
+          </Stack>
+        </Box>
       </Stack>
     </Container>
   );

@@ -6,7 +6,6 @@ import {
   Box, Grid, CircularProgress, Alert, Backdrop,
 } from '@mui/material';
 import axios from 'axios';
-import NoConnectionWarning from './connection/NoConnectionWarning';
 import ProductOverview from './app/ProductOverview';
 import ManageIdentities from './identity/ManageIdentities';
 import YourAccount from './app/YourAccount';
@@ -15,11 +14,17 @@ import DevModeWarning from './app/DevModeWarning';
 import UnsupportedChain from './app/UnsupportedChain';
 
 function AppView({
-  theme, account, identities, setIdentities, supportedChain, SUPPORTED_CHAINS,
+  theme,
+  account,
+  identities,
+  setIdentities,
+  supportedChain,
+  SUPPORTED_CHAINS,
+  encryptionPassword,
+  setEncryptionPassword,
 }) {
   const [config, setConfig, isPersistent] = useLocalStorageState('config', []);
   const [isLoading, setLoading] = useState(false);
-  const [encryptionPassword, setEncryptionPassword] = useState('');
   const [advancedModeEnabled, setAdvancedModeEnabled] = useLocalStorageState(
     'advancedModeEnabled',
     { defaultValue: false },
@@ -129,7 +134,6 @@ function AppView({
         {window.location.hostname !== 'localhost' && <UnderConstructionWarning />}
         {window.location.hostname === 'localhost' && <DevModeWarning />}
         {!account && <ProductOverview />}
-        {!account && <NoConnectionWarning />}
         {account && encryptionPassword && !supportedChain && (
           <UnsupportedChain SUPPORTED_CHAINS={SUPPORTED_CHAINS} />
         )}
@@ -145,23 +149,23 @@ function AppView({
         )}
         {account && encryptionPassword && supportedChain && (
           <ManageIdentities
+            advancedModeEnabled={advancedModeEnabled}
             identities={identities}
             setIdentities={setIdentities}
-            advancedModeEnabled={advancedModeEnabled}
             updateIdentities={updateIdentities}
           />
         )}
         {account && (
           <YourAccount
-            config={config}
-            setConfig={setConfig}
-            isPersistent={isPersistent}
-            setEncryptionPassword={setEncryptionPassword}
-            unlocked={encryptionPassword !== ''}
             advancedModeEnabled={advancedModeEnabled}
-            setAdvancedModeEnabled={setAdvancedModeEnabled}
+            config={config}
             identities={identities}
+            isPersistent={isPersistent}
+            setAdvancedModeEnabled={setAdvancedModeEnabled}
+            setConfig={setConfig}
+            setEncryptionPassword={setEncryptionPassword}
             setIdentities={setIdentities}
+            unlocked={encryptionPassword !== ''}
             updateIdentities={updateIdentities}
           />
         )}

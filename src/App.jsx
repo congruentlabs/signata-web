@@ -13,12 +13,14 @@ import AppFooter from './components/app/AppFooter';
 import AppView from './components/AppView';
 import IdentityView from './components/IdentityView';
 import { SUPPORTED_CHAINS } from './hooks/helpers';
+import NoConnectionWarning from './components/connection/NoConnectionWarning';
 
 const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
 function App() {
   const { account, deactivate, chainId } = useEthers();
   const [identities, setIdentities] = useState([]);
+  const [encryptionPassword, setEncryptionPassword] = useState('');
   const [supportedChain, setSupportedChain] = useState(false);
   const [mode, setMode] = useState('dark');
   const colorMode = useMemo(
@@ -96,15 +98,17 @@ function App() {
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        {account && (
-        <AppHeader
-          account={account}
-          handleClickDisconnect={handleClickDisconnect}
-          chainId={chainId}
-          supportedChain={supportedChain}
-          colorMode={colorMode}
-          theme={theme}
-        />
+        {account ? (
+          <AppHeader
+            account={account}
+            handleClickDisconnect={handleClickDisconnect}
+            chainId={chainId}
+            supportedChain={supportedChain}
+            colorMode={colorMode}
+            theme={theme}
+          />
+        ) : (
+          <NoConnectionWarning theme={theme} />
         )}
         <Container maxWidth="md" sx={{ marginTop: 1 }}>
           <HashRouter>
@@ -113,13 +117,15 @@ function App() {
                 path="/"
                 element={(
                   <AppView
-                    theme={theme}
                     account={account}
-                    identities={identities}
-                    setIdentities={setIdentities}
-                    supportedChain={supportedChain}
-                    SUPPORTED_CHAINS={SUPPORTED_CHAINS}
                     chainId={chainId}
+                    encryptionPassword={encryptionPassword}
+                    identities={identities}
+                    setEncryptionPassword={setEncryptionPassword}
+                    setIdentities={setIdentities}
+                    SUPPORTED_CHAINS={SUPPORTED_CHAINS}
+                    supportedChain={supportedChain}
+                    theme={theme}
                   />
               )}
               />
