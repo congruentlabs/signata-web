@@ -191,6 +191,14 @@ export const getSata100ContractAddress = (chainId) => {
 
 export const getSata100Contract = (chainId) => new Contract(getSata100ContractAddress(chainId), SATA_100_ABI);
 
+export const getModifier2XContractAddress = () => consts.MODIFIER_2X_MAINNET; // mainnet only
+
+export const getModifier2XContract = () => new Contract(getSata100ContractAddress(), SATA_100_ABI);
+
+export const getModifier15XContractAddress = () => consts.MODIFIER_15X_MAINNET; // mainnet only
+
+export const getModifier15XContract = () => new Contract(getSata100ContractAddress(), SATA_100_ABI);
+
 export const useGetValue = (method, args, contractAddress, contract) => {
   const { value, error } = useCall(
     contractAddress && {
@@ -327,9 +335,49 @@ export function usePurchaseSata100Nft(chainId) {
   const sata100Contract = getSata100Contract(chainId);
   const {
     state, send, events, resetState,
-  } = useContractFunction(sata100Contract, 'purchaseRight', {
-    transactionName: 'Puchase SATA 100 Right',
-  });
+  } = useContractFunction(
+    sata100Contract,
+    'purchaseRight',
+    {
+      transactionName: 'Puchase SATA 100 Right',
+    },
+  );
+  return {
+    state,
+    send,
+    events,
+    resetState,
+  };
+}
+export function useClaimModifier15X() {
+  const modifier15XContract = getModifier15XContract();
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(
+    modifier15XContract,
+    'claimRight',
+    {
+      transactionName: 'Claim 2X Modifier Right',
+    },
+  );
+  return {
+    state,
+    send,
+    events,
+    resetState,
+  };
+}
+export function useClaimModifier2X() {
+  const modifier2XContract = getModifier2XContract();
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(
+    modifier2XContract,
+    'claimRight',
+    {
+      transactionName: 'Claim 1.5X Modifier Right',
+    },
+  );
   return {
     state,
     send,

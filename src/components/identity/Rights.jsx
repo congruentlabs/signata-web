@@ -30,9 +30,12 @@ import {
   useGetSingleValue,
   usePurchaseSata100Nft,
   useTokenApprove,
+  useClaimModifier15X,
+  useClaimModifier2X,
 } from '../../hooks/chainHooks';
 import LoadingState from './LoadingState';
 import { shouldBeLoading, logLoading } from '../../hooks/helpers';
+import EthOnlyRights from './EthOnlyRights';
 
 function Rights({
   chainId, id, account, theme,
@@ -68,6 +71,7 @@ function Rights({
     kycClaimContractAddress,
     kycClaimContract,
   );
+
   const sata100SchemaId = useGetSingleValue(
     'schemaId',
     [],
@@ -85,6 +89,20 @@ function Rights({
   const hasSata100Token = useGetSingleValue(
     'holdsTokenOfSchema',
     [id || '', sata100SchemaId],
+    getRightsContractAddress(chainId),
+    getRightsContract(chainId),
+  );
+
+  const has2XToken = useGetSingleValue(
+    'holdsTokenOfSchema',
+    [id || '', 1], // TODO: get the schemaId from mainnet deployment
+    getRightsContractAddress(chainId),
+    getRightsContract(chainId),
+  );
+
+  const has15XToken = useGetSingleValue(
+    'holdsTokenOfSchema',
+    [id || '', 3], // TODO: get the schemaId from mainnet deployment
     getRightsContractAddress(chainId),
     getRightsContract(chainId),
   );
@@ -116,6 +134,18 @@ function Rights({
     send: sata100Send,
     resetState: sata100ResetState,
   } = usePurchaseSata100Nft(chainId);
+
+  const {
+    state: modifier2XState,
+    send: modifier2XSend,
+    resetState: modifier2XResetState,
+  } = useClaimModifier2X();
+
+  const {
+    state: modifier15XState,
+    send: modifier15XSend,
+    resetState: modifier15XResetState,
+  } = useClaimModifier15X();
 
   const {
     state: approveKycClaimState,
@@ -509,6 +539,9 @@ function Rights({
           </Stack>
         </Box>
       </Stack>
+      {chainId === 1 && (
+        <EthOnlyRights chainId={chainId} id={id} account={account} theme={theme} identityExists={identityExists} />
+      )}
     </Container>
   );
 }
