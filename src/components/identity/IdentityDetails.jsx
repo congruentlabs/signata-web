@@ -46,16 +46,14 @@ function IdentityDetails({ chainId, id, theme }) {
     idContract,
   );
 
-  const securityKey = useGetSingleValue(
-    '_identityToSecurityKey',
-    [identityKey || ''],
-    getIdContractAddress(chainId),
-    idContract,
-  );
-
   return (
     <Container maxWidth="sm">
-      <Button to="/" component={Link} startIcon={<ChevronLeftIcon />}>
+      <Button
+        to="/"
+        component={Link}
+        startIcon={<ChevronLeftIcon />}
+        color={theme.palette.mode === 'light' ? 'secondary' : 'primary'}
+      >
         Back to Identity Manager
       </Button>
       <Typography variant="h6" component="h2" gutterBottom>
@@ -93,6 +91,13 @@ function IdentityDetails({ chainId, id, theme }) {
             <Chip
               color="default"
               label={`Identity: ${identityKey}`}
+              sx={{ fontFamily: 'Roboto Mono', borderRadius: 0 }}
+            />
+          )}
+          {identityExists && identityKey && (
+            <Chip
+              color="default"
+              label={`did:signata:${identityKey.slice(2)}`}
               sx={{ fontFamily: 'Roboto Mono', borderRadius: 0 }}
             />
           )}

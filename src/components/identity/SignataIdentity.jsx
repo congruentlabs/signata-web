@@ -6,6 +6,7 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import LinkIcon from '@mui/icons-material/Link';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import LinkOffIcon from '@mui/icons-material/LinkOff';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
@@ -799,13 +800,13 @@ function SignataIdentity({
               <ButtonGroup
                 fullWidth
                 variant="text"
-                disabled={isLoading || id.delegateAddress !== account}
                 color="secondary"
                 orientation={isSm ? 'horizontal' : 'vertical'}
               >
                 {!identityExists && (
                   <Button
                     onClick={id.type === 'wallet' ? onCreateWalletIdentity : onCreateIdentity}
+                    disabled={isLoading || id.delegateAddress !== account}
                     color="primary"
                   >
                     Register
@@ -813,17 +814,34 @@ function SignataIdentity({
                 )}
                 <Button onClick={handleClickRename}>Rename</Button>
                 {identityExists && !identityLocked && (
-                  <Button onClick={handleClickLock}>Lock</Button>
+                  <Button
+                    onClick={handleClickLock}
+                    disabled={isLoading || id.delegateAddress !== account}
+                  >
+                    Lock
+                  </Button>
                 )}
                 {identityExists && identityLocked && (
-                  <Button onClick={handleClickUnlock}>Unlock</Button>
+                  <Button
+                    onClick={handleClickUnlock}
+                    disabled={isLoading || id.delegateAddress !== account}
+                  >
+                    Unlock
+                  </Button>
                 )}
                 {identityExists && (
                   <Button onClick={handleClickRollover} disabled>
                     Rollover
                   </Button>
                 )}
-                {identityExists && <Button onClick={handleClickDestroy}>Destroy</Button>}
+                {identityExists && (
+                  <Button
+                    onClick={handleClickDestroy}
+                    disabled={isLoading || id.delegateAddress !== account}
+                  >
+                    Destroy
+                  </Button>
+                )}
                 {(!identityExists || advancedModeEnabled) && (
                   <Button onClick={handleClickDelete}>Delete</Button>
                 )}
@@ -833,17 +851,16 @@ function SignataIdentity({
               </ButtonGroup>
             </Paper>
           )}
-          {isLoading && (
+          {/* {isLoading && (
             <Box sx={{ width: '100%' }}>
               <LinearProgress />
             </Box>
-          )}
+          )} */}
           {id.chainId === chainId && id.delegateSeed && (
             <Paper>
               <ButtonGroup
                 fullWidth
                 variant="text"
-                disabled={isLoading}
                 color="secondary"
                 orientation={isSm ? 'horizontal' : 'vertical'}
               >
@@ -878,7 +895,7 @@ function SignataIdentity({
             </Paper>
           )}
           <Paper>
-            <Button href={`#/identity/${id.delegateAddress}`} fullWidth>
+            <Button href={`#/identity/${id.delegateAddress}`} fullWidth endIcon={<ChevronRightIcon />}>
               Manage Rights
             </Button>
           </Paper>

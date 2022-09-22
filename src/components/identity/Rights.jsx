@@ -12,6 +12,7 @@ import {
   ButtonGroup,
   Chip,
   Container,
+  Link,
   Stack,
   Typography,
 } from '@mui/material';
@@ -153,6 +154,31 @@ function Rights({
     }
   }, [approveKycClaimState]);
 
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const response = await axios.get(`https://id-api.signata.net/api/v1/requestKyc/${id}`);
+  //       if (response && response.data && response.data.sigS) {
+  //         console.log(response.data);
+
+  //       } else {
+  //         console.log(response);
+  //         // setKycErrorMessage(
+  //         //   'No completed KYC information found for this identity. Complete KYC with a Signata-integrated provider first.',
+  //         // );
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   if (id) {
+  //     getData();
+  //   }
+  // }, [id]);
+
   const onClickBlockpassKyc = (e) => {
     e.preventDefault();
     console.log('onClickBlockpassKyc');
@@ -225,7 +251,7 @@ function Rights({
   };
 
   return (
-    <Container maxWidth="xs">
+    <Container maxWidth="sm">
       <Stack spacing={2} sx={{ pt: 2 }}>
         <Typography variant="h6" component="h2">
           Decentralized Rights Exchange
@@ -311,18 +337,30 @@ function Rights({
               {' '}
               SATA)
             </Typography>
-            <Typography variant="body2" textAlign="center">
+            <Typography variant="body2" textAlign="left">
               KYC with Congruent Labs (Australia) verifying your identity using Blockpass. Excluding
               residents of the following sanctioned countries: Central African Republic, Democratic
               Republic of the Congo, Eritrea, Lebanon, Libya, Myanmar, Russia, Somalia, Sudan,
               Yemen, Zimbabwe, Crimea and Sevastopol, Iran, Syria, and North Korea.
+            </Typography>
+            <Typography variant="body2" textAlign="left">
+              Addresses sanctioned by OFEC will be not be permitted to purchase this NFT.
+              {' '}
+              <Link
+                href="https://home.treasury.gov/policy-issues/office-of-foreign-assets-control-sanctions-programs-and-information"
+                target="_blank"
+                rel="noreferrer"
+                color="secondary"
+              >
+                Learn more about OFEC.
+              </Link>
             </Typography>
             <Button
               fullWidth
               id="blockpass-kyc-connect"
               disabled={isLoading}
               size="large"
-              variant="outlined"
+              variant={theme.palette.mode === 'light' ? 'contained' : 'outlined'}
               onClick={onClickBlockpassKyc}
             >
               Start KYC
@@ -334,17 +372,32 @@ function Rights({
             <ButtonGroup orientation="horizontal" color="secondary" fullWidth size="large">
               <Button
                 onClick={handleClickApproveKycNft}
-                disabled={isLoading || kycClaimAllowance >= 100 * 1e18}
+                disabled={isLoading || kycClaimAllowance >= kycClaimPrice}
               >
                 Approve
               </Button>
               <Button
                 onClick={handleClickClaimKycNft}
-                disabled={isLoading || kycClaimAllowance < 100 * 1e18}
+                variant={theme.palette.mode === 'light' ? 'contained' : 'outlined'}
+                disabled={isLoading || kycClaimAllowance < kycClaimPrice}
               >
                 Claim KYC NFT
               </Button>
             </ButtonGroup>
+            <Typography variant="body2" textAlign="left" color="text.secondary">
+              If you experience any issues with the claim process contact support by clicking the
+              button below or reaching out to us on Discord.
+            </Typography>
+            <Button
+              fullWidth
+              color="inherit"
+              size="small"
+              variant="outlined"
+              target="_blank"
+              href="https://congruentlabs.atlassian.net/servicedesk/customer/portal/5"
+            >
+              Contact Support
+            </Button>
             <LoadingState state={approveKycClaimState} />
             <LoadingState state={claimKycNftState} />
             {kycErrorMessage && <Alert severity="error">{kycErrorMessage}</Alert>}
@@ -445,9 +498,10 @@ function Rights({
               </Button>
               <Button
                 onClick={handleClickPurchaseSata100}
+                variant={theme.palette.mode === 'light' ? 'contained' : 'outlined'}
                 disabled={isLoading || sata100ClaimAllowance < sata100Price}
               >
-                Purchase SATA 100 NFT
+                Purchase NFT
               </Button>
             </ButtonGroup>
             <LoadingState state={approveSata100State} />
