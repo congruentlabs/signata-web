@@ -292,7 +292,7 @@ function Rights({
           sx={{
             textAlign: 'center',
             border: 1,
-            py: 2,
+            p: 2,
             borderRadius: 2,
             borderColor: 'secondary.light',
             backgroundColor: theme.palette.mode === 'light' ? 'grey.50' : 'grey.900',
@@ -414,7 +414,7 @@ function Rights({
           sx={{
             textAlign: 'center',
             border: 1,
-            py: 2,
+            p: 2,
             borderRadius: 2,
             borderColor: 'secondary.light',
             backgroundColor: theme.palette.mode === 'light' ? 'grey.50' : 'grey.900',
