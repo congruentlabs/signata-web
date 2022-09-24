@@ -677,7 +677,7 @@ function SignataIdentity({
       <ItemBox>
         <ItemHeader
           text={`Identity: ${id.name || 'Unnamed'}`}
-          colored={id.chainId === chainId}
+          colored={id.delegateSeed || id.delegateAddress === account}
           logo="logo.png"
         />
         <Stack spacing={2} sx={{ marginTop: 1 }}>
@@ -709,30 +709,7 @@ function SignataIdentity({
               }}
               component="ul"
             >
-              <ListItem>
-                {id.chainId === chainId ? (
-                  <Chip
-                    label={`Chain: ${
-                      SUPPORTED_CHAINS.find((network) => network.chainId === id.chainId)?.chainName
-                    }`}
-                    color="success"
-                    variant="outlined"
-                    icon={<LinkIcon />}
-                    size={isXs ? 'small' : 'medium'}
-                  />
-                ) : (
-                  <Chip
-                    label={`Connect to ${
-                      SUPPORTED_CHAINS.find((network) => network.chainId === id.chainId)?.chainName
-                    } to manage this Identity`}
-                    color="default"
-                    variant="outlined"
-                    size={isXs ? 'small' : 'medium'}
-                    icon={<LinkOffIcon />}
-                  />
-                )}
-              </ListItem>
-              {id.chainId === chainId && !id.delegateSeed && id.delegateAddress === account && (
+              {!id.delegateSeed && id.delegateAddress === account && (
                 <ListItem>
                   <Chip
                     label="Connected Wallet"
@@ -743,7 +720,7 @@ function SignataIdentity({
                   />
                 </ListItem>
               )}
-              {id.chainId === chainId && !id.delegateSeed && id.delegateAddress !== account && (
+              {!id.delegateSeed && id.delegateAddress !== account && (
                 <ListItem>
                   <Chip
                     label="Connect to Delegate Wallet"
@@ -754,7 +731,7 @@ function SignataIdentity({
                   />
                 </ListItem>
               )}
-              {id.chainId === chainId && !identityDestroyed && (
+              {!identityDestroyed && (
                 <ListItem>
                   <Chip
                     label={identityExists ? 'Registered' : 'Unregistered'}
@@ -765,7 +742,7 @@ function SignataIdentity({
                   />
                 </ListItem>
               )}
-              {id.chainId === chainId && !identityDestroyed && (
+              {!identityDestroyed && (
                 <ListItem>
                   <Chip
                     label={identityLocked ? 'Locked' : 'Unlocked'}
@@ -776,7 +753,7 @@ function SignataIdentity({
                   />
                 </ListItem>
               )}
-              {id.chainId === chainId && identityExists && identityDestroyed && (
+              {identityExists && identityDestroyed && (
                 <ListItem>
                   <Chip
                     label="Destroyed"
@@ -794,7 +771,7 @@ function SignataIdentity({
           <LoadingState state={unlockState} />
           <LoadingState state={rolloverState} />
           <LoadingState state={destroyState} />
-          {id.chainId === chainId && !id.delegateSeed && (
+          {!id.delegateSeed && (
             <Paper>
               <ButtonGroup
                 fullWidth
@@ -838,7 +815,7 @@ function SignataIdentity({
               <LinearProgress />
             </Box>
           )}
-          {id.chainId === chainId && id.delegateSeed && (
+          {id.delegateSeed && (
             <Paper>
               <ButtonGroup
                 fullWidth

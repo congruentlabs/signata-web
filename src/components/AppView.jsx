@@ -167,6 +167,8 @@ function AppView({
             setIdentities={setIdentities}
             unlocked={encryptionPassword !== ''}
             updateIdentities={updateIdentities}
+            ipfsAccount={ipfsAccount}
+            errorMessage={errorMessage}
           />
         )}
       </Grid>
