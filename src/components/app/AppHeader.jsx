@@ -21,6 +21,7 @@ const pages = [
   { name: 'Home', href: '/', target: '' },
   { name: 'Docs', href: 'https://docs.signata.net', target: '_blank' },
   { name: 'News', href: 'https://blog.congruentlabs.co', target: '_blank' },
+  { name: 'Stats', href: '#/stats' },
 ];
 
 function AppHeader({
