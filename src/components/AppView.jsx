@@ -42,11 +42,12 @@ function AppView({
         const response = await axios.get(
           `https://id-api.signata.net/api/v1/getIdentities${ipfsAccount || account}`,
         );
-
+        console.log(response);
         if (response.status === 200) {
           const ipfsResponse = await axios.get(
             `https://${response.data[0].cid}.ipfs.w3s.link/data.json`,
           );
+          console.log(ipfsResponse);
 
           const decryptedData = CryptoJS.AES.decrypt(
             ipfsResponse.data,

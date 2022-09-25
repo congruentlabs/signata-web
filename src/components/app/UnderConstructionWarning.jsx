@@ -5,11 +5,12 @@ import Grid from '@mui/material/Grid';
 
 function UnderConstructionWarning() {
   return (
-    <Grid item xs={12}>
-      <Alert severity="warning">
+    <Grid item xs={8} sm={12}>
+      <Alert severity="info">
         <AlertTitle>App Under Construction</AlertTitle>
-        This app is still under active development. Features may not work properly. Only use the app if you know
-        what you are doing, or confirm with the development community which features work and which don&apos;t.
+        This app is still under active development. Some features may not work properly. We
+        recommend using the Backup feature to keep your identities backed up until most bugs are
+        squashed.
       </Alert>
     </Grid>
   );

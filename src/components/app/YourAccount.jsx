@@ -32,6 +32,7 @@ function YourAccount(props) {
     updateIdentities,
     ipfsAccount,
     setIpfsAccount,
+    errorMessage,
   } = props;
   const [password, setPassword] = useState('');
   const [passwordRepeat, setPasswordRepeat] = useState('');
@@ -388,6 +389,11 @@ function YourAccount(props) {
                 </Button>
                 {advancedModeEnabled && <Chip label="Expert Mode Enabled" color="success" />}
               </Stack>
+              {errorMessage && (
+                <Alert severity="error">
+                  {errorMessage}
+                </Alert>
+              )}
 
               {/* <TextField
                 label="New Password"
