@@ -1,4 +1,5 @@
 /* eslint-disable import/prefer-default-export */
+import numeral from 'numeral';
 
 export function shouldBeLoading(state) {
   switch (state) {
@@ -34,3 +35,11 @@ export const SUPPORTED_CHAINS = [
   { chainName: 'Polygon', chainId: 137 },
   { chainName: 'Rinkeby (Test)', chainId: 4 },
 ];
+
+export function fNumber(number) {
+  const toReturn = numeral(number).format();
+  if (toReturn === 'NaN') {
+    return numeral(0).format();
+  }
+  return toReturn;
+}

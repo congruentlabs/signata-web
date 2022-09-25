@@ -37,6 +37,7 @@ function AppView({
       try {
         setLoading(true);
         setErrorMessage('');
+        console.log(ipfsAccount);
         console.log(`fetching identities for ${ipfsAccount || account}`);
 
         const response = await axios.get(
@@ -45,6 +46,7 @@ function AppView({
 
         // console.log({ response });
         if (response.status === 200) {
+          console.log('setting ipfsAccount to ', account);
           setIpfsAccount(account);
 
           const ipfsResponse = await axios.get(

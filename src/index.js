@@ -9,10 +9,15 @@ import { SubgraphProvider } from './SubgraphProvider';
 const container = document.getElementById('root');
 const root = createRoot(container);
 
+const config = {
+  autoConnect: true,
+  fastMulticallEncoding: true,
+};
+
 root.render(
   <React.StrictMode>
     <SubgraphProvider>
-      <DAppProvider>
+      <DAppProvider config={config}>
         <SnackbarProvider maxSnack={3}>
           <App />
         </SnackbarProvider>

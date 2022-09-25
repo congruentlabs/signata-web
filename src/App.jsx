@@ -11,6 +11,7 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 import AppHeader from './components/app/AppHeader';
 import AppFooter from './components/app/AppFooter';
 import AppView from './components/AppView';
+import StatsView from './components/StatsView';
 import IdentityView from './components/IdentityView';
 import { SUPPORTED_CHAINS } from './hooks/helpers';
 import NoConnectionWarning from './components/connection/NoConnectionWarning';
@@ -139,7 +140,19 @@ function App() {
                     SUPPORTED_CHAINS={SUPPORTED_CHAINS}
                     chainId={chainId}
                   />
-              )}
+                )}
+              />
+              <Route
+                path="stats"
+                element={(
+                  <StatsView
+                    theme={theme}
+                    account={account}
+                    supportedChain={supportedChain}
+                    SUPPORTED_CHAINS={SUPPORTED_CHAINS}
+                    chainId={chainId}
+                  />
+                )}
               />
             </Routes>
           </HashRouter>
