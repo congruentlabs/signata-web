@@ -5,9 +5,7 @@ import { shortenIfAddress } from '@usedapp/core';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
-import LinkIcon from '@mui/icons-material/Link';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import LinkOffIcon from '@mui/icons-material/LinkOff';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
@@ -35,7 +33,7 @@ import {
 import LoadingState from './LoadingState';
 import ItemHeader from '../app/ItemHeader';
 import ItemBox from '../app/ItemBox';
-import { shouldBeLoading, logLoading, SUPPORTED_CHAINS } from '../../hooks/helpers';
+import { shouldBeLoading, logLoading } from '../../hooks/helpers';
 import ChangeDialog from './ChangeDialog';
 
 const ListItem = styled('li')(({ theme }) => ({

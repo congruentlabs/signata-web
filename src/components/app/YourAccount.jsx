@@ -13,6 +13,8 @@ import {
   TextField,
   useMediaQuery,
   Chip,
+  Divider,
+  Box,
 } from '@mui/material';
 import ItemHeader from './ItemHeader';
 import ItemBox from './ItemBox';
@@ -28,6 +30,8 @@ function YourAccount(props) {
     identities,
     setIdentities,
     updateIdentities,
+    ipfsAccount,
+    setIpfsAccount,
   } = props;
   const [password, setPassword] = useState('');
   const [passwordRepeat, setPasswordRepeat] = useState('');
@@ -338,6 +342,9 @@ function YourAccount(props) {
           {config && config.hasAccount && unlocked && (
             <Stack spacing={2}>
               <Alert severity="success">Account Unlocked</Alert>
+              <Box>
+                <Divider>Data Backup</Divider>
+              </Box>
               <ButtonGroup fullWidth orientation={isSm ? 'horizontal' : 'vertical'}>
                 <Button color="secondary" variant="contained" onClick={onClickDownloadBackup}>
                   Download Backup
@@ -346,6 +353,28 @@ function YourAccount(props) {
                   Restore Backup
                 </Button>
               </ButtonGroup>
+              {advancedModeEnabled && (
+                <Box>
+                  <Divider>IPFS Account</Divider>
+                </Box>
+              )}
+              {advancedModeEnabled && (
+                <Alert severity="info">
+                  Your data on IPFS is bound to the first wallet you connect and save an identity
+                  for. Only change this value if you have problems with your saved identity data not
+                  showing up.
+                </Alert>
+              )}
+              {advancedModeEnabled && (
+                <TextField
+                  label="IPFS Account"
+                  value={ipfsAccount}
+                  onChange={(e) => setIpfsAccount(e.target.value)}
+                />
+              )}
+              <Box>
+                <Divider>Expert Mode</Divider>
+              </Box>
               <Alert severity="info">
                 Expert mode unlocks some additional features of Signata. Only use this if you
                 understand what these extra features can be used for.

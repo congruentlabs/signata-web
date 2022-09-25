@@ -13,6 +13,7 @@ import {
   Chip,
   Container,
   Link,
+  Paper,
   Stack,
   Typography,
 } from '@mui/material';
@@ -30,8 +31,8 @@ import {
   useGetSingleValue,
   usePurchaseSata100Nft,
   useTokenApprove,
-  useClaimModifier15X,
-  useClaimModifier2X,
+  // useClaimModifier15X,
+  // useClaimModifier2X,
 } from '../../hooks/chainHooks';
 import LoadingState from './LoadingState';
 import { shouldBeLoading, logLoading } from '../../hooks/helpers';
@@ -93,19 +94,19 @@ function Rights({
     getRightsContract(chainId),
   );
 
-  const has2XToken = useGetSingleValue(
-    'holdsTokenOfSchema',
-    [id || '', 1], // TODO: get the schemaId from mainnet deployment
-    getRightsContractAddress(chainId),
-    getRightsContract(chainId),
-  );
+  // const has2XToken = useGetSingleValue(
+  //   'holdsTokenOfSchema',
+  //   [id || '', 1], // TODO: get the schemaId from mainnet deployment
+  //   getRightsContractAddress(chainId),
+  //   getRightsContract(chainId),
+  // );
 
-  const has15XToken = useGetSingleValue(
-    'holdsTokenOfSchema',
-    [id || '', 3], // TODO: get the schemaId from mainnet deployment
-    getRightsContractAddress(chainId),
-    getRightsContract(chainId),
-  );
+  // const has15XToken = useGetSingleValue(
+  //   'holdsTokenOfSchema',
+  //   [id || '', 3], // TODO: get the schemaId from mainnet deployment
+  //   getRightsContractAddress(chainId),
+  //   getRightsContract(chainId),
+  // );
 
   const identityExists = useGetSingleValue(
     '_identityExists',
@@ -135,17 +136,17 @@ function Rights({
     resetState: sata100ResetState,
   } = usePurchaseSata100Nft(chainId);
 
-  const {
-    state: modifier2XState,
-    send: modifier2XSend,
-    resetState: modifier2XResetState,
-  } = useClaimModifier2X();
+  // const {
+  //   state: modifier2XState,
+  //   send: modifier2XSend,
+  //   resetState: modifier2XResetState,
+  // } = useClaimModifier2X();
 
-  const {
-    state: modifier15XState,
-    send: modifier15XSend,
-    resetState: modifier15XResetState,
-  } = useClaimModifier15X();
+  // const {
+  //   state: modifier15XState,
+  //   send: modifier15XSend,
+  //   resetState: modifier15XResetState,
+  // } = useClaimModifier15X();
 
   const {
     state: approveKycClaimState,
@@ -538,10 +539,7 @@ function Rights({
             <LoadingState state={sata100State} />
           </Stack>
         </Box>
-        <Box sx={{
-          border: 1, borderColor: 'primary.main', borderRadius: 2, p: 2,
-        }}
-        >
+        <Paper sx={{ p: 2 }}>
           <Box sx={{ textAlign: 'center' }}>
             <img
               src="hoodie.jpg"
@@ -560,7 +558,7 @@ function Rights({
           >
             Get SATA 100 Merch
           </Button>
-        </Box>
+        </Paper>
       </Stack>
       {chainId === 1 && (
         <EthOnlyRights chainId={chainId} id={id} account={account} theme={theme} identityExists={identityExists} />

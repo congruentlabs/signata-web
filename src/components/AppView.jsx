@@ -37,31 +37,24 @@ function AppView({
       try {
         setLoading(true);
         setErrorMessage('');
-        console.log(ipfsAccount);
         console.log(`fetching identities for ${ipfsAccount || account}`);
 
         const response = await axios.get(
           `https://id-api.signata.net/api/v1/getIdentities${ipfsAccount || account}`,
         );
 
-        // console.log({ response });
         if (response.status === 200) {
-          console.log('setting ipfsAccount to ', account);
-          setIpfsAccount(account);
-
           const ipfsResponse = await axios.get(
             `https://${response.data[0].cid}.ipfs.w3s.link/data.json`,
           );
-
-          // console.log({ data: ipfsResponse.data });
 
           const decryptedData = CryptoJS.AES.decrypt(
             ipfsResponse.data,
             encryptionPassword,
           ).toString(CryptoJS.enc.Utf8);
-          // console.log({ decryptedData });
+
           const decryptedIdentities = JSON.parse(decryptedData);
-          // console.log({ decryptedIdentities });
+
           setIdentities(decryptedIdentities);
         } else if (response.status === 204) {
           setIdentities([]);
@@ -93,19 +86,11 @@ function AppView({
       // generate a hash of the encrypted content
       const idsBuf = Buffer.from(encryptedIdentities, 'utf8');
       const hashToSign = ethers.utils.keccak256(idsBuf);
-      console.log({ hashToSign });
       // sign the hash
       // eslint-disable-next-line no-undef
       const signature = await ethereum.request({
         method: 'personal_sign',
         params: [ipfsAccount || account, hashToSign],
-      });
-      console.log({ signature });
-
-      console.log({
-        encryptedData: encryptedIdentities,
-        signature,
-        address: ipfsAccount || account,
       });
 
       const response = await axios.post('https://id-api.signata.net/api/v1/saveIdentities', {
@@ -115,7 +100,9 @@ function AppView({
       });
 
       console.log({ response });
-
+      if (!ipfsAccount) {
+        setIpfsAccount(account);
+      }
       setIdentities(ids);
     } catch (error) {
       console.error(error);
@@ -170,6 +157,7 @@ function AppView({
             unlocked={encryptionPassword !== ''}
             updateIdentities={updateIdentities}
             ipfsAccount={ipfsAccount}
+            setIpfsAccount={setIpfsAccount}
             errorMessage={errorMessage}
           />
         )}
