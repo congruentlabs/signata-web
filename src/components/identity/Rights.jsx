@@ -160,15 +160,15 @@ function Rights({
   } = useTokenApprove(chainId);
 
   useEffect(() => {
-    if (id && identityKey) {
+    if (id) {
       const blockpass = new window.BlockpassKYCConnect('signata_f812a', {
-        refId: identityKey,
+        refId: id,
         elementId: 'blockpass-kyc-connect',
       });
 
       blockpass.startKYCConnect();
     }
-  }, [id, identityKey]);
+  }, [id]);
 
   useEffect(() => {
     if (claimKycNftState) {
@@ -537,6 +537,29 @@ function Rights({
             <LoadingState state={approveSata100State} />
             <LoadingState state={sata100State} />
           </Stack>
+        </Box>
+        <Box sx={{
+          border: 1, borderColor: 'primary.main', borderRadius: 2, p: 2,
+        }}
+        >
+          <Box sx={{ textAlign: 'center' }}>
+            <img
+              src="hoodie.jpg"
+              alt="SATA 100 Merch"
+              style={{
+                maxWidth: 300, borderRadius: 8, border: 2, borderColor: 'primary.light',
+              }}
+            />
+          </Box>
+          <Button
+            href="https://store.signata.net/"
+            target="_blank"
+            fullWidth
+            variant="contained"
+            color="secondary"
+          >
+            Get SATA 100 Merch
+          </Button>
         </Box>
       </Stack>
       {chainId === 1 && (

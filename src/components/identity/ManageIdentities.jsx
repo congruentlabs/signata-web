@@ -121,7 +121,6 @@ function ManageIdentities(props) {
       delegateAddress,
       securityAddress,
       name: 'New Independent Identity',
-      chainId,
       type: 'independent',
       creator: account,
     });
