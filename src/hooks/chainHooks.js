@@ -10,6 +10,7 @@ import ID_ABI from './identityAbi.json';
 import RIGHTS_ABI from './rightsAbi.json';
 import KYC_CLAIM_ABI from './kycClaimAbi.json';
 import SATA_100_ABI from './sata100Abi.json';
+import AUDIT_CLAIM_ABI from './auditClaimAbi.json';
 
 const sataPriceQuery = gql`
   {
@@ -189,6 +190,38 @@ export const getSata100ContractAddress = (chainId) => {
   return consts.SATA_100_MAINNET;
 };
 
+export const getAuditClaimContractAddress = (chainId) => {
+  if (chainId === 1) {
+    return consts.AUDIT_CLAIM_MAINNET;
+  }
+  if (chainId === 4) {
+    return consts.AUDIT_CLAIM_RINKEBY;
+  }
+  if (chainId === 56) {
+    // bsc
+    return consts.AUDIT_CLAIM_BSC;
+  }
+  if (chainId === 137) {
+    // matic
+    return consts.AUDIT_CLAIM_MATIC;
+  }
+  if (chainId === 250) {
+    // fantom
+    return consts.AUDIT_CLAIM_FTM;
+  }
+  if (chainId === 1088) {
+    // metis
+    return consts.AUDIT_CLAIM_METIS;
+  }
+  if (chainId === 43114) {
+    // avax
+    return consts.AUDIT_CLAIM_AVAX;
+  }
+  return consts.AUDIT_CLAIM_MAINNET;
+};
+
+export const getAuditClaimContract = (chainId) => new Contract(getAuditClaimContractAddress(chainId), AUDIT_CLAIM_ABI);
+
 export const getSata100Contract = (chainId) => new Contract(getSata100ContractAddress(chainId), SATA_100_ABI);
 
 export const getModifier2XContractAddress = () => consts.MODIFIER_2X_MAINNET; // mainnet only
@@ -242,10 +275,10 @@ export function useUniswapDSataPriceData() {
 }
 
 export function useCreateIdentity(chainId) {
-  const identityContract = getIdContract(chainId);
+  const d = getIdContract(chainId);
   const {
     state, send, events, resetState,
-  } = useContractFunction(identityContract, 'create', {
+  } = useContractFunction(d, 'create', {
     transactionName: 'Create Signata Identity',
   });
   return {
@@ -257,10 +290,10 @@ export function useCreateIdentity(chainId) {
 }
 
 export function useDestroyIdentity(chainId) {
-  const identityContract = getIdContract(chainId);
+  const c = getIdContract(chainId);
   const {
     state, send, events, resetState,
-  } = useContractFunction(identityContract, 'destroy', {
+  } = useContractFunction(c, 'destroy', {
     transactionName: 'Destroy Signata Identity',
   });
   return {
@@ -272,10 +305,10 @@ export function useDestroyIdentity(chainId) {
 }
 
 export function useLockIdentity(chainId) {
-  const identityContract = getIdContract(chainId);
+  const c = getIdContract(chainId);
   const {
     state, send, events, resetState,
-  } = useContractFunction(identityContract, 'lock', {
+  } = useContractFunction(c, 'lock', {
     transactionName: 'Lock Signata Identity',
   });
   return {
@@ -287,10 +320,10 @@ export function useLockIdentity(chainId) {
 }
 
 export function useUnlockIdentity(chainId) {
-  const identityContract = getIdContract(chainId);
+  const c = getIdContract(chainId);
   const {
     state, send, events, resetState,
-  } = useContractFunction(identityContract, 'unlock', {
+  } = useContractFunction(c, 'unlock', {
     transactionName: 'Unlock Signata Identity',
   });
   return {
@@ -302,10 +335,10 @@ export function useUnlockIdentity(chainId) {
 }
 
 export function useRolloverIdentity(chainId) {
-  const identityContract = getIdContract(chainId);
+  const c = getIdContract(chainId);
   const {
     state, send, events, resetState,
-  } = useContractFunction(identityContract, 'rollover', {
+  } = useContractFunction(c, 'rollover', {
     transactionName: 'Rollover Signata Identity',
   });
   return {
@@ -331,12 +364,31 @@ export function useClaimKycNft(chainId) {
   };
 }
 
-export function usePurchaseSata100Nft(chainId) {
-  const sata100Contract = getSata100Contract(chainId);
+export function useClaimAuditNft(chainId) {
+  const c = getAuditClaimContract(chainId);
   const {
     state, send, events, resetState,
   } = useContractFunction(
-    sata100Contract,
+    c,
+    'claimRight',
+    {
+      transactionName: 'Claim Proof of Audit Right',
+    },
+  );
+  return {
+    state,
+    send,
+    events,
+    resetState,
+  };
+}
+
+export function usePurchaseSata100Nft(chainId) {
+  const c = getSata100Contract(chainId);
+  const {
+    state, send, events, resetState,
+  } = useContractFunction(
+    c,
     'purchaseRight',
     {
       transactionName: 'Puchase SATA 100 Right',
@@ -349,12 +401,13 @@ export function usePurchaseSata100Nft(chainId) {
     resetState,
   };
 }
+
 export function useClaimModifier15X() {
-  const modifier15XContract = getModifier15XContract();
+  const c = getModifier15XContract();
   const {
     state, send, events, resetState,
   } = useContractFunction(
-    modifier15XContract,
+    c,
     'claimRight',
     {
       transactionName: 'Claim 2X Modifier Right',
@@ -367,6 +420,7 @@ export function useClaimModifier15X() {
     resetState,
   };
 }
+
 export function useClaimModifier2X() {
   const modifier2XContract = getModifier2XContract();
   const {
@@ -387,10 +441,10 @@ export function useClaimModifier2X() {
 }
 
 export function useTokenApprove(chainId) {
-  const tokenContract = getTokenContract(chainId);
+  const c = getTokenContract(chainId);
   const {
     state, send, events, resetState,
-  } = useContractFunction(tokenContract, 'approve', {
+  } = useContractFunction(c, 'approve', {
     transactionName: 'Approve',
   });
   return {

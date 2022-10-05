@@ -45,5 +45,13 @@ export const SATA_100_FTM = '0x4D6A137B248dB37672D99d33f8696012fA4Bd2F3';
 export const SATA_100_METIS = '0x4D6A137B248dB37672D99d33f8696012fA4Bd2F3';
 export const SATA_100_MATIC = '0x8f2F667bf1E3411FC2f6ef8f12F6aD1E939a13CA';
 
+export const AUDIT_CLAIM_RINKEBY = '';
+export const AUDIT_CLAIM_MAINNET = '';
+export const AUDIT_CLAIM_BSC = '';
+export const AUDIT_CLAIM_AVAX = '';
+export const AUDIT_CLAIM_FTM = '';
+export const AUDIT_CLAIM_METIS = '';
+export const AUDIT_CLAIM_MATIC = '';
+
 export const MODIFIER_15X_MAINNET = '';
 export const MODIFIER_2X_MAINNET = '';
