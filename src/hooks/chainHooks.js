@@ -43,6 +43,9 @@ export const getRightsContractAddress = (chainId) => {
   if (chainId === 4) {
     return consts.RIGHTS_CONTRACT_RINKEBY;
   }
+  if (chainId === 5) {
+    return consts.RIGHTS_CONTRACT_GOERLI;
+  }
   if (chainId === 56) {
     // bsc
     return consts.RIGHTS_CONTRACT_BSC;
@@ -75,6 +78,9 @@ export const getTokenContractAddress = (chainId) => {
   if (chainId === 4) {
     return consts.TOKEN_CONTRACT_RINKEBY;
   }
+  if (chainId === 5) {
+    return consts.TOKEN_CONTRACT_GOERLI;
+  }
   if (chainId === 56) {
     // bsc
     return consts.TOKEN_CONTRACT_BSC;
@@ -102,6 +108,9 @@ export const getIdContractAddress = (chainId) => {
   }
   if (chainId === 4) {
     return consts.ID_CONTRACT_RINKEBY;
+  }
+  if (chainId === 5) {
+    return consts.ID_CONTRACT_GOERLI;
   }
   if (chainId === 56) {
     // bsc
@@ -135,6 +144,9 @@ export const getKycClaimContractAddress = (chainId) => {
   if (chainId === 4) {
     return consts.KYC_RIGHTS_CLAIM_RINKEBY;
   }
+  if (chainId === 5) {
+    return consts.KYC_RIGHTS_CLAIM_GOERLI;
+  }
   if (chainId === 56) {
     // bsc
     return consts.KYC_RIGHTS_CLAIM_BSC;
@@ -167,6 +179,9 @@ export const getSata100ContractAddress = (chainId) => {
   if (chainId === 4) {
     return consts.SATA_100_RINKEBY;
   }
+  if (chainId === 5) {
+    return consts.SATA_100_GOERLI;
+  }
   if (chainId === 56) {
     // bsc
     return consts.SATA_100_BSC;
@@ -196,6 +211,9 @@ export const getAuditClaimContractAddress = (chainId) => {
   }
   if (chainId === 4) {
     return consts.AUDIT_CLAIM_RINKEBY;
+  }
+  if (chainId === 5) {
+    return consts.AUDIT_CLAIM_GOERLI;
   }
   if (chainId === 56) {
     // bsc
