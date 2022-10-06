@@ -92,7 +92,6 @@ function SATA100({
         backgroundColor: theme.palette.mode === 'light' ? 'grey.50' : 'grey.900',
       }}
     >
-      {' '}
       {hasSata100Token && (
       <Box
         sx={{
@@ -153,14 +152,8 @@ function SATA100({
         </Stack>
       </Box>
       )}
-      <Box
-        sx={{
-          textAlign: 'center',
-          border: 1,
-          p: 2,
-          borderRadius: 2,
-          borderColor: 'secondary.light',
-          backgroundColor: theme.palette.mode === 'light' ? 'grey.50' : 'grey.900',
+      <div
+        style={{
           display: identityExists && !hasSata100Token && account === id && account ? '' : 'none',
         }}
       >
@@ -197,7 +190,7 @@ function SATA100({
           <LoadingState state={approveSata100State} />
           <LoadingState state={sata100State} />
         </Stack>
-      </Box>
+      </div>
     </Box>
   );
 }

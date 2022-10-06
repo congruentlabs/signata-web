@@ -6,7 +6,15 @@ import { useTokenAllowance } from '@usedapp/core';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import {
-  Alert, Box, Button, ButtonGroup, Chip, Stack, Typography, Link,
+  Alert,
+  Box,
+  Button,
+  ButtonGroup,
+  Chip,
+  Stack,
+  Typography,
+  Link,
+  TextField,
 } from '@mui/material';
 import {
   getAuditClaimContract,
@@ -19,11 +27,22 @@ import { shouldBeLoading, logLoading } from '../../../hooks/helpers';
 import LoadingState from '../LoadingState';
 
 function AuditVerify({
-  chainId, id, account, theme, identityExists, setLoading, isLoading, rightsContractAddress, rightsContract, tokenContractAddress,
+  chainId,
+  id,
+  account,
+  theme,
+  identityExists,
+  setLoading,
+  isLoading,
+  rightsContractAddress,
+  rightsContract,
+  tokenContractAddress,
 }) {
   const [auditErrorMessage, setAuditErrorMessage] = useState('');
   const auditClaimContractAddress = getAuditClaimContractAddress(chainId);
   const auditClaimContract = getAuditClaimContract(chainId);
+  const [auditLink, setAuditLink] = useState('');
+  const [auditContractAddress, setAuditContractAddress] = useState('');
   const auditClaimAllowance = useTokenAllowance(
     tokenContractAddress,
     account,
@@ -77,9 +96,28 @@ function AuditVerify({
     }
   }, [approveAuditClaimState, setLoading]);
 
-  const onClickBlockpassAudit = (e) => {
+  const onClickRequestAudit = async (e) => {
     e.preventDefault();
-    console.log('onClickBlockpassAudit');
+    console.log('onClickRequestAudit');
+    try {
+      const body = {
+        auditLink,
+        auditContractAddress,
+        account,
+      };
+      const response = await axios.post('https://id-api.signata.net/api/v1/requestAudit/', body);
+
+      if (response.status === 200) {
+        // show the request submitted message
+      } else {
+        // otherwise return the error
+        setAuditErrorMessage(response.data);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleClickApproveAuditNft = (e) => {
@@ -98,7 +136,7 @@ function AuditVerify({
     try {
       setLoading(true);
       setAuditErrorMessage('');
-      const response = await axios.get(`https://id-api.signata.net/api/v1/requestAudit/${id}`);
+      const response = await axios.get(`https://id-api.signata.net/api/v1/claimAudit/${id}`);
       if (response && response.data && response.data.sigS) {
         // call chain
         console.log(response.data);
@@ -115,7 +153,7 @@ function AuditVerify({
       } else {
         console.log(response);
         setAuditErrorMessage(
-          'No completed Audit information found for this identity. Complete an Audit validation with Signata first.',
+          'No completed Audit verification found. Complete an Audit verification with Congruent Labs first.',
         );
       }
     } catch (error) {
@@ -157,7 +195,7 @@ function AuditVerify({
       {!hasAuditToken && account !== id && account && (
         <Stack spacing={1}>
           <Box sx={{ textAlign: 'center' }}>
-            <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
+            <img src="congruent.png" alt="Congruent Labs Logo" style={{ maxWidth: 200 }} />
           </Box>
           <Typography variant="body1" component="p" gutterBottom>
             Congruent Labs Audit Verification NFT
@@ -172,20 +210,14 @@ function AuditVerify({
           />
         </Stack>
       )}
-      <Box
-        sx={{
-          textAlign: 'center',
-          border: 1,
-          p: 2,
-          borderRadius: 2,
-          borderColor: 'secondary.light',
-          backgroundColor: theme.palette.mode === 'light' ? 'grey.50' : 'grey.900',
+      <div
+        style={{
           display: identityExists && !hasAuditToken && account === id && account ? '' : 'none',
         }}
       >
-        <Stack spacing={1}>
+        <Stack spacing={2}>
           <Box sx={{ textAlign: 'center' }}>
-            <img src="blockpass.png" alt="Blockpass Logo" style={{ maxWidth: 200 }} />
+            <img src="congruent.png" alt="Congruent Labs Logo" style={{ maxWidth: 200 }} />
           </Box>
           <Typography gutterBottom variant="h5" component="div" textAlign="center">
             Audit Verification
@@ -196,29 +228,44 @@ function AuditVerify({
           </Typography>
           <Typography variant="body2" textAlign="left">
             Verify your project audit with Congruent Labs. Once verified you can claim an NFT proof
-            that represents this audited state that you can then use to prove your project is
-            audited on-chain.
+            for the project token contract that represents this audited state.
           </Typography>
           <Alert severity="info">
             This NFT is not a smart contract audit. It is a proof that you have completed a smart
-            contract through a 3rd party. If you want a smart contract audit from Congruent Labs,
+            contract through a 3rd party, and Congruent Labs has reviewed it. If you want a smart
+            contract audit from Congruent Labs,
             {' '}
             <Link href="mailto:sales@signata.net" target="_blank">
               click here
             </Link>
             .
           </Alert>
+          <TextField
+            label="Audit Link"
+            variant="outlined"
+            fullWidth
+            value={auditLink}
+            onChange={(e) => setAuditLink(e.target.value)}
+          />
+          <TextField
+            label="Project Contract Address"
+            variant="outlined"
+            fullWidth
+            value={auditContractAddress}
+            onChange={(e) => setAuditContractAddress(e.target.value)}
+          />
           <Button
             fullWidth
             disabled={isLoading}
             size="large"
             variant={theme.palette.mode === 'light' ? 'contained' : 'outlined'}
-            onClick={onClickBlockpassAudit}
+            onClick={onClickRequestAudit}
           >
-            Request Verify Audit
+            Request Audit Verification
           </Button>
           <Alert severity="info" variant="outlined" sx={{ textAlign: 'left' }}>
-            Once you have completed an audit verification, click the below button to claim your NFT.
+            Once you have completed an audit verification, click the below button to claim an NFT
+            for the audited token.
           </Alert>
           <ButtonGroup orientation="horizontal" color="secondary" fullWidth size="large">
             <Button
@@ -253,7 +300,7 @@ function AuditVerify({
           <LoadingState state={claimAuditNftState} />
           {auditErrorMessage && <Alert severity="error">{auditErrorMessage}</Alert>}
         </Stack>
-      </Box>
+      </div>
     </Box>
   );
 }

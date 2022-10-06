@@ -186,14 +186,8 @@ function CLKYC({
           />
         </Stack>
       )}
-      <Box
-        sx={{
-          textAlign: 'center',
-          border: 1,
-          p: 2,
-          borderRadius: 2,
-          borderColor: 'secondary.light',
-          backgroundColor: theme.palette.mode === 'light' ? 'grey.50' : 'grey.900',
+      <div
+        style={{
           display:
             identityExists && !hasBlockpassKycToken && account === id && account ? '' : 'none',
         }}
@@ -274,7 +268,7 @@ function CLKYC({
           <LoadingState state={claimKycNftState} />
           {kycErrorMessage && <Alert severity="error">{kycErrorMessage}</Alert>}
         </Stack>
-      </Box>
+      </div>
     </Box>
   );
 }
