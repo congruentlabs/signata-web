@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { formatUnits } from '@ethersproject/units';
-import { BigNumber } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import axios from 'axios';
 import { useTokenAllowance } from '@usedapp/core';
 import CheckIcon from '@mui/icons-material/Check';
@@ -42,7 +42,9 @@ function AuditVerify({
   const auditClaimContractAddress = getAuditClaimContractAddress(chainId);
   const auditClaimContract = getAuditClaimContract(chainId);
   const [auditLink, setAuditLink] = useState('');
+  const [validAuditLink, setValidAuditLink] = useState(true);
   const [auditContractAddress, setAuditContractAddress] = useState('');
+  const [validAuditContractAddress, setValidAuditContractAddress] = useState(true);
   const auditClaimAllowance = useTokenAllowance(
     tokenContractAddress,
     account,
@@ -100,6 +102,17 @@ function AuditVerify({
     e.preventDefault();
     console.log('onClickRequestAudit');
     try {
+      const validUrl = /^(http|https):\/\/[^ "]+$/.test(auditLink);
+      if (!validUrl) {
+        setAuditErrorMessage('Please enter a valid URL for the proof of audit');
+        return;
+      }
+      if (!utils.isAddress(auditContractAddress)) {
+        setAuditErrorMessage(
+          'Please provide a valid contract address for the audit NFT to be issued to',
+        );
+        return;
+      }
       const body = {
         auditLink,
         auditContractAddress,
@@ -163,6 +176,25 @@ function AuditVerify({
     }
   };
 
+  const onChangeAuditLink = (e) => {
+    const validUrl = /^(http|https):\/\/[^ "]+$/.test(e.target.value);
+    if (!validUrl) {
+      setValidAuditLink(false);
+    } else {
+      setValidAuditLink(true);
+    }
+    setAuditLink(e.target.value);
+  };
+
+  const onChangeAuditContractAddress = (e) => {
+    if (!utils.isAddress(e.target.value)) {
+      setValidAuditContractAddress(false);
+    } else {
+      setValidAuditContractAddress(true);
+    }
+    setAuditContractAddress(e.target.value);
+  };
+
   return (
     <Box
       sx={{
@@ -177,7 +209,7 @@ function AuditVerify({
       {hasAuditToken && (
         <Stack>
           <Box sx={{ textAlign: 'center' }}>
-            <img src="congruent.png" alt="Congruent Labs Logo" style={{ maxWidth: 200 }} />
+            <img src="congruent.png" alt="Congruent Labs Logo" style={{ maxWidth: 100 }} />
           </Box>
           <Typography variant="body1" component="p" gutterBottom>
             Congruent Labs Audit Verification NFT
@@ -195,7 +227,7 @@ function AuditVerify({
       {!hasAuditToken && account !== id && account && (
         <Stack spacing={1}>
           <Box sx={{ textAlign: 'center' }}>
-            <img src="congruent.png" alt="Congruent Labs Logo" style={{ maxWidth: 200 }} />
+            <img src="congruent.png" alt="Congruent Labs Logo" style={{ maxWidth: 100 }} />
           </Box>
           <Typography variant="body1" component="p" gutterBottom>
             Congruent Labs Audit Verification NFT
@@ -217,7 +249,7 @@ function AuditVerify({
       >
         <Stack spacing={2}>
           <Box sx={{ textAlign: 'center' }}>
-            <img src="congruent.png" alt="Congruent Labs Logo" style={{ maxWidth: 200 }} />
+            <img src="congruent.png" alt="Congruent Labs Logo" style={{ maxWidth: 100 }} />
           </Box>
           <Typography gutterBottom variant="h5" component="div" textAlign="center">
             Audit Verification
@@ -227,12 +259,12 @@ function AuditVerify({
             SATA)
           </Typography>
           <Typography variant="body2" textAlign="left">
-            Verify your project audit with Congruent Labs. Once verified you can claim an NFT proof
-            for the project token contract that represents this audited state.
+            Verify a project audit with Congruent Labs. Once verified you can claim an NFT proof for
+            the project token contract that represents this audited state.
           </Typography>
           <Alert severity="info">
-            This NFT is not a smart contract audit. It is a proof that you have completed a smart
-            contract through a 3rd party, and Congruent Labs has reviewed it. If you want a smart
+            This NFT is not a smart contract audit. It is a proof a smart contract audit has been
+            completed through a 3rd party, and Congruent Labs has reviewed it. If you want a smart
             contract audit from Congruent Labs,
             {' '}
             <Link href="mailto:sales@signata.net" target="_blank">
@@ -244,19 +276,21 @@ function AuditVerify({
             label="Audit Link"
             variant="outlined"
             fullWidth
+            error={!validAuditLink}
             value={auditLink}
-            onChange={(e) => setAuditLink(e.target.value)}
+            onChange={onChangeAuditLink}
           />
           <TextField
             label="Project Contract Address"
             variant="outlined"
             fullWidth
+            error={!validAuditContractAddress}
             value={auditContractAddress}
-            onChange={(e) => setAuditContractAddress(e.target.value)}
+            onChange={onChangeAuditContractAddress}
           />
           <Button
             fullWidth
-            disabled={isLoading}
+            disabled={isLoading || !validAuditContractAddress || !validAuditLink}
             size="large"
             variant={theme.palette.mode === 'light' ? 'contained' : 'outlined'}
             onClick={onClickRequestAudit}
