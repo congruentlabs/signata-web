@@ -34,6 +34,7 @@ export const SUPPORTED_CHAINS = [
   { chainName: 'Metis Andromeda', chainId: 1088 },
   { chainName: 'Polygon', chainId: 137 },
   { chainName: 'Goerli (Test)', chainId: 5 },
+  { chainName: 'Arbitrum', chainId: 42161 },
 ];
 
 export function fNumber(number) {

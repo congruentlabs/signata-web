@@ -66,6 +66,10 @@ export const getRightsContractAddress = (chainId) => {
     // avax
     return consts.RIGHTS_CONTRACT_AVAX;
   }
+  if (chainId === 42161) {
+    // avax
+    return consts.RIGHTS_CONTRACT_ARBITRUM;
+  }
   return consts.RIGHTS_CONTRACT_MAINNET;
 };
 
@@ -96,6 +100,10 @@ export const getTokenContractAddress = (chainId) => {
   if (chainId === 43114) {
     // avax
     return consts.TOKEN_CONTRACT_AVAX;
+  }
+  if (chainId === 42161) {
+    // avax
+    return consts.TOKEN_CONTRACT_ARBITRUM;
   }
   return consts.TOKEN_CONTRACT_MAINNET;
 };
@@ -132,6 +140,10 @@ export const getIdContractAddress = (chainId) => {
     // avax
     return consts.ID_CONTRACT_AVAX;
   }
+  if (chainId === 42161) {
+    // avax
+    return consts.ID_CONTRACT_ARBITRUM;
+  }
   return consts.ID_CONTRACT_MAINNET;
 };
 
@@ -166,6 +178,10 @@ export const getKycClaimContractAddress = (chainId) => {
   if (chainId === 43114) {
     // avax
     return consts.KYC_RIGHTS_CLAIM_AVAX;
+  }
+  if (chainId === 42161) {
+    // avax
+    return consts.KYC_RIGHTS_CLAIM_ARBITRUM;
   }
   return consts.KYC_RIGHTS_CLAIM_MAINNET;
 };
@@ -202,6 +218,10 @@ export const getSata100ContractAddress = (chainId) => {
     // avax
     return consts.SATA_100_AVAX;
   }
+  if (chainId === 42161) {
+    // avax
+    return consts.SATA_100_ARBITRUM;
+  }
   return consts.SATA_100_MAINNET;
 };
 
@@ -234,6 +254,10 @@ export const getAuditClaimContractAddress = (chainId) => {
   if (chainId === 43114) {
     // avax
     return consts.AUDIT_CLAIM_AVAX;
+  }
+  if (chainId === 42161) {
+    // avax
+    return consts.AUDIT_CLAIM_ARBITRUM;
   }
   return consts.AUDIT_CLAIM_MAINNET;
 };
